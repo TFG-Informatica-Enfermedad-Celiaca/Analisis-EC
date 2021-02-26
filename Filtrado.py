@@ -4,26 +4,89 @@
 Created on Wed Feb 24 16:29:51 2021
 
 @author: pablo
+@author: carla
 """
 
 import pandas as pd
 import numpy as np
 
 
-#Función que comprueba
-def comprobarParentesco (data_aux, cadena):
-    for i in range (0, len(cadena)):
-        if ~ cadena[i].isalnum():
-            if '1' in cadena[i]:
-                data_aux.loc[:,'1º grado'].iloc[i] = 1
-            elif '2' in cadena[i]:
-                data_aux.loc[:,'2º grado'].iloc[i] = 1
-            elif '3' in cadena[i]:
-                data_aux.loc[:,'3º grado'].iloc[i] = 1
-            elif '4' in cadena[i]:
-                data_aux.loc[:,'4º grado'].iloc[i] = 1
-            
-    return data_aux
+def main():
+    df = read_data_from_local()
+    df_aux = df
+    records_number = df.iloc[:,0].size
+    column = df.columns
+    df_aux = process_kindship(df_aux)
+    modified_data = process_data(data)
+    write_data_to_database(modified_data)
+
+if __name__ == "__main__":
+    main()
+
+
+'''
+Read data from .csv file stored in local and creates dataframe
+'''
+def read_data_from_local():
+try:
+    df=pd.read_csv(
+        '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Datos.csv')
+    return df
+except:
+    try:
+        df=pd.read_csv(
+            '/mnt/c/Users/Carla Martínez/Desktop/TFG-Informática/Datos.csv')
+        return df
+    except:
+        print("It was not possible to load data")
+
+
+'''
+Insert columns in the dataframe that show if the patient has celiac family. 
+There are 4 levels of kindship so we create 4 columns, each of which contains
+0 in case there isn't any celiac relative in that level or 1 in other case.
+'''
+def process_kindship(df_aux):
+    # Create 4 extra columns and fill them with 0s
+    df_aux = df_aux.reindex (columns = df_aux.columns.tolist() +
+                                ['1º grado','2º grado','3º grado', '4º grado'])
+    df_f.loc[:, ['1º grado','2º grado','3º grado', '4º grado']] = 0
+
+    # In case there is a i-level of kindship it fills the column 'iº grado' with '1'
+    for i in range(1, 4):
+        df_aux.loc[df_aux['Grado de parentesco'].str.contains(str(i)) | 
+            df_aux['Grado de parentesco (si hay más de 1)'].str.contains(str(i)), str(i)+'º grado'] = 1
+
+    # Delete the previous columns releated to kindship
+    df_aux.drop(columns=['Grado de parentesco', 'Grado de parentesco (si hay más de 1)'])
+    return df_aux
+
+'''
+For each immunological desease we create a column. This column contains 0 in case
+the patient does not suffer this desease and 1 in other case.
+'''
+def process_immunological_desease(df_aux):
+    previous_columns = ['Enfermedad inmunológica', 'Enfermedad inmunológica (si hay más de 1)', 
+                'Enfermedad inmunológica (si hay más de 2)']
+
+    # Select the columns containing immunological deseases
+    immunological_columns= pd.unique(df[[previous_columns].values.ravel('K'))
+    # Filter out nan value in array
+    immunological_columns = list(filter(lambda i: not i is np.nan, immunological_columns))
+
+    # Add a new column per desease
+    df_aux = df_aux.reindex (columns = df_aux.columns.tolist() +
+                                immunological_columns)
+    df_aux.loc[:, immunological_columns] = 0
+
+    for i in range(0, len(immunological_columns)):
+        for j in range(records_number):
+            for z in range (0, len(previous_columns)):
+                if (immunological_columns[i] == data.loc[:,
+                                        previous_columns[z]].iloc[j]): 
+                    data_aux.loc[:,immunological_columns[i]].iloc[j] = 1
+    
+    return df_aux
 
 
 #Funcion que sirve para borrar casillas que pone algun string que se le pasa
@@ -48,17 +111,11 @@ def rellenarCasillas (data, pacientesTotales,
 
 
 
-
-
-data=pd.read_csv(
-    '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Datos.csv')
-
 #Creo una nueva tabla auxiliar que será la que vamos a limpiar a partir de la original
 data_aux = data
 
 
-total_pacientes = data.iloc[:,0].size
-lista_columnas = data.columns
+
 
 '''
 print(data.head())
@@ -67,71 +124,8 @@ print(data.describe())
 '''
 
 
-
-
-'''Insertar columnas que reflejen si el paciente
-tiene en la familia personas diagnosticadas.
-Hay 4 grados de parentescos posibles. 
-Por lo tanto, creamos 4 columnas y en cada una poner 0 si no tienen
- ningún familiar de ese grado diagnosticado o 1 en caso contrario'''
-
-
-#Creo las 4 columnas extras y las relleno de 0s
-data_aux = data_aux.reindex (columns = data_aux.columns.tolist() +
-                             ['1º grado','2º grado','3º grado', '4º grado'])
-data_aux.loc[:, ['1º grado','2º grado','3º grado', '4º grado']] = 0
-
-
-#En la tabla original había dos columnas de parentesco
-columna_parentesco1 = data.loc[:,'Grado de parentesco']
-columna_parentesco2 = data.loc[:,
-        'Grado de parentesco (si hay más de 1)']
-
-#Relleno con 0s en forma de string los valores qué eran nan para que no se lie
-columna_parentesco1 = columna_parentesco1.fillna("0")
-columna_parentesco2 = columna_parentesco2.fillna("0")
-
-#A partir de las 2 columnas anteriores relleno las 4 columnas extras
-data_aux = comprobarParentesco(data_aux, columna_parentesco1)
-data_aux = comprobarParentesco(data_aux, columna_parentesco2)
-
-
-
-
-
 '''Filtrado de enfermedad inmunológica'''
 
-#Selecciono todas las columnas que tengan enfermedades inmunologicas
-columna_inmunologica1 = data.loc[:,'Enfermedad inmunológica'].dropna()
-columna_inmunologica2 = data.loc[:, 
-                'Enfermedad inmunológica (si hay más de 1)'].dropna()
-columna_inmunologica3 = data.loc[:,
-                'Enfermedad inmunológica (si hay más de 2)'].dropna()
-
-#Creo una lista de enfermedades inmunologicas unicas
-columna_inmunologica = pd.concat([columna_inmunologica1,
-                                  columna_inmunologica2,
-                                  columna_inmunologica3], axis = 0)
-columna_inmunologica = pd.unique(columna_inmunologica)
-
-'''Creo un dataframe con las columnas de las enfermedades
- y todas las casillas inicializadas a 0'''
-data_inmunologia = pd.DataFrame(columns = columna_inmunologica,
-                                index = range(total_pacientes))
-data_inmunologia.iloc[:,:] = 0
-
-
-columna_inmunologica = pd.Series(columna_inmunologica)
-nombresColumnasAAnalizar = ['Enfermedad inmunológica',
-                            'Enfermedad inmunológica (si hay más de 1)',
-                            'Enfermedad inmunológica (si hay más de 2)']
-
-#Relleno el nuevo dataframe
-data_inmunologia = rellenarCasillas (data, total_pacientes,
-              columna_inmunologica, nombresColumnasAAnalizar, data_inmunologia)
-
-#Junto los dos dataframe
-data_aux = pd.concat([data_aux, data_inmunologia], axis = 1)
 
 
 

@@ -50,8 +50,9 @@ def process_kindship(df_aux):
     return df_aux
 
 '''
-For each different value in 'previous_columns' we create a column. Each record contains 0 in case
-the row has not that value and 1 in case the row has that value
+For each different value in 'previous_columns' we create a column. 
+Each record contains 0 in case the row has not that value and 1 in
+case the row has that value
 '''
 def process_columns_to_binary(df_aux, delete_more, records_number, previous_columns):
     # Create an array containing the values in previous_colums 
@@ -74,15 +75,24 @@ def process_columns_to_binary(df_aux, delete_more, records_number, previous_colu
     df_aux = df_aux.drop(columns=previous_columns)
     return df_aux
 
+'''
+Given a list of columns this creates a one binary column per value
+IMPORTANT: the values in the columns should be disjoint, if not it 
+will create as many new columns as it appears in a different colums
+'''
+def simple_process_columns_to_binary(df_aux, columns_list):
+    df_aux = pd.get_dummies(df_aux, columns=columns_list)
+    return df_aux
 
 def main():
     df = read_data_from_local()
     df_aux = df
     records_number = df.iloc[:,0].size
     df_aux = process_kindship(df_aux)
-    df_aux = process_columns_to_binary(df_aux,to_delete["immunological_desease"], records_number, column_names["immunological_desease"])
-    df_aux = process_columns_to_binary(df_aux,to_delete["symptoms"], records_number, column_names["symptoms"])
-    df_aux = process_columns_to_binary(df_aux,to_delete["signs"], records_number, column_names["signs"])
+    df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
+    df_aux = process_columns_to_binary(df_aux,to_delete["immunological_desease"], records_number, process_column_names["immunological_desease"])
+    df_aux = process_columns_to_binary(df_aux,to_delete["symptoms"], records_number, process_column_names["symptoms"])
+    df_aux = process_columns_to_binary(df_aux,to_delete["signs"], records_number, process_column_names["signs"])
     df_aux.to_excel("filterData.xlsx")
 
 if __name__ == "__main__":

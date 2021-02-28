@@ -17,7 +17,7 @@ Read data from .csv file stored in local and creates dataframe
 def read_data_from_local():
     try:
         df=pd.read_csv(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Datos.csv')
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Datos.csv')
         return df
     except:
         try:
@@ -27,6 +27,22 @@ def read_data_from_local():
         except:
             print("It was not possible to load data")
 
+
+'''
+Read the relevant columns form .xlsx stored in local and creates deaframe
+'''
+def read_columns_from_local():
+    try:
+        df=pd.read_excel(
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Important columns.xlsx')
+        return df
+    except:
+        try:
+            df=pd.read_excel(
+                '/mnt/c/Users/Carla Martínez/Desktop/TFG-Informática/Important columns.xlsx')
+            return df
+        except:
+            print("It was not possible to load data")
 
 '''
 Insert columns in the dataframe that show if the patient has celiac family. 
@@ -87,6 +103,11 @@ def simple_process_columns_to_binary(df_aux, columns_list):
 def main():
     df = read_data_from_local()
     df_aux = df
+    important_columns = read_columns_from_local()
+    important_columns = list(important_columns.iloc[:,1])
+    aux = df_aux.columns
+    important_columns = important_columns
+    df_aux = df_aux.loc[:,important_columns]
     records_number = df.iloc[:,0].size
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
@@ -94,6 +115,11 @@ def main():
     df_aux = process_columns_to_binary(df_aux,to_delete["symptoms"], records_number, process_column_names["symptoms"])
     df_aux = process_columns_to_binary(df_aux,to_delete["signs"], records_number, process_column_names["signs"])
     df_aux.to_excel("filterData.xlsx")
+    
 
 if __name__ == "__main__":
     main()
+    
+    
+    
+    

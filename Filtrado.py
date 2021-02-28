@@ -10,6 +10,7 @@ Created on Wed Feb 24 16:29:51 2021
 import pandas as pd
 import numpy as np
 from utils import *
+from sklearn import preprocessing
 
 '''
 Read data from .csv file stored in local and creates dataframe
@@ -105,6 +106,34 @@ def simple_process_columns_to_binary(df_aux, columns_list):
 
 
 '''
+Changes the value of a column to binary when it only has 2 possible values
+'''
+def change_column_to_binary(df_aux, column_list):
+    df_aux = pd.get_dummies(df_aux, columns ={column_list[0]})
+    df_aux = df_aux.drop(columns=column_list[1], axis=1)
+    df_aux = df_aux.rename(columns={column_list[2]: column_list[0]})
+    return df_aux
+
+'''
+Given a column containing numerical data this fills the mising values with ceros
+and normalizes the data
+'''
+def fill_nan_with_zero_and_scale(df_aux, column_list):
+    for column in column_list:
+        df_aux[column] = df_aux[column].fillna(0)
+        #df_aux[column] = df_aux[column].astype(str)
+        #df_aux = df_aux.apply(lambda x: x.str.replace(',', '.').astype(float), axis=1)
+  
+    #min_max = preprocessing.MinMaxScaler()
+    #scaled_df = min_max.fit_transform(df_aux[column_list].values)
+    #final_df = pd.DataFrame(scaled_df,columns=column_list)
+    #df_aux = df_aux.drop(columns= column_list)
+
+    #df_aux = pd.concat([df_aux, final_df], axis = 1)
+
+    return df_aux
+
+'''
 Given a file with the relevant columns name, it selects them in the dataframe
 '''
 def selectImportantColumns(df_aux):
@@ -117,13 +146,19 @@ def selectImportantColumns(df_aux):
 def main():
     df = read_data_from_local()
     df_aux = df
-    df = selectImportantColumns(df_aux)
-    records_number = df.iloc[:,0].size
+    df_aux = selectImportantColumns(df_aux)
+    records_number = df_aux.iloc[:,0].size
+
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
-    df_aux = process_columns_to_binary(df_aux,to_delete["immunological_desease"], records_number, process_column_names["immunological_desease"])
-    df_aux = process_columns_to_binary(df_aux,to_delete["symptoms"], records_number, process_column_names["symptoms"])
-    df_aux = process_columns_to_binary(df_aux,to_delete["signs"], records_number, process_column_names["signs"])
+    df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
+
+    for column in column_to_binary_column_names.values():
+        df_aux = change_column_to_binary(df_aux, column)
+    
+    for column in process_column_names.values():
+        df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
+
     df_aux.to_excel("filterData.xlsx")
     
 

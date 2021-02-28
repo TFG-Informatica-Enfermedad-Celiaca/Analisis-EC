@@ -75,17 +75,20 @@ def process_columns_to_binary(df_aux, delete_more, records_number, previous_colu
     new_columns= pd.unique(df_aux[previous_columns].values.ravel('K'))
     # Filter out nan value and delete_more in array
     new_columns = list(filter(lambda i: not i in [np.nan] + delete_more, new_columns))
-
-    for column in new_columns:
-        if (column not in df_aux.columns):
-            df_aux.insert(0, column, 0)
-
+    
+    data_aux = pd.DataFrame(columns = new_columns,
+                                index = range(records_number))
+    data_aux.iloc[:,:] = 0
+    
     for i in range(0, len(new_columns)):
         for j in range(records_number):
             for z in range (0, len(previous_columns)):
                 if (new_columns[i] == df_aux.loc[:,
                                         previous_columns[z]].iloc[j]): 
-                    df_aux.loc[:,new_columns[i]].iloc[j] = 1
+                    data_aux.loc[:,new_columns[i]].iloc[j] = 1
+                    
+    df_aux = pd.concat([df_aux, data_aux], axis = 1)
+    
     
     # Delete previous columns 
     df_aux = df_aux.drop(columns=previous_columns)
@@ -100,14 +103,21 @@ def simple_process_columns_to_binary(df_aux, columns_list):
     df_aux = pd.get_dummies(df_aux, columns=columns_list)
     return df_aux
 
+
+'''
+Given a file with the relevant columns name, it selects them in the dataframe
+'''
+def selectImportantColumns(df_aux):
+    important_columns = read_columns_from_local()
+    important_columns = list(important_columns.iloc[:,1])
+    df_aux = df_aux.loc[:,important_columns]
+    return df_aux
+    
+
 def main():
     df = read_data_from_local()
     df_aux = df
-    important_columns = read_columns_from_local()
-    important_columns = list(important_columns.iloc[:,1])
-    aux = df_aux.columns
-    important_columns = important_columns
-    df_aux = df_aux.loc[:,important_columns]
+    df = selectImportantColumns(df_aux)
     records_number = df.iloc[:,0].size
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)

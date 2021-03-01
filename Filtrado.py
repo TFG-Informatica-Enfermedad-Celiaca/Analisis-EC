@@ -4,203 +4,167 @@
 Created on Wed Feb 24 16:29:51 2021
 
 @author: pablo
+@author: carla
 """
 
 import pandas as pd
 import numpy as np
-
-
-#Función que comprueba
-def comprobarParentesco (data_aux, cadena):
-    for i in range (0, len(cadena)):
-        if ~ cadena[i].isalnum():
-            if '1' in cadena[i]:
-                data_aux.loc[:,'1º grado'].iloc[i] = 1
-            elif '2' in cadena[i]:
-                data_aux.loc[:,'2º grado'].iloc[i] = 1
-            elif '3' in cadena[i]:
-                data_aux.loc[:,'3º grado'].iloc[i] = 1
-            elif '4' in cadena[i]:
-                data_aux.loc[:,'4º grado'].iloc[i] = 1
-            
-    return data_aux
-
-
-#Funcion que sirve para borrar casillas que pone algun string que se le pasa
-def borrarOtrosSintomas (data, columna, columnaALimpiar, stringABorrar):
-    indexNames = data[ data[columna] == 
-                  stringABorrar].index
-    # Delete these row indexes from dataFrame
-    return columnaALimpiar.drop(indexNames , inplace=True)
-
-
-'''Dado una lista de columnas, comprueba si cada uno de los pacientes
-cumple la condición de cada columna. En caso afirmativo, escribe un 1'''
-def rellenarCasillas (data, pacientesTotales,
-                      listaColumnas, nombresColumnasAAnalizar, data_aux):
-    for i in range(0, len(listaColumnas)):
-        for j in range(pacientesTotales):
-            for z in range (0, len(nombresColumnasAAnalizar)):
-                if (listaColumnas[i] == data.loc[:,
-                                        nombresColumnasAAnalizar[z]].iloc[j]): 
-                    data_aux.loc[:,listaColumnas[i]].iloc[j] = 1
-    return data_aux
-
-
-
-
-
-data=pd.read_csv(
-    '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Datos.csv')
-
-#Creo una nueva tabla auxiliar que será la que vamos a limpiar a partir de la original
-data_aux = data
-
-
-total_pacientes = data.iloc[:,0].size
-lista_columnas = data.columns
+from utils import *
+from sklearn import preprocessing
 
 '''
-print(data.head())
-print(data.info())
-print(data.describe())
+Read data from .csv file stored in local and creates dataframe
 '''
+def read_data_from_local():
+    try:
+        df=pd.read_csv(
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Datos.csv')
+        return df
+    except:
+        try:
+            df=pd.read_csv(
+                '/mnt/c/Users/Carla Martínez/Desktop/TFG-Informática/Datos.csv')
+            return df
+        except:
+            print("It was not possible to load data")
 
 
+'''
+Read the relevant columns form .xlsx stored in local and creates deaframe
+'''
+def read_columns_from_local():
+    try:
+        df=pd.read_excel(
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Important columns.xlsx')
+        return df
+    except:
+        try:
+            df=pd.read_excel(
+                '/mnt/c/Users/Carla Martínez/Desktop/TFG-Informática/Important columns.xlsx')
+            return df
+        except:
+            print("It was not possible to load data")
 
+'''
+Insert columns in the dataframe that show if the patient has celiac family. 
+There are 4 levels of kindship so we create 4 columns, each of which contains
+0 in case there isn't any celiac relative in that level or 1 in other case.
+'''
+def process_kindship(df_aux):
+    # Create 4 extra columns and fill them with 0s
+    new_columns = ['1º grado','2º grado','3º grado', '4º grado']
+    for column in new_columns:
+        if (column not in df_aux.columns):
+            df_aux.insert(0, column, 0)
 
-'''Insertar columnas que reflejen si el paciente
-tiene en la familia personas diagnosticadas.
-Hay 4 grados de parentescos posibles. 
-Por lo tanto, creamos 4 columnas y en cada una poner 0 si no tienen
- ningún familiar de ese grado diagnosticado o 1 en caso contrario'''
+    # In case there is a i-level of kindship it fills the column 'iº grado' with '1'
+    for i in range(1, 4):
+        df_aux.loc[df_aux['Grado de parentesco'].str.contains(str(i)) | 
+            df_aux['Grado de parentesco (si hay más de 1)'].str.contains(str(i)), str(i)+'º grado'] = 1
 
+    # Delete the previous columns releated to kindship
+    df_aux = df_aux.drop(columns=['Grado de parentesco', 'Grado de parentesco (si hay más de 1)'])
+    return df_aux
 
-#Creo las 4 columnas extras y las relleno de 0s
-data_aux = data_aux.reindex (columns = data_aux.columns.tolist() +
-                             ['1º grado','2º grado','3º grado', '4º grado'])
-data_aux.loc[:, ['1º grado','2º grado','3º grado', '4º grado']] = 0
-
-
-#En la tabla original había dos columnas de parentesco
-columna_parentesco1 = data.loc[:,'Grado de parentesco']
-columna_parentesco2 = data.loc[:,
-        'Grado de parentesco (si hay más de 1)']
-
-#Relleno con 0s en forma de string los valores qué eran nan para que no se lie
-columna_parentesco1 = columna_parentesco1.fillna("0")
-columna_parentesco2 = columna_parentesco2.fillna("0")
-
-#A partir de las 2 columnas anteriores relleno las 4 columnas extras
-data_aux = comprobarParentesco(data_aux, columna_parentesco1)
-data_aux = comprobarParentesco(data_aux, columna_parentesco2)
-
-
-
-
-
-'''Filtrado de enfermedad inmunológica'''
-
-#Selecciono todas las columnas que tengan enfermedades inmunologicas
-columna_inmunologica1 = data.loc[:,'Enfermedad inmunológica'].dropna()
-columna_inmunologica2 = data.loc[:, 
-                'Enfermedad inmunológica (si hay más de 1)'].dropna()
-columna_inmunologica3 = data.loc[:,
-                'Enfermedad inmunológica (si hay más de 2)'].dropna()
-
-#Creo una lista de enfermedades inmunologicas unicas
-columna_inmunologica = pd.concat([columna_inmunologica1,
-                                  columna_inmunologica2,
-                                  columna_inmunologica3], axis = 0)
-columna_inmunologica = pd.unique(columna_inmunologica)
-
-'''Creo un dataframe con las columnas de las enfermedades
- y todas las casillas inicializadas a 0'''
-data_inmunologia = pd.DataFrame(columns = columna_inmunologica,
-                                index = range(total_pacientes))
-data_inmunologia.iloc[:,:] = 0
-
-
-columna_inmunologica = pd.Series(columna_inmunologica)
-nombresColumnasAAnalizar = ['Enfermedad inmunológica',
-                            'Enfermedad inmunológica (si hay más de 1)',
-                            'Enfermedad inmunológica (si hay más de 2)']
-
-#Relleno el nuevo dataframe
-data_inmunologia = rellenarCasillas (data, total_pacientes,
-              columna_inmunologica, nombresColumnasAAnalizar, data_inmunologia)
-
-#Junto los dos dataframe
-data_aux = pd.concat([data_aux, data_inmunologia], axis = 1)
-
-
-
+'''
+For each different value in 'previous_columns' we create a column. 
+Each record contains 0 in case the row has not that value and 1 in
+case the row has that value
+'''
+def process_columns_to_binary(df_aux, delete_more, records_number, previous_columns):
+    # Create an array containing the values in previous_colums 
+    new_columns= pd.unique(df_aux[previous_columns].values.ravel('K'))
+    # Filter out nan value and delete_more in array
+    new_columns = list(filter(lambda i: not i in [np.nan] + delete_more, new_columns))
     
-
-
-
-'''Filtrado de sintomas'''
-#Selecciono todas las columnas que tengan sintomas
-columna_sintomas1 = data.loc[:,'Síntomas específicos'].dropna()
-columna_sintomas2 = data.loc[:, 
-                'Síntomas específicos.1'].dropna()
-columna_sintomas3 = data.loc[:,
-                'Síntomas específicos.2'].dropna()
-columna_sintomas4 = data.loc[:,
-                'Otros síntomas'].dropna()
-
-#Limpio las casillas en las que pone "otros sintomas"
-borrarOtrosSintomas (data, 'Síntomas específicos',
-                     columna_sintomas1, 'Otros (especificar en otros síntomas)')
-borrarOtrosSintomas (data, 'Síntomas específicos.1',
-                     columna_sintomas2, 'Otros (especificar en otros síntomas)')
-borrarOtrosSintomas (data, 'Síntomas específicos.2',
-                     columna_sintomas3, 'Otros (especificar en otros síntomas)')
-
-#De la ultima columna solo cojo las casillas donde hay menos de 2 palabras porque si no se liaba mucho
-indexNames = []
-for index, value in columna_sintomas4.items():
-    if len(value.split()) > 2:
-        indexNames.append(index)
-columna_sintomas4.drop(indexNames , inplace=True)
-
-
-#Creo una lista de enfermedades inmunologicas unicas
-columna_sintomas = pd.concat([columna_sintomas1,
-                                  columna_sintomas2,
-                                  columna_sintomas3,
-                                  columna_sintomas4], axis = 0)
-columna_sintomas = pd.unique(columna_sintomas)
-
-
-'''Creo un dataframe con las columnas de los sintomas
- y todas las casillas inicializadas a 0'''
-data_sintomas = pd.DataFrame(columns = columna_sintomas,
-                             index=range(total_pacientes))
-data_sintomas.iloc[:,:] = 0
-
-columna_sintomas = pd.Series(columna_sintomas)
-
-nombresColumnasAAnalizar = ['Síntomas específicos',
-                            'Síntomas específicos.1',
-                            'Síntomas específicos.2',
-                            'Otros síntomas'] 
-
-#Relleno el nuevo dataframe
-data_sintomas = rellenarCasillas (data, total_pacientes,
-              columna_sintomas, nombresColumnasAAnalizar, data_sintomas)
-
-#Junto los dos dataframe
-data_aux = pd.concat([data_aux, data_sintomas], axis = 1)
-
- 
-
-
-aux = data_aux.iloc[:, 170:231]
-
+    data_aux = pd.DataFrame(columns = new_columns,
+                                index = range(records_number))
+    data_aux.iloc[:,:] = 0
+    
+    for i in range(0, len(new_columns)):
+        for j in range(records_number):
+            for z in range (0, len(previous_columns)):
+                if (new_columns[i] == df_aux.loc[:,
+                                        previous_columns[z]].iloc[j]): 
+                    data_aux.loc[:,new_columns[i]].iloc[j] = 1
+                    
+    df_aux = pd.concat([df_aux, data_aux], axis = 1)
     
     
+    # Delete previous columns 
+    df_aux = df_aux.drop(columns=previous_columns)
+    return df_aux
+
+'''
+Given a list of columns this creates a one binary column per value
+IMPORTANT: the values in the columns should be disjoint, if not it 
+will create as many new columns as it appears in a different colums
+'''
+def simple_process_columns_to_binary(df_aux, columns_list):
+    df_aux = pd.get_dummies(df_aux, columns=columns_list)
+    return df_aux
+
+
+'''
+Changes the value of a column to binary when it only has 2 possible values
+'''
+def change_column_to_binary(df_aux, column_list):
+    df_aux = pd.get_dummies(df_aux, columns ={column_list[0]})
+    df_aux = df_aux.drop(columns=column_list[1], axis=1)
+    df_aux = df_aux.rename(columns={column_list[2]: column_list[0]})
+    return df_aux
+
+'''
+Given a column containing numerical data this fills the mising values with ceros
+and normalizes the data
+'''
+def fill_nan_with_zero_and_scale(df_aux, column_list):
+    for column in column_list:
+        df_aux[column] = df_aux[column].fillna(0)
+        #df_aux[column] = df_aux[column].astype(str)
+        #df_aux = df_aux.apply(lambda x: x.str.replace(',', '.').astype(float), axis=1)
+  
+    #min_max = preprocessing.MinMaxScaler()
+    #scaled_df = min_max.fit_transform(df_aux[column_list].values)
+    #final_df = pd.DataFrame(scaled_df,columns=column_list)
+    #df_aux = df_aux.drop(columns= column_list)
+
+    #df_aux = pd.concat([df_aux, final_df], axis = 1)
+
+    return df_aux
+
+'''
+Given a file with the relevant columns name, it selects them in the dataframe
+'''
+def selectImportantColumns(df_aux):
+    important_columns = read_columns_from_local()
+    important_columns = list(important_columns.iloc[:,1])
+    df_aux = df_aux.loc[:,important_columns]
+    return df_aux
     
 
+def main():
+    df = read_data_from_local()
+    df_aux = df
+    df_aux = selectImportantColumns(df_aux)
+    records_number = df_aux.iloc[:,0].size
 
+    df_aux = process_kindship(df_aux)
+    df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
+    df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
 
+    for column in column_to_binary_column_names.values():
+        df_aux = change_column_to_binary(df_aux, column)
+    
+    for column in process_column_names.values():
+        df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
+
+    df_aux.to_excel("filterData.xlsx")
+    
+
+if __name__ == "__main__":
+    main()
+    
+    
+    
+    

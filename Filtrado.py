@@ -121,6 +121,7 @@ and normalizes the data
 def fill_nan_with_zero_and_scale(df_aux, column_list):
     for column in column_list:
         df_aux[column] = df_aux[column].fillna(0)
+<<<<<<< HEAD
         df_aux[column] = df_aux[column].astype(str)
         df_aux[column] = df_aux[column].apply(lambda x: float(x.replace(',', '.')))
   
@@ -130,6 +131,17 @@ def fill_nan_with_zero_and_scale(df_aux, column_list):
     df_aux = df_aux.drop(columns= column_list)
 
     df_aux = pd.concat([df_aux, final_df], axis = 1)
+=======
+        #df_aux[column] = df_aux[column].astype(str)
+        #df_aux = df_aux.apply(lambda x: x.str.replace(',', '.').astype(float), axis=1)
+  
+    #min_max = preprocessing.MinMaxScaler()
+    #scaled_df = min_max.fit_transform(df_aux[column_list].values)
+    #final_df = pd.DataFrame(scaled_df,columns=column_list)
+    #df_aux = df_aux.drop(columns= column_list)
+
+    #df_aux = pd.concat([df_aux, final_df], axis = 1)
+>>>>>>> 31f5f47dc2a42fc2547a4be532bd91fb9dd2c618
 
     return df_aux
 
@@ -156,7 +168,10 @@ def main():
     for column in column_to_binary_column_names.values():
         df_aux = change_column_to_binary(df_aux, column)
     
+<<<<<<< HEAD
     df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
+=======
+>>>>>>> 31f5f47dc2a42fc2547a4be532bd91fb9dd2c618
     for column in process_column_names.values():
         df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
 

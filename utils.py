@@ -11,7 +11,9 @@ process_column_names = {
 }
 
 simple_process_column_names = ['Diagnóstico', 'HLA: grupos de riesgo', 'Haplotipo1', 'Haplotipo2', 
-    'DCG EMA', 'DCG A-PDG_1  ']
+    'DCG EMA', 'DCG A-PDG_1  ', 'Valoración DCG LIEs1', 'Valoración LIEs2', 'Valoración DSG LIEs1', 
+    'Respuesta DSG  ', 'Respuesta DSG Clínica  ','Respuesta DSG Serológica  ','Respuesta DSG Histológica  ', 
+    'Marcadores citometría']
 
 column_to_binary_column_names ={
     "gender": ["Sexo", "Sexo_Hombre", "Sexo_Mujer"],

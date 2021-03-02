@@ -40,3 +40,7 @@ fill_nan_with_zero_column_names = ["Edad diagnóstico", "Indicar titulo del anti
     "LIEs DSG %iNK_1  ", "N CD8 triple positiva d0", "N CD8 triple positiva d6", "% CD8 triple positiva d0", 
     "% CD8 triple positiva d6", "N GD triple positiva d0", "N GD triple positiva d6", "% GD triple positiva d0", 
     "% GD triple positiva d6", "LIEs %GD  ", "LIEs %iNK  "]
+
+column_with_irrelevant_data_names = {
+    "ELISPOT": [['ELISPOT', 'ELISPOT.1'], 'No hecho']
+}

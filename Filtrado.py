@@ -133,6 +133,18 @@ def fill_nan_with_zero_and_scale(df_aux, column_list):
 
     return df_aux
 
+
+'''
+Given a column containing some values that don't give any relevant information,
+it replaces them
+'''
+def replace_by_nan_and_complete(df_aux, column_list, irrelevant_data):
+    for column in column_list:
+        df_aux[column] = df_aux[column].replace(irrelevant_data, np.nan)
+    
+    return df_aux
+
+
 '''
 Given a file with the relevant columns name, it selects them in the dataframe
 '''
@@ -148,7 +160,9 @@ def main():
     df_aux = df
     df_aux = selectImportantColumns(df_aux)
     records_number = df_aux.iloc[:,0].size
+    df_aux.to_excel("unfilterData.xlsx")
 
+    aux = df_aux.columns
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
     df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
@@ -159,6 +173,9 @@ def main():
     df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
     for column in process_column_names.values():
         df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
+
+    for column in column_with_irrelevant_data_names.values():
+        df_aux = replace_by_nan_and_complete(df_aux, column[0], column[1])
 
     df_aux.to_excel("filterData.xlsx")
     

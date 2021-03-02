@@ -146,6 +146,20 @@ def replace_by_nan_and_complete(df_aux, column_list, irrelevant_data):
 
 
 '''
+Given some columns, take the last column avaliable
+'''
+def take_last_column_avaliable(df_aux, column_list):
+    aux = list(column_list.values())[0]
+    new_colum = df_aux.loc[:, aux[len(aux)-1]]
+    for i in reversed(aux):
+        new_colum = new_colum.replace(np.nan, df_aux.loc[:,i])
+        
+    df_aux = pd.concat([df_aux, new_colum], axis = 1)
+    df_aux = df_aux.drop(columns= aux)
+    return df_aux
+
+
+'''
 Given a file with the relevant columns name, it selects them in the dataframe
 '''
 def selectImportantColumns(df_aux):
@@ -167,6 +181,9 @@ def main():
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
     df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
 
+    for column in columns_to_be_joined.values():
+        df_aux = take_last_column_avaliable(df_aux, columns_to_be_joined)
+        
     for column in column_to_binary_column_names.values():
         df_aux = change_column_to_binary(df_aux, column)
     
@@ -174,6 +191,8 @@ def main():
     for column in process_column_names.values():
         df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
 
+    
+    
     for column in column_with_irrelevant_data_names.values():
         df_aux = replace_by_nan_and_complete(df_aux, column[0], column[1])
 

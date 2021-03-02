@@ -6,7 +6,6 @@ process_column_names = {
   "signs": [['Signos  ', 'Signos 2  ', '  Signos 3'], ["Nada"]],
   "kits": [['Indicar el kit empleado con el punto de corte entre paréntesis',
             'Indicar el kit empleado con el punto de corte entre paréntesis.1'], ["Nada"]],
-  "DCG": [['DCG Biopsia-AP1  ', 'DCG Biopsia-AP2  '], ["Nada"]],
   "AP_Biopsy": [['AP Biopsia DCG LIEs_1  ', 'AP Biopsia DSG LIEs_1  '], ["Nada"]]
 }
 
@@ -43,4 +42,8 @@ fill_nan_with_zero_column_names = ["Edad diagnóstico", "Indicar titulo del anti
 
 column_with_irrelevant_data_names = {
     "ELISPOT": [['ELISPOT', 'ELISPOT.1'], 'No hecho']
+}
+
+columns_to_be_joined = {
+    "DCG": ['DCG Biopsia-AP1  ', 'DCG Biopsia-AP2  ']
 }

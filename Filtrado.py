@@ -154,8 +154,9 @@ def take_last_column_avaliable(df_aux, column_list):
     for i in reversed(aux):
         new_colum = new_colum.replace(np.nan, df_aux.loc[:,i])
         
-    df_aux = pd.concat([df_aux, new_colum], axis = 1)
     df_aux = df_aux.drop(columns= aux)
+    df_aux = pd.concat([df_aux, new_colum], axis = 1)
+    
     return df_aux
 
 

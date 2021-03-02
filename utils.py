@@ -4,8 +4,6 @@ process_column_names = {
   "symptoms": [['Síntomas específicos', 'Síntomas específicos.1', 'Síntomas específicos.2', 'Otros síntomas'], 
               ["Otros (especificar en otros síntomas)"]],
   "signs": [['Signos  ', 'Signos 2  ', '  Signos 3'], ["Nada"]],
-  "kits": [['Indicar el kit empleado con el punto de corte entre paréntesis',
-            'Indicar el kit empleado con el punto de corte entre paréntesis.1'], ["Nada"]],
   "DCG": [['DCG Biopsia-AP1  ', 'DCG Biopsia-AP2  '], ["Nada"]],
   "AP_Biopsy": [['AP Biopsia DCG LIEs_1  ', 'AP Biopsia DSG LIEs_1  '], ["Nada"]]
 }
@@ -13,7 +11,7 @@ process_column_names = {
 simple_process_column_names = ['Diagnóstico', 'HLA: grupos de riesgo', 'Haplotipo1', 'Haplotipo2', 
     'DCG EMA', 'DCG A-PDG_1  ', 'Valoración DCG LIEs1', 'Valoración LIEs2', 'Valoración DSG LIEs1', 
     'Respuesta DSG  ', 'Respuesta DSG Clínica  ','Respuesta DSG Serológica  ','Respuesta DSG Histológica  ', 
-    'Marcadores citometría']
+    'Marcadores citometría', 'Dieta en determinación de LIEs']
 
 column_to_binary_column_names ={
     "gender": ["Sexo", "Sexo_Hombre", "Sexo_Mujer"],

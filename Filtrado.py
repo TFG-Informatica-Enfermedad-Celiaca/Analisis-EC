@@ -154,15 +154,44 @@ def selectImportantColumns(df_aux):
     df_aux = df_aux.loc[:,important_columns]
     return df_aux
     
+'''
+Preprocessing for column "Dieta en determinación de LIEs" so we only have three
+possible values DSG, DCG y provocación
+'''
+def diet_preprocessing(df_aux, records_number):
+    data_aux = pd.DataFrame(columns = ["Dieta en determinación de LIEs"],
+                                index = range(records_number))
+
+    data_aux["Dieta en determinación de LIEs"] = df_aux["Dieta en determinación de LIEs"]
+    # Get only the first word 
+    data_aux["Dieta en determinación de LIEs"] = data_aux["Dieta en determinación de LIEs"] \
+            .apply(lambda x: np.where(pd.isnull(x), x, str(x).split()[0]))
+
+    for j in range(records_number):
+        if (~pd.isnull(data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j])):
+            # If the word contains special characters at the end delete them
+            if (((data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j])[-1] == "?") |
+            ((data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j])[-1] == ":") ):
+                data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j] = \
+                data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j][:-1]
+            # If we have a value diferent from DSG DCG and Provocación delete it
+            if ((data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j] != "DSG") &
+            (data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j] != "DCG") & 
+            (data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j] != "Provocación")):
+                data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j] = np.nan
+
+    df_aux = df_aux.drop(columns=["Dieta en determinación de LIEs"])
+    df_aux = pd.concat([df_aux, data_aux], axis = 1)
+    return df_aux
 
 def main():
     df = read_data_from_local()
     df_aux = df
     df_aux = selectImportantColumns(df_aux)
     records_number = df_aux.iloc[:,0].size
+    df_aux = diet_preprocessing(df_aux, records_number)
     df_aux.to_excel("unfilterData.xlsx")
 
-    aux = df_aux.columns
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
     df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)

@@ -4,7 +4,6 @@ process_column_names = {
   "symptoms": [['Síntomas específicos', 'Síntomas específicos.1', 'Síntomas específicos.2', 'Otros síntomas'], 
               ["Otros (especificar en otros síntomas)"]],
   "signs": [['Signos  ', 'Signos 2  ', '  Signos 3'], ["Nada"]],
-  "DCG": [['DCG Biopsia-AP1  ', 'DCG Biopsia-AP2  '], ["Nada"]],
   "AP_Biopsy": [['AP Biopsia DCG LIEs_1  ', 'AP Biopsia DSG LIEs_1  '], ["Nada"]]
 }
 
@@ -35,7 +34,7 @@ column_to_binary_column_names ={
 fill_nan_with_zero_column_names = ["Edad diagnóstico", "Indicar titulo del anticuerpo (DCG ATG_2_1)", 
     "Indique título de anticuerpo  (DCG ATG_2_2)", "Indique el título del anticuerpo (DSG ATG2_1)",
     "Indique el título del anticuerpo (DSG ATG2_2)",
-    "LIEs DCG %GD_1  ", "LIEs DCG %iNK_1  ", "LIEs DCG %GD_2  ", "LIEs DCG %iNK_2  ", "LIEs DSG %GD_1  ", 
+    "LIEs DCG %GD_2  ", "LIEs DCG %iNK_2  ", "LIEs DSG %GD_1  ", 
     "LIEs DSG %iNK_1  ", "N CD8 triple positiva d0", "N CD8 triple positiva d6", "% CD8 triple positiva d0", 
     "% CD8 triple positiva d6", "N GD triple positiva d0", "N GD triple positiva d6", "% GD triple positiva d0", 
     "% GD triple positiva d6", "LIEs %GD  ", "LIEs %iNK  "]
@@ -44,4 +43,14 @@ preprocessing_1_data = {
     "diet": [["Dieta en determinación de LIEs"], ["DSG", "DCG" ,"Provocación"]], 
     "provocacion_corta": [["Provocación 3 días  "], ["Negativa", "Positiva"]], 
     "provocacion_larga": [["Provocación larga  "], ["Negativa", "Positiva", "Ac"]]
+}
+
+columns_to_be_joined = {
+    "DCG": ['DCG Biopsia-AP1  ', 'DCG Biopsia-AP2  '],
+    "LIEs_GD": ["LIEs DCG %GD_1  ", "LIEs DCG %GD_2  "],
+    "LIEs_iNK": ["LIEs DCG %iNK_1  ", "LIEs DCG %iNK_2  "]
+}
+
+columns_to_be_parsed_names = {
+    "Marked": ['Marcadores citometría']
 }

@@ -66,6 +66,27 @@ def process_kindship(df_aux):
     df_aux = df_aux.drop(columns=['Grado de parentesco', 'Grado de parentesco (si hay más de 1)'])
     return df_aux
 
+
+'''
+Fill the dataframes with the new cloumns with 1s
+'''
+def fill_table(new_columns, records_number, previous_columns, data):
+    
+    data_aux = pd.DataFrame(columns = new_columns,
+                                index = range(records_number))
+    data_aux.iloc[:,:] = 0
+    
+    for i in range(0, len(new_columns)):
+        for j in range(records_number):
+            for z in range (0, len(previous_columns)):
+                aux = data.loc[:, previous_columns[z]].iloc[j]
+                if (str(aux) != 'nan' and new_columns[i] in aux): 
+                    data_aux.loc[:,new_columns[i]].iloc[j] = 1
+                    
+    data = pd.concat([data, data_aux], axis = 1)
+    
+    return data
+
 '''
 For each different value in 'previous_columns' we create a column. 
 Each record contains 0 in case the row has not that value and 1 in
@@ -77,19 +98,7 @@ def process_columns_to_binary(df_aux, delete_more, records_number, previous_colu
     # Filter out nan value and delete_more in array
     new_columns = list(filter(lambda i: not i in [np.nan] + delete_more, new_columns))
     
-    data_aux = pd.DataFrame(columns = new_columns,
-                                index = range(records_number))
-    data_aux.iloc[:,:] = 0
-    
-    for i in range(0, len(new_columns)):
-        for j in range(records_number):
-            for z in range (0, len(previous_columns)):
-                if (new_columns[i] == df_aux.loc[:,
-                                        previous_columns[z]].iloc[j]): 
-                    data_aux.loc[:,new_columns[i]].iloc[j] = 1
-                    
-    df_aux = pd.concat([df_aux, data_aux], axis = 1)
-    
+    df_aux =  fill_table(new_columns, records_number, previous_columns, df_aux)             
     
     # Delete previous columns 
     df_aux = df_aux.drop(columns=previous_columns)
@@ -133,6 +142,42 @@ def fill_nan_with_zero_and_scale(df_aux, column_list):
 
     return df_aux
 
+'''
+Given some columns, take the last column avaliable
+'''
+def take_last_column_avaliable(df_aux, column_list):
+    new_colum = df_aux.loc[:, column_list[len(column_list)-1]]
+    for i in reversed(column_list):
+        new_colum = new_colum.replace(np.nan, df_aux.loc[:,i])
+        
+    df_aux = df_aux.drop(columns= column_list)
+    df_aux = pd.concat([df_aux, new_colum], axis = 1)
+    
+    return df_aux
+
+'''
+Given some columns, parse the values and create the necessary columns
+'''
+def parse_values_create_columns_and_fill(df_aux, column_list, records_number):
+    val = []
+    newColumns = []
+    for column in column_list:
+        val = df_aux.loc[:,column].values
+    
+    val = pd.unique(val)
+    val = pd.DataFrame(val).dropna()
+    val = val.values.tolist()
+    
+    for i in range(0, len(val)):
+        aux = val[i][0].split(',')
+        for j in range(0, len(aux)):
+            if aux[j] not in newColumns:
+                newColumns.append(aux[j])
+    
+    df_aux = fill_table(newColumns, records_number, column_list, df_aux)
+    df_aux = df_aux.drop(columns = column_list)
+
+    return df_aux
 
 '''
 Given a file with the relevant columns name, it selects them in the dataframe
@@ -196,21 +241,23 @@ def elispot_preprocessing (df_aux, records_number):
     df_aux = pd.concat([df_aux, data_aux], axis = 1)
     return df_aux
 
-def main():
-    df = read_data_from_local()
-    df_aux = df
-    df_aux = selectImportantColumns(df_aux)
+
+'''
+Function that makes the filtering by columns
+'''
+def filtering (df_aux):
+    
     records_number = df_aux.iloc[:,0].size
+    for column in columns_to_be_joined.values():
+        df_aux = take_last_column_avaliable(df_aux, column)
     for data in preprocessing_1_data.values():
         df_aux = preprocessing_1(df_aux, records_number, data[0][0], data[1])
 
     df_aux = elispot_preprocessing(df_aux, records_number)
-    df_aux.to_excel("unfilterData.xlsx")
-
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
     df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
-
+    
     for column in column_to_binary_column_names.values():
         df_aux = change_column_to_binary(df_aux, column)
     
@@ -218,6 +265,20 @@ def main():
     for column in process_column_names.values():
         df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
 
+    for column in columns_to_be_parsed_names.values():
+        df_aux = parse_values_create_columns_and_fill(df_aux, column, records_number)
+
+    return df_aux
+
+
+
+def main():
+    df = read_data_from_local()
+    df_aux = df
+    df_aux = selectImportantColumns(df_aux)
+    df_aux.to_excel("unfilterData.xlsx")
+
+    df_aux = filtering(df_aux)
     df_aux.to_excel("filterData.xlsx")
     
 

@@ -11,7 +11,8 @@ process_column_names = {
 simple_process_column_names = ['Diagnóstico', 'HLA: grupos de riesgo', 'Haplotipo1', 'Haplotipo2', 
     'DCG EMA', 'DCG A-PDG_1  ', 'Valoración DCG LIEs1', 'Valoración LIEs2', 'Valoración DSG LIEs1', 
     'Respuesta DSG  ', 'Respuesta DSG Clínica  ','Respuesta DSG Serológica  ','Respuesta DSG Histológica  ', 
-    'Marcadores citometría', 'Dieta en determinación de LIEs']
+    'Marcadores citometría', 'Dieta en determinación de LIEs', 'ELISPOT', 'Provocación 3 días  ',
+    'Provocación larga  ' ]
 
 column_to_binary_column_names ={
     "gender": ["Sexo", "Sexo_Hombre", "Sexo_Mujer"],
@@ -39,6 +40,8 @@ fill_nan_with_zero_column_names = ["Edad diagnóstico", "Indicar titulo del anti
     "% CD8 triple positiva d6", "N GD triple positiva d0", "N GD triple positiva d6", "% GD triple positiva d0", 
     "% GD triple positiva d6", "LIEs %GD  ", "LIEs %iNK  "]
 
-column_with_irrelevant_data_names = {
-    "ELISPOT": [['ELISPOT', 'ELISPOT.1'], 'No hecho']
+preprocessing_1_data = {
+    "diet": [["Dieta en determinación de LIEs"], ["DSG", "DCG" ,"Provocación"]], 
+    "provocacion_corta": [["Provocación 3 días  "], ["Negativa", "Positiva"]], 
+    "provocacion_larga": [["Provocación larga  "], ["Negativa", "Positiva", "Ac"]]
 }

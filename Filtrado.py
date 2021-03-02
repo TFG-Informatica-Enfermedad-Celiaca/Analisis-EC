@@ -135,17 +135,6 @@ def fill_nan_with_zero_and_scale(df_aux, column_list):
 
 
 '''
-Given a column containing some values that don't give any relevant information,
-it replaces them
-'''
-def replace_by_nan_and_complete(df_aux, column_list, irrelevant_data):
-    for column in column_list:
-        df_aux[column] = df_aux[column].replace(irrelevant_data, np.nan)
-    
-    return df_aux
-
-
-'''
 Given a file with the relevant columns name, it selects them in the dataframe
 '''
 def selectImportantColumns(df_aux):
@@ -155,32 +144,55 @@ def selectImportantColumns(df_aux):
     return df_aux
     
 '''
-Preprocessing for column "Dieta en determinación de LIEs" so we only have three
-possible values DSG, DCG y provocación
+Preprocessing for column column_name so we only have as values possible_values
 '''
-def diet_preprocessing(df_aux, records_number):
-    data_aux = pd.DataFrame(columns = ["Dieta en determinación de LIEs"],
+def preprocessing_1(df_aux, records_number, column_name, possible_values):
+    data_aux = pd.DataFrame(columns = [column_name],
                                 index = range(records_number))
 
-    data_aux["Dieta en determinación de LIEs"] = df_aux["Dieta en determinación de LIEs"]
+    data_aux[column_name] = df_aux[column_name]
     # Get only the first word 
-    data_aux["Dieta en determinación de LIEs"] = data_aux["Dieta en determinación de LIEs"] \
-            .apply(lambda x: np.where(pd.isnull(x), x, str(x).split()[0]))
+    data_aux[column_name] = data_aux[column_name].apply(lambda x: np.where(pd.isnull(x), x, str(x).split()[0]))
 
     for j in range(records_number):
-        if (~pd.isnull(data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j])):
+        if (~pd.isnull(data_aux.loc[:,column_name].iloc[j])):
             # If the word contains special characters at the end delete them
-            if (((data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j])[-1] == "?") |
-            ((data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j])[-1] == ":") ):
-                data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j] = \
-                data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j][:-1]
+            if (((data_aux.loc[:,column_name].iloc[j])[-1] == "?") |
+            ((data_aux.loc[:,column_name].iloc[j])[-1] == ":") |
+            ((data_aux.loc[:,column_name].iloc[j])[-1] == ",") ):
+                data_aux.loc[:,column_name].iloc[j] = data_aux.loc[:,column_name].iloc[j][:-1]
             # If we have a value diferent from DSG DCG and Provocación delete it
-            if ((data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j] != "DSG") &
-            (data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j] != "DCG") & 
-            (data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j] != "Provocación")):
-                data_aux.loc[:,"Dieta en determinación de LIEs"].iloc[j] = np.nan
+            enter = 0
+            for value in possible_values:
+                if data_aux.loc[:,column_name].iloc[j] == value:
+                    enter = 1
+                    break
+            if enter == 0:
+                data_aux.loc[:,column_name].iloc[j] = np.nan
 
-    df_aux = df_aux.drop(columns=["Dieta en determinación de LIEs"])
+    df_aux = df_aux.drop(columns=[column_name])
+    df_aux = pd.concat([df_aux, data_aux], axis = 1)
+    return df_aux
+
+'''
+Processing columns "ELISPOT" y "ELISPOT.1" so we only have values "Negativo" and "Positivo"
+and unite them in one with the most up-to-date value 
+'''
+def elispot_preprocessing (df_aux, records_number):
+    columns = ["ELISPOT", "ELISPOT.1"]
+    df_aux[columns] = df_aux[columns].apply(lambda x: np.where((x != "Negativo") & (x != "Positivo"), np.nan, x))
+
+    data_aux = pd.DataFrame(columns = ["ELISPOT"],
+                                index = range(records_number))
+
+    for j in range(records_number):
+        # If there is a value in the second column then we take it
+        if (~pd.isnull(df_aux.loc[:,columns[1]].iloc[j])):
+            data_aux["ELISPOT"].iloc[j] = df_aux[columns[1]].iloc[j]
+        else:
+            data_aux["ELISPOT"].iloc[j] = df_aux[columns[0]].iloc[j]
+    
+    df_aux = df_aux.drop(columns=columns)
     df_aux = pd.concat([df_aux, data_aux], axis = 1)
     return df_aux
 
@@ -189,7 +201,10 @@ def main():
     df_aux = df
     df_aux = selectImportantColumns(df_aux)
     records_number = df_aux.iloc[:,0].size
-    df_aux = diet_preprocessing(df_aux, records_number)
+    for data in preprocessing_1_data.values():
+        df_aux = preprocessing_1(df_aux, records_number, data[0][0], data[1])
+
+    df_aux = elispot_preprocessing(df_aux, records_number)
     df_aux.to_excel("unfilterData.xlsx")
 
     df_aux = process_kindship(df_aux)
@@ -202,9 +217,6 @@ def main():
     df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
     for column in process_column_names.values():
         df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
-
-    for column in column_with_irrelevant_data_names.values():
-        df_aux = replace_by_nan_and_complete(df_aux, column[0], column[1])
 
     df_aux.to_excel("filterData.xlsx")
     

@@ -216,7 +216,11 @@ def main():
     records_number = df_aux.iloc[:,0].size
     df_aux.to_excel("unfilterData.xlsx")
 
-    aux = df_aux.columns
+
+    
+    for column in columns_to_be_joined.values():
+        df_aux = take_last_column_avaliable(df_aux, column)
+    
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
     df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
@@ -234,8 +238,7 @@ def main():
     for column in columns_to_be_parsed_names.values():
         df_aux = parse_values_create_columns_and_fill(df_aux, column, records_number)
 
-    for column in columns_to_be_joined.values():
-        df_aux = take_last_column_avaliable(df_aux, column)
+    
     
 
     df_aux.to_excel("filterData.xlsx")

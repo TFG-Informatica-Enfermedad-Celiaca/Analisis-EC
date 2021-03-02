@@ -70,14 +70,22 @@ def process_kindship(df_aux):
 '''
 Fill the dataframes with the new cloumns with 1s
 '''
-def fill_table(new_columns, records_number, previous_columns, data, df_aux):
+def fill_table(new_columns, records_number, previous_columns, data):
+    
+    data_aux = pd.DataFrame(columns = new_columns,
+                                index = range(records_number))
+    data_aux.iloc[:,:] = 0
+    
     for i in range(0, len(new_columns)):
         for j in range(records_number):
             for z in range (0, len(previous_columns)):
-                if (new_columns[i] == data.loc[:,
-                                        previous_columns[z]].iloc[j]): 
-                    df_aux.loc[:,new_columns[i]].iloc[j] = 1
-    return df_aux
+                aux = data.loc[:, previous_columns[z]].iloc[j]
+                if (str(aux) != 'nan' and new_columns[i] in aux): 
+                    data_aux.loc[:,new_columns[i]].iloc[j] = 1
+                    
+    data = pd.concat([data, data_aux], axis = 1)
+    
+    return data
 
 '''
 For each different value in 'previous_columns' we create a column. 
@@ -90,19 +98,7 @@ def process_columns_to_binary(df_aux, delete_more, records_number, previous_colu
     # Filter out nan value and delete_more in array
     new_columns = list(filter(lambda i: not i in [np.nan] + delete_more, new_columns))
     
-    data_aux = pd.DataFrame(columns = new_columns,
-                                index = range(records_number))
-    data_aux.iloc[:,:] = 0
-    
-    for i in range(0, len(new_columns)):
-        for j in range(records_number):
-            for z in range (0, len(previous_columns)):
-                if (new_columns[i] == df_aux.loc[:,
-                                        previous_columns[z]].iloc[j]): 
-                    data_aux.loc[:,new_columns[i]].iloc[j] = 1
-                    
-    df_aux = pd.concat([df_aux, data_aux], axis = 1)
-    
+    df_aux =  fill_table(new_columns, records_number, previous_columns, df_aux)             
     
     # Delete previous columns 
     df_aux = df_aux.drop(columns=previous_columns)
@@ -183,18 +179,7 @@ def parse_values_create_columns_and_fill(df_aux, column_list, records_number):
             if aux[j] not in newColumns:
                 newColumns.append(aux[j])
     
-    data_aux = pd.DataFrame(columns = newColumns,
-                                index = range(records_number))
-    data_aux.iloc[:,:] = 0
-    
-    for i in range(0, len(newColumns)):
-        for j in range(records_number):
-            for z in range (0, len(column_list)):
-                pos = df_aux.loc[:, column_list[z]].iloc[j]
-                if (str(pos) != 'nan' and newColumns[i] in pos): 
-                    data_aux.loc[:,newColumns[i]].iloc[j] = 1
-        
-    df_aux = pd.concat([df_aux, data_aux], axis = 1)
+    df_aux = fill_table(newColumns, records_number, column_list, df_aux)
     df_aux = df_aux.drop(columns = column_list)
 
     return df_aux
@@ -209,27 +194,22 @@ def selectImportantColumns(df_aux):
     return df_aux
     
 
-def main():
-    df = read_data_from_local()
-    df_aux = df
-    df_aux = selectImportantColumns(df_aux)
-    records_number = df_aux.iloc[:,0].size
-    df_aux.to_excel("unfilterData.xlsx")
 
-
+'''
+Function that makes the filtering by columns
+'''
+def filtering (df_aux):
     
+    records_number = df_aux.iloc[:,0].size
     for column in columns_to_be_joined.values():
         df_aux = take_last_column_avaliable(df_aux, column)
     
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
     df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
-
     
-        
     for column in column_to_binary_column_names.values():
         df_aux = change_column_to_binary(df_aux, column)
-    
     
     df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
     for column in process_column_names.values():
@@ -238,8 +218,17 @@ def main():
     for column in columns_to_be_parsed_names.values():
         df_aux = parse_values_create_columns_and_fill(df_aux, column, records_number)
 
-    
-    
+    return df_aux
+
+
+
+def main():
+    df = read_data_from_local()
+    df_aux = df
+    df_aux = selectImportantColumns(df_aux)
+    df_aux.to_excel("unfilterData.xlsx")
+
+    df_aux = filtering(df_aux)
 
     df_aux.to_excel("filterData.xlsx")
     

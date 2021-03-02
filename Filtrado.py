@@ -66,6 +66,19 @@ def process_kindship(df_aux):
     df_aux = df_aux.drop(columns=['Grado de parentesco', 'Grado de parentesco (si hay más de 1)'])
     return df_aux
 
+
+'''
+Fill the dataframes with the new cloumns with 1s
+'''
+def fill_table(new_columns, records_number, previous_columns, data, df_aux):
+    for i in range(0, len(new_columns)):
+        for j in range(records_number):
+            for z in range (0, len(previous_columns)):
+                if (new_columns[i] == data.loc[:,
+                                        previous_columns[z]].iloc[j]): 
+                    df_aux.loc[:,new_columns[i]].iloc[j] = 1
+    return df_aux
+
 '''
 For each different value in 'previous_columns' we create a column. 
 Each record contains 0 in case the row has not that value and 1 in
@@ -134,31 +147,57 @@ def fill_nan_with_zero_and_scale(df_aux, column_list):
     return df_aux
 
 
-'''
-Given a column containing some values that don't give any relevant information,
-it replaces them
-'''
-def replace_by_nan_and_complete(df_aux, column_list, irrelevant_data):
-    for column in column_list:
-        df_aux[column] = df_aux[column].replace(irrelevant_data, np.nan)
-    
-    return df_aux
-
 
 '''
 Given some columns, take the last column avaliable
 '''
 def take_last_column_avaliable(df_aux, column_list):
-    aux = list(column_list.values())[0]
-    new_colum = df_aux.loc[:, aux[len(aux)-1]]
-    for i in reversed(aux):
+    new_colum = df_aux.loc[:, column_list[len(column_list)-1]]
+    for i in reversed(column_list):
         new_colum = new_colum.replace(np.nan, df_aux.loc[:,i])
         
-    df_aux = df_aux.drop(columns= aux)
+    df_aux = df_aux.drop(columns= column_list)
     df_aux = pd.concat([df_aux, new_colum], axis = 1)
     
     return df_aux
 
+
+
+
+'''
+Given some columns, parse the values and create the necessary columns
+'''
+def parse_values_create_columns_and_fill(df_aux, column_list, records_number):
+    val = []
+    newColumns = []
+    for column in column_list:
+        val = df_aux.loc[:,column].values
+    
+    val = pd.unique(val)
+    val = pd.DataFrame(val).dropna()
+    val = val.values.tolist()
+    
+    for i in range(0, len(val)):
+        aux = val[i][0].split(',')
+        for j in range(0, len(aux)):
+            if aux[j] not in newColumns:
+                newColumns.append(aux[j])
+    
+    data_aux = pd.DataFrame(columns = newColumns,
+                                index = range(records_number))
+    data_aux.iloc[:,:] = 0
+    
+    for i in range(0, len(newColumns)):
+        for j in range(records_number):
+            for z in range (0, len(column_list)):
+                pos = df_aux.loc[:, column_list[z]].iloc[j]
+                if (str(pos) != 'nan' and newColumns[i] in pos): 
+                    data_aux.loc[:,newColumns[i]].iloc[j] = 1
+        
+    df_aux = pd.concat([df_aux, data_aux], axis = 1)
+    df_aux = df_aux.drop(columns = column_list)
+
+    return df_aux
 
 '''
 Given a file with the relevant columns name, it selects them in the dataframe
@@ -182,20 +221,22 @@ def main():
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
     df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
 
-    for column in columns_to_be_joined.values():
-        df_aux = take_last_column_avaliable(df_aux, columns_to_be_joined)
+    
         
     for column in column_to_binary_column_names.values():
         df_aux = change_column_to_binary(df_aux, column)
+    
     
     df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
     for column in process_column_names.values():
         df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
 
+    for column in columns_to_be_parsed_names.values():
+        df_aux = parse_values_create_columns_and_fill(df_aux, column, records_number)
+
+    for column in columns_to_be_joined.values():
+        df_aux = take_last_column_avaliable(df_aux, column)
     
-    
-    for column in column_with_irrelevant_data_names.values():
-        df_aux = replace_by_nan_and_complete(df_aux, column[0], column[1])
 
     df_aux.to_excel("filterData.xlsx")
     

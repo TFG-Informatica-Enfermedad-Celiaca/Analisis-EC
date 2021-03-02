@@ -11,8 +11,7 @@ process_column_names = {
 
 simple_process_column_names = ['Diagnóstico', 'HLA: grupos de riesgo', 'Haplotipo1', 'Haplotipo2', 
     'DCG EMA', 'DCG A-PDG_1  ', 'Valoración DCG LIEs1', 'Valoración LIEs2', 'Valoración DSG LIEs1', 
-    'Respuesta DSG  ', 'Respuesta DSG Clínica  ','Respuesta DSG Serológica  ','Respuesta DSG Histológica  ', 
-    'Marcadores citometría']
+    'Respuesta DSG  ', 'Respuesta DSG Clínica  ','Respuesta DSG Serológica  ','Respuesta DSG Histológica  ']
 
 column_to_binary_column_names ={
     "gender": ["Sexo", "Sexo_Hombre", "Sexo_Mujer"],
@@ -40,10 +39,14 @@ fill_nan_with_zero_column_names = ["Edad diagnóstico", "Indicar titulo del anti
     "% CD8 triple positiva d6", "N GD triple positiva d0", "N GD triple positiva d6", "% GD triple positiva d0", 
     "% GD triple positiva d6", "LIEs %GD  ", "LIEs %iNK  "]
 
-column_with_irrelevant_data_names = {
-    "ELISPOT": [['ELISPOT', 'ELISPOT.1'], 'No hecho']
-}
+
 
 columns_to_be_joined = {
     "DCG": ['DCG Biopsia-AP1  ', 'DCG Biopsia-AP2  ']
 }
+
+columns_to_be_parsed_names = {
+    "Marked": ['Marcadores citometría']
+}
+
+

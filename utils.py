@@ -4,14 +4,15 @@ process_column_names = {
   "symptoms": [['Síntomas específicos', 'Síntomas específicos.1', 'Síntomas específicos.2', 'Otros síntomas'], 
               ["Otros (especificar en otros síntomas)"]],
   "signs": [['Signos  ', 'Signos 2  ', '  Signos 3'], ["Nada"]],
-  "AP_Biopsy": [['AP Biopsia DCG LIEs_1  ', 'AP Biopsia DSG LIEs_1  '], ["Nada"]],
-  "Biopsia": [["DCG Biopsia-AP2  "], ["Sin biopsia hecha en DCG"]]
+  "Biopsia": [["DCG Biopsia-AP2  "], ["Sin biopsia hecha en DCG"]],
+  "Halotipos": [["Haplotipo1", "Haplotipo2"], ["HLA NO HECHO"]]
 }
 
-simple_process_column_names = ['Diagnóstico', 'HLA: grupos de riesgo', 'Haplotipo1', 'Haplotipo2', 
+simple_process_column_names = ['Diagnóstico', 'HLA: grupos de riesgo', 
     'DCG EMA', 'DCG A-PDG_1  ', 'Valoración DCG LIEs1', 'Valoración LIEs2', 'Valoración DSG LIEs1', 
     'Respuesta DSG  ', 'Respuesta DSG Clínica  ','Respuesta DSG Serológica  ','Respuesta DSG Histológica  ', 
     'Dieta en determinación de LIEs', 'ELISPOT', 'Provocación 3 días  ',
+    'AP Biopsia DCG LIEs_1  ', 'AP Biopsia DSG LIEs_1  ',
     'Provocación larga  ' ]
 
 column_to_binary_column_names ={

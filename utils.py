@@ -5,7 +5,7 @@ process_column_names = {
               ["Otros (especificar en otros síntomas)"]],
   "signs": [['Signos  ', 'Signos 2  ', '  Signos 3'], ["Nada"]],
   "Biopsia": [["DCG Biopsia-AP2  "], ["Sin biopsia hecha en DCG"]],
-  "Halotipos": [["Haplotipo1", "Haplotipo2"], ["HLA NO HECHO"]]
+  "Halotipos": [["Haplotipo1", "Haplotipo2"], ["SIN RIESGO"]]
 }
 
 simple_process_column_names = ['Diagnóstico', 'HLA: grupos de riesgo', 

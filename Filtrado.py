@@ -55,7 +55,7 @@ def process_kindship(df_aux):
     new_columns = ['1º grado','2º grado','3º grado', '4º grado']
     for column in new_columns:
         if (column not in df_aux.columns):
-            df_aux.insert(0, column, 0)
+            df_aux.insert(len(df_aux.columns), column, 0)
 
     # In case there is a i-level of kindship it fills the column 'iº grado' with '1'
     for i in range(1, 4):
@@ -279,6 +279,8 @@ def main():
     df_aux.to_excel("unfilterData.xlsx")
 
     df_aux = filtering(df_aux)
+    
+    aux = df_aux.columns
     df_aux.to_excel("filterData.xlsx")
     
 

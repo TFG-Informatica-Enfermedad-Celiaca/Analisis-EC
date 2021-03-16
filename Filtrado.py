@@ -183,6 +183,7 @@ def parse_values_create_columns_and_fill(df_aux, column_list, records_number):
 Given a file with the relevant columns name, it selects them in the dataframe
 '''
 def selectImportantColumns(df_aux):
+    aux = df_aux.columns
     important_columns = read_columns_from_local()
     important_columns = list(important_columns.iloc[:,1])
     df_aux = df_aux.loc[:,important_columns]
@@ -243,16 +244,38 @@ def elispot_preprocessing (df_aux, records_number):
 
 
 '''
+Function that group countries by European or not
+'''
+def countries_preprocesing(df_aux, european_countries, records_number):
+    df_aux["Indique país de origen o en su defecto la información disponible"] = df_aux[
+        "Indique país de origen o en su defecto la información disponible"
+        ].replace([european_countries], "Europeo")
+
+    df_aux.loc[df_aux["Indique país de origen o en su defecto la información disponible"]
+        != "Europeo",
+        "Indique país de origen o en su defecto la información disponible"
+        ] = "Otro" 
+
+    return df_aux
+
+
+'''
 Function that makes the filtering by columns
 '''
 def filtering (df_aux):
     
     records_number = df_aux.iloc[:,0].size
+    
+    
+    
     for column in columns_to_be_joined.values():
         df_aux = take_last_column_avaliable(df_aux, column)
     for data in preprocessing_1_data.values():
         df_aux = preprocessing_1(df_aux, records_number, data[0][0], data[1])
 
+
+    df_aux = countries_preprocesing(df_aux, european_countries, records_number)
+    
     df_aux = elispot_preprocessing(df_aux, records_number)
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)

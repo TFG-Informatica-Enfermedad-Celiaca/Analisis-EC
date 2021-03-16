@@ -56,3 +56,11 @@ columns_to_be_joined = {
 columns_to_be_parsed_names = {
     "Marked": ['Marcadores citometría']
 }
+
+
+european_countries = [ "Alemania", "Austria", "Bélgica", "Bulgaria",
+    "Chequia", "Chipre", "Croacia", "Dinamarca", "Eslovaquia", "Eslovenia",
+    "España", "Estonia", "Finlandia", "Francia", "Grecia", "Hungría",
+    "Irlanda", "Italia", "Letonia", "Lituania", "Luxemburgo", "Malta",
+    "Países Bajos", "Polonia", "Portugal", "Rumanía", "Suecia"
+    ]

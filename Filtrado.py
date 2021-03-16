@@ -220,28 +220,6 @@ def preprocessing_1(df_aux, records_number, column_name, possible_values):
     df_aux = pd.concat([df_aux, data_aux], axis = 1)
     return df_aux
 
-'''
-Processing columns "ELISPOT" y "ELISPOT.1" so we only have values "Negativo" and "Positivo"
-and unite them in one with the most up-to-date value 
-'''
-def elispot_preprocessing (df_aux, records_number):
-    columns = ["ELISPOT", "ELISPOT.1"]
-    df_aux[columns] = df_aux[columns].apply(lambda x: np.where((x != "Negativo") & (x != "Positivo"), np.nan, x))
-
-    data_aux = pd.DataFrame(columns = ["ELISPOT"],
-                                index = range(records_number))
-
-    for j in range(records_number):
-        # If there is a value in the second column then we take it
-        if (~pd.isnull(df_aux.loc[:,columns[1]].iloc[j])):
-            data_aux["ELISPOT"].iloc[j] = df_aux[columns[1]].iloc[j]
-        else:
-            data_aux["ELISPOT"].iloc[j] = df_aux[columns[0]].iloc[j]
-    
-    df_aux = df_aux.drop(columns=columns)
-    df_aux = pd.concat([df_aux, data_aux], axis = 1)
-    return df_aux
-
 
 '''
 Function that group countries by European or not
@@ -249,10 +227,15 @@ Function that group countries by European or not
 def countries_preprocesing(df_aux, european_countries, records_number):
     df_aux["Indique país de origen o en su defecto la información disponible"] = df_aux[
         "Indique país de origen o en su defecto la información disponible"
+        ].replace(np.nan, "Desconocido")
+    df_aux["Indique país de origen o en su defecto la información disponible"] = df_aux[
+        "Indique país de origen o en su defecto la información disponible"
         ].replace([european_countries], "Europeo")
 
-    df_aux.loc[df_aux["Indique país de origen o en su defecto la información disponible"]
-        != "Europeo",
+    df_aux.loc[(df_aux["Indique país de origen o en su defecto la información disponible"]
+        != "Europeo") & 
+        (df_aux["Indique país de origen o en su defecto la información disponible"]
+        != "Desconocido"),
         "Indique país de origen o en su defecto la información disponible"
         ] = "Otro" 
 
@@ -266,17 +249,13 @@ def filtering (df_aux):
     
     records_number = df_aux.iloc[:,0].size
     
-    
+    df_aux = countries_preprocesing(df_aux, european_countries, records_number)
+
     
     for column in columns_to_be_joined.values():
         df_aux = take_last_column_avaliable(df_aux, column)
-    for data in preprocessing_1_data.values():
-        df_aux = preprocessing_1(df_aux, records_number, data[0][0], data[1])
 
-
-    df_aux = countries_preprocesing(df_aux, european_countries, records_number)
     
-    df_aux = elispot_preprocessing(df_aux, records_number)
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
     df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
@@ -288,9 +267,7 @@ def filtering (df_aux):
     for column in process_column_names.values():
         df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
 
-    for column in columns_to_be_parsed_names.values():
-        df_aux = parse_values_create_columns_and_fill(df_aux, column, records_number)
-
+    
     return df_aux
 
 

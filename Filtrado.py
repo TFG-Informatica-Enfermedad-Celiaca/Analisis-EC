@@ -32,6 +32,24 @@ def read_data_from_local():
 '''
 Read the relevant columns form .xlsx stored in local and creates deaframe
 '''
+def read_new_data_from_local():
+    try:
+        df=pd.read_excel(
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Datos actualizados.xlsx')
+        return df
+    except:
+        try:
+            df=pd.read_excel(
+                '/mnt/c/Users/Carla Martínez/Desktop/TFG-Informática/Datos actualizados.xlsx')
+            return df
+        except:
+            print("It was not possible to load data")
+
+
+
+'''
+Read the relevant columns form .xlsx stored in local and creates deaframe
+'''
 def read_columns_from_local():
     try:
         df=pd.read_excel(
@@ -129,16 +147,19 @@ and normalizes the data
 '''
 def fill_nan_with_zero_and_scale(df_aux, column_list):
     for column in column_list:
-        df_aux[column] = df_aux[column].fillna(0)
+        #df_aux[column] = df_aux[column].fillna(0)
         df_aux[column] = df_aux[column].astype(str)
         df_aux[column] = df_aux[column].apply(lambda x: float(x.replace(',', '.')))
   
+    
     min_max = preprocessing.MinMaxScaler()
     scaled_df = min_max.fit_transform(df_aux[column_list].values)
     final_df = pd.DataFrame(scaled_df,columns=column_list)
     df_aux = df_aux.drop(columns= column_list)
+    
 
     df_aux = pd.concat([df_aux, final_df], axis = 1)
+    
 
     return df_aux
 
@@ -183,7 +204,6 @@ def parse_values_create_columns_and_fill(df_aux, column_list, records_number):
 Given a file with the relevant columns name, it selects them in the dataframe
 '''
 def selectImportantColumns(df_aux):
-    aux = df_aux.columns
     important_columns = read_columns_from_local()
     important_columns = list(important_columns.iloc[:,1])
     df_aux = df_aux.loc[:,important_columns]
@@ -242,6 +262,59 @@ def countries_preprocesing(df_aux, european_countries, records_number):
     return df_aux
 
 
+
+'''
+Functions that join several columns and take the higher values 
+'''
+def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
+                       kitOK, finalName1, finalName2):
+    kitsAccepted = []
+   
+    #Check the kits
+    for i in kits:
+        aux = df_aux[df_aux[i] == kitOK[0]].index.tolist()
+        kitsAccepted.append(aux)
+        kitsAccepted = np.unique(kitsAccepted)
+    
+    #Take the most positive values of each rows
+    auxPorN = df_aux.loc[:,posOrNeg[0]]
+    auxPorN = pd.DataFrame(index=range(len(df_aux.loc[:,posOrNeg[0]])),columns=range(1)).squeeze()
+    for i in posOrNeg:
+        aux = []
+        for j in range(len(df_aux.loc[:,posOrNeg[0]])):
+            if (df_aux.loc[:,i].iloc[j] == "Positivo") or (
+                    (str(auxPorN[j]) == 'nan') & (df_aux.loc[:,i].iloc[j] != 'No hechos')):
+                aux.append(df_aux.loc[:,i].iloc[j])
+            else:
+                aux.append(auxPorN[j])
+        auxPorN = aux
+    
+    #Take the highest numerical values of each rows
+    corrValu = df_aux.loc[:,numericalValues[0]]
+    for i in numericalValues:
+        aux = []
+        for j in range(len(corrValu)):
+            if (df_aux.loc[:,i].iloc[j] > corrValu[j]) or (
+                    str(corrValu[j]) == 'nan'):
+                aux.append(df_aux.loc[:,i].iloc[j])
+            else:
+                aux.append(corrValu[j])
+        corrValu = aux
+    
+    #insert the new columns into the dataframe and remove the old ones
+    aux = pd.DataFrame({finalName1[0]:auxPorN, finalName2[0]:corrValu})
+    for i in range(0, len(auxPorN)):
+        if i not in kitsAccepted:
+            aux.loc[i,finalName1[0]] = np.nan
+            aux.loc[i,finalName2[0]] = np.nan
+    
+    df_aux = df_aux.drop(columns= (posOrNeg + numericalValues + kits))
+    df_aux = pd.concat([df_aux, aux], axis = 1)
+    
+    
+    return df_aux
+
+
 '''
 Function that makes the filtering by columns
 '''
@@ -251,6 +324,13 @@ def filtering (df_aux):
     
     df_aux = countries_preprocesing(df_aux, european_countries, records_number)
 
+    df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
+
+    
+    for column in take_the_highest_value_columns.values():
+        df_aux = take_highest_value(df_aux, column[0], column[1], column[2],
+                                    column[3], column[4], column[5])
+
     
     for column in columns_to_be_joined.values():
         df_aux = take_last_column_avaliable(df_aux, column)
@@ -258,7 +338,6 @@ def filtering (df_aux):
     
     df_aux = process_kindship(df_aux)
     df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
-    df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
     
     for column in column_to_binary_column_names.values():
         df_aux = change_column_to_binary(df_aux, column)
@@ -273,7 +352,8 @@ def filtering (df_aux):
 
 
 def main():
-    df = read_data_from_local()
+    #df = read_data_from_local()
+    df = read_new_data_from_local()
     df_aux = df
     df_aux = selectImportantColumns(df_aux)
     df_aux.to_excel("unfilterData.xlsx")

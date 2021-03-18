@@ -9,10 +9,10 @@ process_column_names = {
 }
 
 simple_process_column_names = ['Diagnóstico', 'HLA: grupos de riesgo', 
-    'DCG EMA', 'Valoración DCG LIEs1', 'Valoración LIEs2',
+    'Valoración DCG LIEs1', 'Valoración LIEs2',
     'Valoración DSG LIEs1', 'AP Biopsia DCG LIEs_1  ', 'AP Biopsia DSG LIEs_1  ']
 '''
-'DCG A-PDG_1  ',
+'DCG A-PDG_1  ', 'DCG EMA'
 '''
 
 

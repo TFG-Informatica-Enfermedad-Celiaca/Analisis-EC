@@ -277,7 +277,6 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
         kitsAccepted = np.unique(kitsAccepted)
     
     #Take the most positive values of each rows
-    auxPorN = df_aux.loc[:,posOrNeg[0]]
     auxPorN = pd.DataFrame(index=range(len(df_aux.loc[:,posOrNeg[0]])),columns=range(1)).squeeze()
     for i in posOrNeg:
         aux = []
@@ -316,6 +315,26 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
 
 
 '''
+Function that fix the EMA columns
+'''
+def proces_EMA_column(df_aux, columnName):
+    aux = df_aux[columnName]
+    aux2 = []
+    for i in range(0, len(aux)):
+        if pd.isna(aux[i]):
+            aux2.append(aux[i])
+        else:
+            aux2.append(aux[i].split()[0])
+    
+    aux2 = pd.DataFrame(aux2).replace('No', "No hecho")
+    aux2 = aux2.replace(np.nan, "No hecho")
+    
+    df_aux[columnName] = aux2
+    
+    return df_aux
+
+
+'''
 Function that makes the filtering by columns
 '''
 def filtering (df_aux):
@@ -324,6 +343,8 @@ def filtering (df_aux):
     
     df_aux = countries_preprocesing(df_aux, european_countries, records_number)
 
+    df_aux = proces_EMA_column(df_aux, "DCG EMA")
+    
     df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
 
     
@@ -331,6 +352,9 @@ def filtering (df_aux):
         df_aux = take_highest_value(df_aux, column[0], column[1], column[2],
                                     column[3], column[4], column[5])
 
+
+    
+    
     
     for column in columns_to_be_joined.values():
         df_aux = take_last_column_avaliable(df_aux, column)

@@ -23,10 +23,10 @@ def read_data_from_local():
     except:
         try:
             df=pd.read_csv(
-                '/mnt/c/Users/Carla Martínez/Desktop/TFG-Informática/Datos.csv')
+                r'C:\Users\Carla\Desktop\TFG-Informatica\Datos.csv')
             return df
         except:
-            print("It was not possible to load data")
+            print("It was not possible to load data 1")
 
 
 '''
@@ -40,10 +40,10 @@ def read_new_data_from_local():
     except:
         try:
             df=pd.read_excel(
-                '/mnt/c/Users/Carla Martínez/Desktop/TFG-Informática/Datos actualizados.xlsx')
+                r'C:\Users\Carla\Desktop\TFG-Informatica\Datos actualizados.xlsx')
             return df
         except:
-            print("It was not possible to load data")
+            print("It was not possible to load data 2")
 
 
 
@@ -58,10 +58,10 @@ def read_columns_from_local():
     except:
         try:
             df=pd.read_excel(
-                '/mnt/c/Users/Carla Martínez/Desktop/TFG-Informática/Important columns.xlsx')
+                r'C:\Users\Carla\Desktop\TFG-Informatica\Important columns.xlsx')
             return df
         except:
-            print("It was not possible to load data")
+            print("It was not possible to load data 3")
 
 '''
 Insert columns in the dataframe that show if the patient has celiac family. 
@@ -314,7 +314,36 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
     
     return df_aux
 
-
+'''
+'''
+def HLA_formating(df_aux):
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'SIN RIESGO') | (df_aux['Haplotipo2'] == 'SIN RIESGO')
+               , 'HLA: grupos de riesgo'] =  'SIN RIESGO'
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ7.5') | (df_aux['Haplotipo2'] == 'DQ7.5')
+               , 'HLA: grupos de riesgo'] =  'DQ7.5'
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.2') | (df_aux['Haplotipo2'] == 'DQ2.2')
+               , 'HLA: grupos de riesgo'] =  'DQ2.2'
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ8') & (df_aux['Haplotipo2'] == 'DQ8')
+               , 'HLA: grupos de riesgo'] =  'DQ8 doble dosis'
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ8') | (df_aux['Haplotipo2'] == 'DQ8')
+               , 'HLA: grupos de riesgo'] =  'DQ8 una dosis'
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ7.5') & (df_aux['Haplotipo2'] == 'DQ2.2')
+               , 'HLA: grupos de riesgo'] =  'DQ2.5 una dosis'
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.2') & (df_aux['Haplotipo2'] == 'DQ7.5')
+               , 'HLA: grupos de riesgo'] =  'DQ2.5 una dosis'
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.5') | (df_aux['Haplotipo2'] == 'DQ2.5')
+               , 'HLA: grupos de riesgo'] =  'DQ2.5 una dosis'
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.2') & (df_aux['Haplotipo2'] == 'DQ2.5')
+               , 'HLA: grupos de riesgo'] =  'DQ2.5 doble dosis'
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.5') & (df_aux['Haplotipo2'] == 'DQ2.2')
+               , 'HLA: grupos de riesgo'] =  'DQ2.5 doble dosis'
+    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.5') & (df_aux['Haplotipo2'] == 'DQ2.5')
+               , 'HLA: grupos de riesgo'] =  'DQ2.5 doble dosis'
+    
+    df_aux['HLA: grupos de riesgo'] = df_aux['HLA: grupos de riesgo'].fillna('HLA NO HECHO')
+    df_aux = df_aux.drop(columns = ['Haplotipo1', 'Haplotipo2'])
+    return df_aux 
+    
 '''
 Function that makes the filtering by columns
 '''
@@ -326,6 +355,8 @@ def filtering (df_aux):
 
     df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
 
+    df_aux = HLA_formating(df_aux)
+    
     
     for column in take_the_highest_value_columns.values():
         df_aux = take_highest_value(df_aux, column[0], column[1], column[2],
@@ -345,7 +376,6 @@ def filtering (df_aux):
     df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
     for column in process_column_names.values():
         df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
-
     
     return df_aux
 
@@ -360,7 +390,6 @@ def main():
 
     df_aux = filtering(df_aux)
     
-    aux = df_aux.columns
     df_aux.to_excel("filterData.xlsx")
     
 

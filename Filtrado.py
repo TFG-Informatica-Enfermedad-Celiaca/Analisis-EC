@@ -10,6 +10,7 @@ Created on Wed Feb 24 16:29:51 2021
 import pandas as pd
 import numpy as np
 from utils import european_countries, take_the_highest_value_columns, lies_dcg_numerical,lies_dsg_numerical
+from utils import lies_valoracion
 from sklearn import preprocessing
    
 '''
@@ -372,7 +373,28 @@ def LIEs_DCG_formating(df_aux, columns, new_names, records_number):
         
     df_aux = df_aux.drop(columns = columns)
     return df_aux
-    
+
+'''
+Function that formats LIEs Valoración
+'''
+def LIEs_Valoracion_formating(df_aux, columns, new_name, values,records_number):
+    pd.concat([df_aux,pd.DataFrame(columns=new_name, index = range(records_number))])
+    df_aux[new_name] = "LIEs no hecho"
+
+    for i in range(records_number):
+        for value in values:
+            aux = 0
+            for column in columns:
+                if df_aux[column].iloc[i] == value :
+                   df_aux.loc[i:i, new_name] = value
+                   aux = 1
+                   break;
+            if aux == 1: break
+           
+    df_aux = df_aux.drop(columns = columns)
+
+    return df_aux
+
 '''
 Function that formats LIEs %GD and LIEs %iNK
 '''
@@ -453,6 +475,10 @@ def filtering (df_aux):
     
     df_aux = LIEs_DSG_formating(df_aux, lies_dsg_numerical[0], lies_dsg_numerical[1],
                                 records_number)
+    
+    for value in lies_valoracion.values():
+        df_aux = LIEs_Valoracion_formating(df_aux, value[0], value[1], 
+                                           value[2],records_number)
         
     #for column in columns_to_be_joined.values():
     #    df_aux = take_last_column_avaliable(df_aux, column)

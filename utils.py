@@ -73,4 +73,11 @@ lies_dcg_numerical = [["LIEs DCG %GD_1  ", "LIEs DCG %iNK_1  ", "LIEs DCG %GD_2 
 lies_dsg_numerical = [["LIEs DSG %GD_1  ", "LIEs DSG %iNK_1  ", "LIEs DSG %GD_2  ", 
                   "LIEs DSG %iNK_2  ", "LIEs DSG %GD_3  ", "LIEs DSG %iNK_3  "]
                  , ["LIEs DSG %GD", "LIEs DSG %iNK"]]
-
+lies_valoracion = {
+    "DCG": [["Valoración DCG LIEs1", "Valoración LIEs2"],["Valoracion LIEs DCG"], 
+                       ["Compatible con EC activa", "Compatible con EC en DSG", 
+              "No compatible con EC"]],
+    "DSG": [["Valoración DSG LIEs1", "Valoración DSG LIEs2", "Valoración DSG LIEs3"],
+            ["Valoracion LIEs DSG"], ["No compatible con EC", "Compatible con EC en DSG", 
+              "Compatible con EC activa"]]
+}

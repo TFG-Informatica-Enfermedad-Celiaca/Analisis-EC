@@ -4,9 +4,12 @@ process_column_names = {
   "symptoms": [['Síntomas específicos', 'Síntomas específicos.1', 'Síntomas específicos.2'], 
               ["Otros (especificar en otros síntomas)"]],
   "signs": [['Signos  ', 'Signos 2  ', '  Signos 3'], ["Nada"]],
-  "Biopsia": [["DCG Biopsia-AP2  "], ["Sin biopsia hecha en DCG"]],
-  "Halotipos": [["Haplotipo1", "Haplotipo2"], ["SIN RIESGO"]]
+  "Biopsia": [["DCG Biopsia-AP2  "], ["Sin biopsia hecha en DCG"]]
 }
+'''
+"Halotipos": [["Haplotipo1", "Haplotipo2"], ["SIN RIESGO"]]
+'''
+
 
 simple_process_column_names = ['Diagnóstico', 'HLA: grupos de riesgo', 
     'Valoración DCG LIEs1', 'Valoración LIEs2',
@@ -19,7 +22,7 @@ simple_process_column_names = ['Diagnóstico', 'HLA: grupos de riesgo',
 column_to_binary_column_names ={
     "gender": ["Sexo", "Sexo_Hombre", "Sexo_Mujer"],
     
-    "DSG ATG2_2": ["DSG ATG2_2  ", "DSG ATG2_2  _Negativo", "DSG ATG2_2  _Positivo"],
+    
     "helicobacter" :["Helicobacter pylori en el momento de la biopsia", 
     "Helicobacter pylori en el momento de la biopsia_No", 
     "Helicobacter pylori en el momento de la biopsia_Yes"]
@@ -28,6 +31,7 @@ column_to_binary_column_names ={
 Esta línea la he quitado de arriba justo (del hueco) porque al ejecutarse 
 convierte la columna de neg/pos a 0 y 1 pero rellenando con 0s
  "DCG_ATG2": ["DCG_ATG2", "DCG_ATG2_Negativo", "DCG_ATG2_Positivo"],
+ "DSG ATG2_2": ["DSG ATG2_2  ", "DSG ATG2_2  _Negativo", "DSG ATG2_2  _Positivo"],
 '''
 
 
@@ -49,7 +53,7 @@ columns_to_be_joined = {
 
 
 take_the_highest_value_columns = {
-    "DCG":[["DCG_ATG2_1", "DCG ATG2_2  "],
+    "DCG ATG2":[["DCG_ATG2_1", "DCG ATG2_2  "],
            ["Indicar titulo del anticuerpo (DCG ATG_2_1)", "Indique título de anticuerpo  (DCG ATG_2_2)"],
            ["Indicar el kit empleado con el punto de corte entre paréntesis"],
            ["Aeskulisa tTg-A de Grifols (20)"], ['DCG_ATG2'], ['DCG_ATG2_VALUE']],
@@ -58,6 +62,14 @@ take_the_highest_value_columns = {
                   ["Indicar el kit empleado con el punto de corte entre paréntesis 1"],
                   ["Euroimmun (25)"], ['DCG A-PDG'], ['DCG A-PDG_VALUE']]
 }
+
+take_the_lower_value_columns = {
+    "DSG ATG2":[["DSG ATG2_1  ", "DSG ATG2_2  "],
+           ["Indique el título del anticuerpo (DSG ATG2_1)", "Indique el título del anticuerpo (DSG ATG2_2)"],
+           ["Indicar el kit empleado con el punto de corte entre paréntesis 2"],
+           ["Aeskulisa tTg-A de Grifols (20)"], ['DSG_ATG2'], ['DSG_ATG2_VALUE']]
+}
+
 
 
 

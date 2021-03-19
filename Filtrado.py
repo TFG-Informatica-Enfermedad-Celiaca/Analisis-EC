@@ -9,9 +9,9 @@ Created on Wed Feb 24 16:29:51 2021
 
 import pandas as pd
 import numpy as np
-from utils import *
+from utils import european_countries, take_the_highest_value_columns, lies_dcg_numerical,lies_dsg_numerical
 from sklearn import preprocessing
-
+   
 '''
 Read data from .csv file stored in local and creates dataframe
 '''
@@ -314,6 +314,7 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
     return df_aux
 
 '''
+Function that formats HLA
 '''
 def HLA_formating(df_aux):
     df_aux.loc[ (df_aux['Haplotipo1'] == 'SIN RIESGO') | (df_aux['Haplotipo2'] == 'SIN RIESGO')
@@ -342,7 +343,71 @@ def HLA_formating(df_aux):
     df_aux['HLA: grupos de riesgo'] = df_aux['HLA: grupos de riesgo'].fillna('HLA NO HECHO')
     df_aux = df_aux.drop(columns = ['Haplotipo1', 'Haplotipo2'])
     return df_aux 
+
+'''
+Function that formats LIEs %GD and LIEs %iNK
+'''
+def LIEs_DCG_formating(df_aux, columns, new_names, records_number):
+    df_aux[columns] = df_aux[columns].fillna(-1)
+    pd.concat([df_aux,pd.DataFrame(columns=new_names, index = range(records_number))])
     
+    for i in range(records_number):
+        vector = []
+        for j in range(0, len(columns), 2):
+            vector.append((float(df_aux.loc[i:i,columns[j]]), 
+                           float(df_aux.loc[i:i,columns[j + 1]])))
+    
+        compatible = [x for x in vector if x[0] >= 10 and x[1] < 10]
+        if len(compatible) > 0:
+            x, y = max(compatible,key=lambda item:item[0])
+        else :
+            compatible_dsg = [x for x in vector if x[0] >= 10 and x[1] > 10]
+            if len(compatible_dsg) > 0:
+                x,y = max(compatible_dsg, key=lambda item:item[0])
+            else :
+                x,y = max(vector, key=lambda item:item[0])
+                        
+        df_aux.loc[i:i,new_names[0]] = x
+        df_aux.loc[i:i,new_names[1]] = y
+        
+    df_aux = df_aux.drop(columns = columns)
+    return df_aux
+    
+'''
+Function that formats LIEs %GD and LIEs %iNK
+'''
+def LIEs_DSG_formating(df_aux, columns, new_names, records_number):
+    df_aux[columns] = df_aux[columns].fillna(-1)
+    pd.concat([df_aux,pd.DataFrame(columns=new_names, index = range(records_number))])
+    
+    for i in range(records_number):
+        vector = []
+        for j in range(0, len(columns), 2):
+            vector.append((float(df_aux.loc[i:i,columns[j]]), 
+                           float(df_aux.loc[i:i,columns[j + 1]])))
+            
+        vector = [x for x in vector if x[0] != -1 and x[1] != -1]
+        if len(vector) > 0:
+            no_compatible = [x for x in vector if x[0] < 10]
+            if len(no_compatible) > 0:
+                x,y = min(no_compatible,key=lambda item:item[0])
+            else:
+                compatible_dsg = [x for x in vector if x[0] >= 10 and x[1] > 10]
+                if len(compatible_dsg) > 0:
+                    x,y = min(compatible_dsg, key=lambda item:item[0])
+                else:
+                    x,y = min(vector, key=lambda item:item[0])
+                        
+            df_aux.loc[i:i,new_names[0]] = x
+            df_aux.loc[i:i,new_names[1]] = y
+        else:
+            df_aux.loc[i:i,new_names[0]] = -1
+            df_aux.loc[i:i,new_names[1]] = -1
+        
+    df_aux = df_aux.drop(columns = columns)
+    return df_aux
+    
+
 '''
 Function that fix the EMA columns
 '''
@@ -374,7 +439,7 @@ def filtering (df_aux):
 
     df_aux = proces_EMA_column(df_aux, "DCG EMA")
     
-    df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
+   # df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
 
     df_aux = HLA_formating(df_aux)
     
@@ -382,24 +447,26 @@ def filtering (df_aux):
     for column in take_the_highest_value_columns.values():
         df_aux = take_highest_value(df_aux, column[0], column[1], column[2],
                                     column[3], column[4], column[5])
+    
+    df_aux = LIEs_DCG_formating(df_aux, lies_dcg_numerical[0], lies_dcg_numerical[1],
+                                records_number)
+    
+    df_aux = LIEs_DSG_formating(df_aux, lies_dsg_numerical[0], lies_dsg_numerical[1],
+                                records_number)
+        
+    #for column in columns_to_be_joined.values():
+    #    df_aux = take_last_column_avaliable(df_aux, column)
 
-
     
+    #df_aux = process_kindship(df_aux)
+    #df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
     
+    #for column in column_to_binary_column_names.values():
+    #    df_aux = change_column_to_binary(df_aux, column)
     
-    for column in columns_to_be_joined.values():
-        df_aux = take_last_column_avaliable(df_aux, column)
-
-    
-    df_aux = process_kindship(df_aux)
-    df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
-    
-    for column in column_to_binary_column_names.values():
-        df_aux = change_column_to_binary(df_aux, column)
-    
-    df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
-    for column in process_column_names.values():
-        df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
+    #df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
+    #for column in process_column_names.values():
+    #    df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
     
     return df_aux
 

@@ -67,3 +67,10 @@ european_countries = [ "Alemania", "Austria", "Bélgica", "Bulgaria",
     "Irlanda", "Italia", "Letonia", "Lituania", "Luxemburgo", "Malta",
     "Países Bajos", "Polonia", "Portugal", "Rumanía", "Suecia"
     ]
+
+lies_dcg_numerical = [["LIEs DCG %GD_1  ", "LIEs DCG %iNK_1  ", "LIEs DCG %GD_2  ", 
+                  "LIEs DCG %iNK_2  "], ["LIEs DCG %GD", "LIEs DCG %iNK"]]
+lies_dsg_numerical = [["LIEs DSG %GD_1  ", "LIEs DSG %iNK_1  ", "LIEs DSG %GD_2  ", 
+                  "LIEs DSG %iNK_2  ", "LIEs DSG %GD_3  ", "LIEs DSG %iNK_3  "]
+                 , ["LIEs DSG %GD", "LIEs DSG %iNK"]]
+

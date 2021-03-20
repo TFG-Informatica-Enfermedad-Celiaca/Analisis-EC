@@ -75,9 +75,43 @@ lies_dsg_numerical = [["LIEs DSG %GD_1  ", "LIEs DSG %iNK_1  ", "LIEs DSG %GD_2 
                  , ["LIEs DSG %GD", "LIEs DSG %iNK"]]
 lies_valoracion = {
     "DCG": [["Valoración DCG LIEs1", "Valoración LIEs2"],["Valoracion LIEs DCG"], 
-                       ["Compatible con EC activa", "Compatible con EC en DSG", 
+            ["LIEs no hecho"],["Compatible con EC activa", "Compatible con EC en DSG", 
               "No compatible con EC"]],
     "DSG": [["Valoración DSG LIEs1", "Valoración DSG LIEs2", "Valoración DSG LIEs3"],
-            ["Valoracion LIEs DSG"], ["No compatible con EC", "Compatible con EC en DSG", 
+            ["Valoracion LIEs DSG"], ["LIEs no hecho"], 
+            ["No compatible con EC", "Compatible con EC en DSG", 
               "Compatible con EC activa"]]
+}
+
+biopsias_AP = {
+    "DCG": [["DCG Biopsia-AP1  ", "DCG Biopsia-AP2  "], ["Sin biopsia hecha en DCG"], 
+            ["Sin biopsia hecha"]], 
+    "DSG": [["DSG Biopsia AP1", "DSG Biopsia AP2"],["Sin biopsia hecha en DCG"],
+            ["Sin biopsia hecha"]]
+}
+
+biopsias_LIEs = {
+    "DCG": [["AP Biopsia DCG LIEs_1  ", "AP en Biopsia DCG LIEs_2  "],
+            ["Sin biopsia hecha"]], 
+    "DSG": [["AP Biopsia DSG LIEs_1  ", "AP en Biopsia DSG LIEs_2  ", 
+             "AP en Biopsia DSG LIEs_3  "],["Sin biopsia hecha"]]    
+}
+
+dates = ["Fecha DCG Biopsia1", "Fecha DCG Biopsia2  ", "Fecha DSG biopsia1", 
+         "Fecha DSG biopsia2", "FECHA LIEs DCG_1  ", "FECHA LIEs DCG_2",
+         "FECHA LIEs DSG_1  ", "FECHA LIEs DSG_2  ", "FECHA LIEs DSG_3  "]
+biopsias_delete_dsg = [["Fecha DCG Biopsia1", "Fecha DCG Biopsia2  ",
+         "FECHA LIEs DCG_1  ", "FECHA LIEs DCG_2"],["Fecha DSG biopsia1", 
+         "Fecha DSG biopsia2","FECHA LIEs DSG_1  ", "FECHA LIEs DSG_2  ", 
+         "FECHA LIEs DSG_3  "], ["DSG Biopsia AP1", "DSG Biopsia AP2", 
+        "AP Biopsia DSG LIEs_1  ", "AP en Biopsia DSG LIEs_2  ", 
+             "AP en Biopsia DSG LIEs_3  "]]
+                                 
+join_biopsias = {
+    "DCG": [["DCG Biopsia-AP1  ", "DCG Biopsia-AP2  ", "AP Biopsia DCG LIEs_1  ",
+                  "AP en Biopsia DCG LIEs_2  "], ["Biopsia DCG"], ["Sin biopsia hecha"] , 
+                 ["M3c", "M3b", "M3a", "M2", "M1", "M0"]],
+    "DSG": [["DSG Biopsia AP1", "DSG Biopsia AP2", "AP Biopsia DSG LIEs_1  ",
+             "AP en Biopsia DSG LIEs_2  ", "AP en Biopsia DSG LIEs_3  "], ["Biopsia DSG"], 
+            ["Sin biopsia hecha"] , ["M0", "M1", "M2", "M3a", "M3b", "M3c"]]
 }

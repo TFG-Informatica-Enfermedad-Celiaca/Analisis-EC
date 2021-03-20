@@ -10,9 +10,9 @@ Created on Wed Feb 24 16:29:51 2021
 import pandas as pd
 import numpy as np
 from utils import european_countries, take_the_highest_value_columns, lies_dcg_numerical,lies_dsg_numerical
-from utils import lies_valoracion
+from utils import lies_valoracion, biopsias_AP, biopsias_LIEs, dates, biopsias_delete_dsg, join_biopsias
 from sklearn import preprocessing
-   
+import datetime as dt
 '''
 Read data from .csv file stored in local and creates dataframe
 '''
@@ -346,7 +346,8 @@ def HLA_formating(df_aux):
     return df_aux 
 
 '''
-Function that formats LIEs %GD and LIEs %iNK
+Function that formats columns "LIEs DCG %GD_1  ", "LIEs DCG %iNK_1  ", "LIEs DCG %GD_2  ", 
+"LIEs DCG %iNK_2  "
 '''
 def LIEs_DCG_formating(df_aux, columns, new_names, records_number):
     df_aux[columns] = df_aux[columns].fillna(-1)
@@ -375,11 +376,12 @@ def LIEs_DCG_formating(df_aux, columns, new_names, records_number):
     return df_aux
 
 '''
-Function that formats LIEs Valoración
+Function that formats columns "Valoración DCG LIEs1", "Valoración LIEs2", 
+"Valoración DSG LIEs1", "Valoración DSG LIEs2", "Valoración DSG LIEs3"
 '''
-def LIEs_Valoracion_formating(df_aux, columns, new_name, values,records_number):
+def join_columns(df_aux, columns, new_name,null_value, values,records_number):
     pd.concat([df_aux,pd.DataFrame(columns=new_name, index = range(records_number))])
-    df_aux[new_name] = "LIEs no hecho"
+    df_aux[new_name] =null_value 
 
     for i in range(records_number):
         for value in values:
@@ -396,7 +398,8 @@ def LIEs_Valoracion_formating(df_aux, columns, new_name, values,records_number):
     return df_aux
 
 '''
-Function that formats LIEs %GD and LIEs %iNK
+Function that formats "LIEs DSG %GD_1  ", "LIEs DSG %iNK_1  ", "LIEs DSG %GD_2  ", 
+"LIEs DSG %iNK_2  ", "LIEs DSG %GD_3  ", "LIEs DSG %iNK_3  "
 '''
 def LIEs_DSG_formating(df_aux, columns, new_names, records_number):
     df_aux[columns] = df_aux[columns].fillna(-1)
@@ -428,7 +431,78 @@ def LIEs_DSG_formating(df_aux, columns, new_names, records_number):
         
     df_aux = df_aux.drop(columns = columns)
     return df_aux
+
+'''
+Function that preprocesses columns "DCG Biopsia-AP1  ", "DCG Biopsia-AP2  ", 
+["DSG Biopsia AP1", "DSG Biopsia AP2". It converts M3b/c in M3v and fills 
+nan values with "Sin biopsia hecha"
+'''    
+def preprocess_Biopsias_AP(df_aux, columns, current_nan_value, final_nan_value, records_number):
     
+    for i in range(records_number):
+            for column in columns:
+                if ((str(df_aux[column].iloc[i]) != "nan") and
+                    (str(df_aux[column].iloc[i]) != current_nan_value) and
+                    (len(str(df_aux[column].iloc[i])) > 2)):
+                    df_aux.loc[i:i, column] = str(df_aux[column].iloc[i])[0:3]
+                    
+                if str(df_aux[column].iloc[i]) == current_nan_value:
+                    df_aux.loc[i:i, column] = final_nan_value
+                   
+    df_aux[columns] = df_aux[columns].fillna(final_nan_value)
+    
+    return df_aux
+
+'''
+Function that preprocesses columns "AP Biopsia DCG LIEs_1  ", "AP en Biopsia DCG LIEs_2  ", 
+"AP Biopsia DSG LIEs_1  ", "AP en Biopsia DSG LIEs_2  ", "AP en Biopsia DSG LIEs_3  ". 
+It changes Marsh 0 and Marsh 1 to M0, M1. And deletes information about Helicobacter
+pilory that follows the result of the Biopsy after "-".
+'''
+def preprocess_Biopsias_LIEs(df_aux, columns, nan_value, records_number):
+    
+    for i in range(records_number):
+            for column in columns:
+                if ((str(df_aux[column].iloc[i]) != "nan") and
+                    (len(str(df_aux[column].iloc[i])) > 2)):
+                    s = str(df_aux[column].iloc[i])
+                    s = s.replace("Marsh ", "M")
+                    index = s.rfind("-")
+                    if index != -1:
+                        df_aux.loc[i:i, column] = s[0:index]
+                    else:
+                        df_aux.loc[i:i, column] = s
+
+    df_aux[columns] = df_aux[columns].fillna(nan_value)
+    
+    return df_aux
+
+'''
+Function that converts the dates in seconds since epoch.
+'''
+def preprocess_dates(df_aux, columns):
+    for column in columns:
+        df_aux[column]= pd.to_datetime(df_aux[column],format='%d/%m/%y', errors='coerce')
+        df_aux[column]=(df_aux[column] - dt.datetime(1970,1,1)).dt.total_seconds()
+    df_aux[columns] = df_aux[columns].fillna(0)
+    return df_aux
+
+'''
+Function that deletes DSG biopsies that where made with less than 6 months since
+the last DCG biopsy. 
+'''
+def delete_DSG_biopsias(df_aux, dcg_dates, dsg_dates, dsg_biopsias, records_number):
+    pd.concat([df_aux,pd.DataFrame(columns=['max_dcg'], index = range(records_number))])
+    df_aux['max_dcg'] = df_aux[dcg_dates].max(axis=1)
+    for i in range(len(dsg_dates)):
+        df_aux[dsg_biopsias[i]] = df_aux[dsg_biopsias[i]]
+        df_aux.loc[df_aux[dsg_dates[i]] - df_aux['max_dcg'] < 15811171, 
+                   dsg_biopsias[i]] = "Sin biopsia hecha"
+        
+    df_aux = df_aux.drop(columns=['max_dcg'])
+    df_aux = df_aux.drop(columns=dcg_dates)
+    df_aux = df_aux.drop(columns=dsg_dates)
+    return df_aux
 
 '''
 Function that fix the EMA columns
@@ -477,8 +551,23 @@ def filtering (df_aux):
                                 records_number)
     
     for value in lies_valoracion.values():
-        df_aux = LIEs_Valoracion_formating(df_aux, value[0], value[1], 
-                                           value[2],records_number)
+        df_aux = join_columns(df_aux, value[0], value[1], 
+                                           value[2][0],value[3], records_number)
+    for value in biopsias_AP.values():
+        df_aux = preprocess_Biopsias_AP(df_aux, value[0], value[1][0], value[2][0],
+                                     records_number)
+    for value in biopsias_LIEs.values():
+        df_aux = preprocess_Biopsias_LIEs(df_aux, value[0], value[1][0], 
+                                          records_number)
+        
+    df_aux = preprocess_dates(df_aux, dates)
+        
+    df_aux = delete_DSG_biopsias(df_aux,biopsias_delete_dsg[0], biopsias_delete_dsg[1],
+                                 biopsias_delete_dsg[2], records_number)
+    
+    for value in join_biopsias.values():
+        df_aux = join_columns(df_aux, value[0], value[1], 
+                                           value[2][0],value[3],records_number)
         
     #for column in columns_to_be_joined.values():
     #    df_aux = take_last_column_avaliable(df_aux, column)

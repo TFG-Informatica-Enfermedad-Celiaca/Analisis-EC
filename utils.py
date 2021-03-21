@@ -15,22 +15,22 @@ take_the_highest_value_columns = {
     "DCG ATG2":[["DCG_ATG2_1", "DCG ATG2_2  "],
            ["Indicar titulo del anticuerpo (DCG ATG_2_1)", "Indique título de anticuerpo  (DCG ATG_2_2)"],
            ["Indicar el kit empleado con el punto de corte entre paréntesis"],
-           ["Aeskulisa tTg-A de Grifols (20)"], ['DCG_ATG2'], ['DCG_ATG2_VALUE']],
+           ["Aeskulisa tTg-A de Grifols (20)"], ['DCG_ATG2'], ['DCG_ATG2_VALUE'], 20],
     "DCG A-PDG": [["DCG A-PDG_1  ", "DCG A-PDG_2  "],
                   ["Indique el título del anticuerpo (A-PDG_1)", "Indique el título del anticuerpo (A-PDG_2)"],
                   ["Indicar el kit empleado con el punto de corte entre paréntesis 1"],
-                  ["Euroimmun (25)"], ['DCG A-PDG'], ['DCG A-PDG_VALUE']]
+                  ["Euroimmun (25)"], ['DCG A-PDG'], ['DCG A-PDG_VALUE'], 25]
 }
 
 take_the_lower_value_columns = {
     "DSG ATG2":[["DSG ATG2_1  ", "DSG ATG2_2  "],
            ["Indique el título del anticuerpo (DSG ATG2_1)", "Indique el título del anticuerpo (DSG ATG2_2)"],
            ["Indicar el kit empleado con el punto de corte entre paréntesis 2"],
-           ["Aeskulisa tTg-A de Grifols (20)"], ['DSG ATG2'], ['DSG ATG2 VALUE']],
+           ["Aeskulisa tTg-A de Grifols (20)"], ['DSG ATG2'], ['DSG ATG2 VALUE'], 20],
     "DSG APDG": [["DSG A-PDG_1  "],
                  ["Valor  A-PDG_1  "],
                  ["A-PDG kit  "], ["Euroimmun (25)"],
-                 ["DSG A-PDG"], ["DSG A-PDG VALUE"]]
+                 ["DSG A-PDG"], ["DSG A-PDG VALUE"], 25]
 }
 
 european_countries = [ "Alemania", "Austria", "Bélgica", "Bulgaria",
@@ -90,3 +90,6 @@ join_biopsias = {
              "AP en Biopsia DSG LIEs_2  ", "AP en Biopsia DSG LIEs_3  "], ["Biopsia DSG"], 
             ["Sin biopsia hecha"] , ["M0", "M1", "M2", "M3a", "M3b", "M3c"]]
 }
+
+
+

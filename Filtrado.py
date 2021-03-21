@@ -165,16 +165,18 @@ Function that fill the empty values and remove the old columns and
  concate the new ones with the hole dataframe
 '''
 def fill_and_concatenate_columns(df_aux, aux, columns_to_delete,
-                                 kitsAccepted, finalName1, finalName2):
-    for i in range(0, aux.shape[0]):
-        if i not in kitsAccepted:
-            aux.loc[i,finalName1[0]] = "No hecho"
-            aux.loc[i,finalName2[0]] = np.nan
+                                 kitsAccepted, finalName1, finalName2, cut_point):
+    
     df_aux = df_aux.drop(columns= (columns_to_delete))
     df_aux = pd.concat([df_aux, aux], axis = 1)
     
+    #Fix the input errors
+    df_aux.loc[df_aux[finalName2[0]] < cut_point, finalName1[0]] = "Negativo"
+    df_aux.loc[df_aux[finalName2[0]] > cut_point, finalName1[0]] = "Positivo"
+    
+    df_aux[finalName1[0]] = df_aux[finalName1[0]].fillna("No hecho")
+    
     return df_aux
-
 
 
 '''
@@ -193,7 +195,7 @@ def check_kits(df_aux, kits, kitOK):
 Functions that join several columns and take the higher values 
 '''
 def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
-                       kitOK, finalName1, finalName2):
+                       kitOK, finalName1, finalName2, cut_point):
    
     #Check the kits
     kitsAccepted = check_kits(df_aux, kits, kitOK) 
@@ -226,7 +228,8 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
     aux = pd.DataFrame({finalName1[0]:auxPorN, finalName2[0]:corrValu})
     columns_to_delete = posOrNeg + numericalValues + kits
     df_aux = fill_and_concatenate_columns(df_aux, aux,
-            columns_to_delete, kitsAccepted, finalName1, finalName2)
+            columns_to_delete, kitsAccepted, finalName1, finalName2, cut_point)
+    
     
     return df_aux
 
@@ -236,7 +239,7 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
 Functions that join several columns and take the lower values 
 '''
 def take_lower_value(df_aux, posOrNeg, numericalValues, kits,
-                       kitOK, finalName1, finalName2):
+                       kitOK, finalName1, finalName2, cut_point):
     
     #Check the kits
     kitsAccepted = check_kits(df_aux, kits, kitOK) 
@@ -269,7 +272,7 @@ def take_lower_value(df_aux, posOrNeg, numericalValues, kits,
     aux = pd.DataFrame({finalName1[0]:auxPorN, finalName2[0]:corrValu})
     columns_to_delete = posOrNeg + numericalValues + kits
     df_aux = fill_and_concatenate_columns (df_aux, aux,
-            columns_to_delete, kitsAccepted, finalName1, finalName2)
+            columns_to_delete, kitsAccepted, finalName1, finalName2, cut_point)
     
 
     return df_aux
@@ -520,12 +523,54 @@ def proces_EMA_column(df_aux, columnName):
     return df_aux
 
 
+
+##################################################################
+#           PROCESS Edad diagnostico, Fecha nacimiento
+##################################################################
+
+'''
+Given a list of column, split each column in several strips
+'''
+def split_by_strips(df_aux, columns):
+    for column in columns:
+        conditionlist = [
+        (df_aux[column] < 18) ,
+        ((18 <= df_aux[column]) & (df_aux[column] < 28)),
+        (28 <= df_aux[column]) & (df_aux[column]< 38),
+        (38 <= df_aux[column]) & (df_aux[column]< 48),
+        (48 <= df_aux[column]) & (df_aux[column] < 58),
+        (58 <= df_aux[column]) & (df_aux[column] < 70),
+        (df_aux[column] > 70)]
+        
+        choicelist = ["-18", "18 - 27", "28 - 37", "38 - 47",
+            "48 - 57", "58 - 70", "+70"]
+        
+        df_aux[column] = np.select(conditionlist,
+                        choicelist, default='Desconocido')
+    
+    return df_aux
+
+'''
+Function that proceses the age columns, 'Edad de diagnostico'
+ and 'Fecha nacimiento'.
+'''
+def calculate_age(df_aux, age, age_diagnostic):
+    df_aux[age]= pd.to_datetime(df_aux[age],format='%d/%m/%y', errors='coerce')
+    df_aux[age]=(dt.datetime.now() - df_aux[age]).dt.total_seconds()//(31536000)
+    
+    df_aux = split_by_strips(df_aux, [age, age_diagnostic])
+    
+    return df_aux
+
+
 '''
 Function that makes the filtering by columns
 '''
 def filtering (df_aux):
     
     records_number = df_aux.iloc[:,0].size
+    
+    df_aux = calculate_age(df_aux, "Fecha nacimiento", "Edad diagnóstico")
     
     df_aux = countries_preprocesing(df_aux, european_countries, records_number)
 
@@ -537,11 +582,11 @@ def filtering (df_aux):
     
     for column in take_the_highest_value_columns.values():
         df_aux = take_highest_value(df_aux, column[0], column[1], column[2],
-                                    column[3], column[4], column[5])
+                                    column[3], column[4], column[5], column[6])
 
     for column in take_the_lower_value_columns.values():
         df_aux = take_lower_value(df_aux, column[0], column[1], column[2],
-                                    column[3], column[4], column[5])
+                                    column[3], column[4], column[5], column[6])
         
     df_aux = process_kindship(df_aux)
     
@@ -557,6 +602,8 @@ def filtering (df_aux):
     df_aux = process_LIEs(df_aux, records_number)
     
     df_aux = process_biopsias(df_aux, records_number)
+    
+    
             
     return df_aux
 

@@ -67,7 +67,11 @@ take_the_lower_value_columns = {
     "DSG ATG2":[["DSG ATG2_1  ", "DSG ATG2_2  "],
            ["Indique el título del anticuerpo (DSG ATG2_1)", "Indique el título del anticuerpo (DSG ATG2_2)"],
            ["Indicar el kit empleado con el punto de corte entre paréntesis 2"],
-           ["Aeskulisa tTg-A de Grifols (20)"], ['DSG_ATG2'], ['DSG_ATG2_VALUE']]
+           ["Aeskulisa tTg-A de Grifols (20)"], ['DSG ATG2'], ['DSG ATG2 VALUE']],
+    "DSG APDG": [["DSG A-PDG_1  "],
+                 ["Valor  A-PDG_1  "],
+                 ["A-PDG kit  "], ["Euroimmun (25)"],
+                 ["DSG A-PDG"], ["DSG A-PDG VALUE"]]
 }
 
 

@@ -280,17 +280,26 @@ def fill_and_concatenate_columns(df_aux, aux, columns_to_delete,
 
 
 '''
+Check if there is a valid kit
+'''
+def check_kits(df_aux, kits, kitOK):
+    kitsAccepted = [] 
+    for i in kits:
+        aux = df_aux[df_aux[i] == kitOK[0]].index.tolist()
+        kitsAccepted.append(aux)
+        kitsAccepted = np.unique(kitsAccepted)
+    
+    return kitsAccepted
+
+
+'''
 Functions that join several columns and take the higher values 
 '''
 def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
                        kitOK, finalName1, finalName2):
    
     #Check the kits
-    kitsAccepted = [] 
-    for i in kits:
-        aux = df_aux[df_aux[i] == kitOK[0]].index.tolist()
-        kitsAccepted.append(aux)
-        kitsAccepted = np.unique(kitsAccepted)
+    kitsAccepted = check_kits(df_aux, kits, kitOK) 
     
     #Take the most positive values of each rows
     auxPorN = pd.DataFrame(index=range(len(df_aux.loc[:,posOrNeg[0]])),columns=range(1)).squeeze()
@@ -333,13 +342,9 @@ def take_lower_value(df_aux, posOrNeg, numericalValues, kits,
                        kitOK, finalName1, finalName2):
     
     #Check the kits
-    kitsAccepted = []
-    for i in kits:
-        aux = df_aux[df_aux[i] == kitOK[0]].index.tolist()
-        kitsAccepted.append(aux)
-        kitsAccepted = np.unique(kitsAccepted)
+    kitsAccepted = check_kits(df_aux, kits, kitOK) 
     
-    #Take the most positive values of each rows
+    #Take the least positive values of each rows
     auxPorN = pd.DataFrame(index=range(len(df_aux.loc[:,posOrNeg[0]])),columns=range(1)).squeeze()
     for i in posOrNeg:
         aux = []
@@ -351,7 +356,7 @@ def take_lower_value(df_aux, posOrNeg, numericalValues, kits,
                 aux.append(auxPorN[j])
         auxPorN = aux
     
-    #Take the highest numerical values of each rows
+    #Take the lowest numerical values of each rows
     corrValu = df_aux.loc[:,numericalValues[0]]
     for i in numericalValues:
         aux = []
@@ -363,16 +368,13 @@ def take_lower_value(df_aux, posOrNeg, numericalValues, kits,
                 aux.append(corrValu[j])
         corrValu = aux
     
-    
-    
     #insert the new columns into the dataframe and remove the old ones
     aux = pd.DataFrame({finalName1[0]:auxPorN, finalName2[0]:corrValu})
     columns_to_delete = posOrNeg + numericalValues + kits
     df_aux = fill_and_concatenate_columns (df_aux, aux,
             columns_to_delete, kitsAccepted, finalName1, finalName2)
     
-    
-    
+
     return df_aux
 
 

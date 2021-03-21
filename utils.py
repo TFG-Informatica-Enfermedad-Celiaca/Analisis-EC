@@ -3,8 +3,11 @@ process_column_names = {
                 'Enfermedad inmunológica (si hay más de 2)'], ["Otra"]],
   "symptoms": [['Síntomas específicos', 'Síntomas específicos.1', 'Síntomas específicos.2'], 
               ["Otros (especificar en otros síntomas)"]],
-  "signs": [['Signos  ', 'Signos 2  ', '  Signos 3'], ["Nada"]],
+  "signs": [['Signos  ', 'Signos 2  ', '  Signos 3'], ["Nada"]]
 }
+'''
+"Halotipos": [["Haplotipo1", "Haplotipo2"], ["SIN RIESGO"]]
+'''
 
 fill_nan_value = {
     "gender": ["Sexo", "Desconocido"], 
@@ -12,7 +15,7 @@ fill_nan_value = {
 }
 
 take_the_highest_value_columns = {
-    "DCG":[["DCG_ATG2_1", "DCG ATG2_2  "],
+    "DCG ATG2":[["DCG_ATG2_1", "DCG ATG2_2  "],
            ["Indicar titulo del anticuerpo (DCG ATG_2_1)", "Indique título de anticuerpo  (DCG ATG_2_2)"],
            ["Indicar el kit empleado con el punto de corte entre paréntesis"],
            ["Aeskulisa tTg-A de Grifols (20)"], ['DCG_ATG2'], ['DCG_ATG2_VALUE']],
@@ -20,6 +23,17 @@ take_the_highest_value_columns = {
                   ["Indique el título del anticuerpo (A-PDG_1)", "Indique el título del anticuerpo (A-PDG_2)"],
                   ["Indicar el kit empleado con el punto de corte entre paréntesis 1"],
                   ["Euroimmun (25)"], ['DCG A-PDG'], ['DCG A-PDG_VALUE']]
+}
+
+take_the_lower_value_columns = {
+    "DSG ATG2":[["DSG ATG2_1  ", "DSG ATG2_2  "],
+           ["Indique el título del anticuerpo (DSG ATG2_1)", "Indique el título del anticuerpo (DSG ATG2_2)"],
+           ["Indicar el kit empleado con el punto de corte entre paréntesis 2"],
+           ["Aeskulisa tTg-A de Grifols (20)"], ['DSG ATG2'], ['DSG ATG2 VALUE']],
+    "DSG APDG": [["DSG A-PDG_1  "],
+                 ["Valor  A-PDG_1  "],
+                 ["A-PDG kit  "], ["Euroimmun (25)"],
+                 ["DSG A-PDG"], ["DSG A-PDG VALUE"]]
 }
 
 european_countries = [ "Alemania", "Austria", "Bélgica", "Bulgaria",

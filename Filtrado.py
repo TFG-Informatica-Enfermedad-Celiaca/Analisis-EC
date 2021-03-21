@@ -161,17 +161,42 @@ def countries_preprocesing(df_aux, european_countries, records_number):
 
 
 '''
-Functions that join several columns and take the higher values 
+Function that fill the empty values and remove the old columns and
+ concate the new ones with the hole dataframe
 '''
-def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
-                       kitOK, finalName1, finalName2):
-    kitsAccepted = []
-   
-    #Check the kits
+def fill_and_concatenate_columns(df_aux, aux, columns_to_delete,
+                                 kitsAccepted, finalName1, finalName2):
+    for i in range(0, aux.shape[0]):
+        if i not in kitsAccepted:
+            aux.loc[i,finalName1[0]] = "No hecho"
+            aux.loc[i,finalName2[0]] = np.nan
+    df_aux = df_aux.drop(columns= (columns_to_delete))
+    df_aux = pd.concat([df_aux, aux], axis = 1)
+    
+    return df_aux
+
+
+
+'''
+Check if there is a valid kit
+'''
+def check_kits(df_aux, kits, kitOK):
+    kitsAccepted = [] 
     for i in kits:
         aux = df_aux[df_aux[i] == kitOK[0]].index.tolist()
         kitsAccepted.append(aux)
         kitsAccepted = np.unique(kitsAccepted)
+    
+    return kitsAccepted
+
+'''
+Functions that join several columns and take the higher values 
+'''
+def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
+                       kitOK, finalName1, finalName2):
+   
+    #Check the kits
+    kitsAccepted = check_kits(df_aux, kits, kitOK) 
     
     #Take the most positive values of each rows
     auxPorN = pd.DataFrame(index=range(len(df_aux.loc[:,posOrNeg[0]])),columns=range(1)).squeeze()
@@ -199,15 +224,54 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
     
     #insert the new columns into the dataframe and remove the old ones
     aux = pd.DataFrame({finalName1[0]:auxPorN, finalName2[0]:corrValu})
-    for i in range(0, len(auxPorN)):
-        if i not in kitsAccepted:
-            aux.loc[i,finalName1[0]] = np.nan
-            aux.loc[i,finalName2[0]] = np.nan
+    columns_to_delete = posOrNeg + numericalValues + kits
+    df_aux = fill_and_concatenate_columns(df_aux, aux,
+            columns_to_delete, kitsAccepted, finalName1, finalName2)
     
-    df_aux = df_aux.drop(columns= (posOrNeg + numericalValues + kits))
-    df_aux = pd.concat([df_aux, aux], axis = 1)
+    return df_aux
+
+
+
+'''
+Functions that join several columns and take the lower values 
+'''
+def take_lower_value(df_aux, posOrNeg, numericalValues, kits,
+                       kitOK, finalName1, finalName2):
     
+    #Check the kits
+    kitsAccepted = check_kits(df_aux, kits, kitOK) 
     
+    #Take the least positive values of each rows
+    auxPorN = pd.DataFrame(index=range(len(df_aux.loc[:,posOrNeg[0]])),columns=range(1)).squeeze()
+    for i in posOrNeg:
+        aux = []
+        for j in range(len(df_aux.loc[:,posOrNeg[0]])):
+            if (df_aux.loc[:,i].iloc[j] == "Negativo") or (
+                    (str(auxPorN[j]) == 'nan') & (df_aux.loc[:,i].iloc[j] != 'No hechos')):
+                aux.append(df_aux.loc[:,i].iloc[j])
+            else:
+                aux.append(auxPorN[j])
+        auxPorN = aux
+    
+    #Take the lowest numerical values of each rows
+    corrValu = df_aux.loc[:,numericalValues[0]]
+    for i in numericalValues:
+        aux = []
+        for j in range(len(corrValu)):
+            if (df_aux.loc[:,i].iloc[j] < corrValu[j]) or (
+                    str(corrValu[j]) == 'nan'):
+                aux.append(df_aux.loc[:,i].iloc[j])
+            else:
+                aux.append(corrValu[j])
+        corrValu = aux
+    
+    #insert the new columns into the dataframe and remove the old ones
+    aux = pd.DataFrame({finalName1[0]:auxPorN, finalName2[0]:corrValu})
+    columns_to_delete = posOrNeg + numericalValues + kits
+    df_aux = fill_and_concatenate_columns (df_aux, aux,
+            columns_to_delete, kitsAccepted, finalName1, finalName2)
+    
+
     return df_aux
 
 ##################################################################
@@ -464,7 +528,23 @@ def filtering (df_aux):
     records_number = df_aux.iloc[:,0].size
     
     df_aux = countries_preprocesing(df_aux, european_countries, records_number)
+
+    df_aux = proces_EMA_column(df_aux, "DCG EMA")
+    df_aux = proces_EMA_column(df_aux, "DSG EMA  ")
     
+    df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
+
+    df_aux = HLA_formating(df_aux)
+    
+    
+    for column in take_the_highest_value_columns.values():
+        df_aux = take_highest_value(df_aux, column[0], column[1], column[2],
+                                    column[3], column[4], column[5])
+
+    for column in take_the_lower_value_columns.values():
+        df_aux = take_lower_value(df_aux, column[0], column[1], column[2],
+                                    column[3], column[4], column[5])
+        
     df_aux = process_kindship(df_aux)
     
     for element in fill_nan_value.values():

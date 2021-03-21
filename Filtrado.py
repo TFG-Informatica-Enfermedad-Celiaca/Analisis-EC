@@ -372,8 +372,8 @@ Function that join columns, in column new_name, with null_value for the nan
 giving priority to values
 '''
 def join_columns(df_aux, columns, new_name, null_value, values,records_number):
-    pd.concat([df_aux,pd.DataFrame(columns=new_name, index = range(records_number))])
-    df_aux[new_name] =null_value 
+    df_aux = pd.concat([df_aux, pd.DataFrame(columns=new_name, index = range(records_number))], axis = 1)
+    df_aux[new_name] = null_value 
 
     for i in range(records_number):
         for value in values:

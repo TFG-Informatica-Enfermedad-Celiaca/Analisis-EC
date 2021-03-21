@@ -5,9 +5,6 @@ process_column_names = {
               ["Otros (especificar en otros síntomas)"]],
   "signs": [['Signos  ', 'Signos 2  ', '  Signos 3'], ["Nada"]]
 }
-'''
-"Halotipos": [["Haplotipo1", "Haplotipo2"], ["SIN RIESGO"]]
-'''
 
 fill_nan_value = {
     "gender": ["Sexo", "Desconocido"], 

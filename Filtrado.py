@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 from utils import european_countries, take_the_highest_value_columns, lies_dcg_numerical,lies_dsg_numerical
 from utils import lies_valoracion, biopsias_AP, biopsias_LIEs, dates, biopsias_delete_dsg, join_biopsias
-from utils import process_column_names, fill_nan_value
+from utils import process_column_names,fill_nan_value, take_the_lower_value_columns
 import datetime as dt
 import operator
 
@@ -531,8 +531,6 @@ def filtering (df_aux):
 
     df_aux = proces_EMA_column(df_aux, "DCG EMA")
     df_aux = proces_EMA_column(df_aux, "DSG EMA  ")
-    
-    df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
 
     df_aux = HLA_formating(df_aux)
     
@@ -553,14 +551,6 @@ def filtering (df_aux):
     for column in process_column_names.values():
         df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
         
-    
-    df_aux = proces_EMA_column(df_aux, "DCG EMA")
-
-    df_aux = HLA_formating(df_aux)    
-    
-    for column in take_the_highest_value_columns.values():
-        df_aux = take_highest_value(df_aux, column[0], column[1], column[2],
-                                    column[3], column[4], column[5])
     
     df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
     

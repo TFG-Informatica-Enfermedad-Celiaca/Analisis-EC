@@ -68,6 +68,9 @@ european_countries = [ "Alemania", "Austria", "Bélgica", "Bulgaria",
     "Países Bajos", "Polonia", "Portugal", "Rumanía", "Suecia"
     ]
 
+hla_haplotipos = [['SIN RIESGO', 'SIN RIESGO', 'SIN RIESGO'], ['DQ7.5', 'DQ7.5', 'DQ7.5'], 
+                  ['DQ2.2', 'DQ2.2', 'DQ2.2'], ['DQ8', 'DQ8', 'DQ8 doble dosis'], 
+                  'DQ8']
 lies_dcg_numerical = [["LIEs DCG %GD_1  ", "LIEs DCG %iNK_1  ", "LIEs DCG %GD_2  ", 
                   "LIEs DCG %iNK_2  "], ["LIEs DCG %GD", "LIEs DCG %iNK"]]
 lies_dsg_numerical = [["LIEs DSG %GD_1  ", "LIEs DSG %iNK_1  ", "LIEs DSG %GD_2  ", 

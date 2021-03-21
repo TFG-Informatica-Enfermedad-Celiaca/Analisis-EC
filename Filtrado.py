@@ -13,6 +13,7 @@ from utils import european_countries, take_the_highest_value_columns, lies_dcg_n
 from utils import lies_valoracion, biopsias_AP, biopsias_LIEs, dates, biopsias_delete_dsg, join_biopsias
 from sklearn import preprocessing
 import datetime as dt
+import operator
 '''
 Read data from .csv file stored in local and creates dataframe
 '''
@@ -318,28 +319,16 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
 Function that formats HLA
 '''
 def HLA_formating(df_aux):
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'SIN RIESGO') | (df_aux['Haplotipo2'] == 'SIN RIESGO')
-               , 'HLA: grupos de riesgo'] =  'SIN RIESGO'
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ7.5') | (df_aux['Haplotipo2'] == 'DQ7.5')
-               , 'HLA: grupos de riesgo'] =  'DQ7.5'
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.2') | (df_aux['Haplotipo2'] == 'DQ2.2')
-               , 'HLA: grupos de riesgo'] =  'DQ2.2'
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ8') & (df_aux['Haplotipo2'] == 'DQ8')
-               , 'HLA: grupos de riesgo'] =  'DQ8 doble dosis'
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ8') | (df_aux['Haplotipo2'] == 'DQ8')
-               , 'HLA: grupos de riesgo'] =  'DQ8 una dosis'
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ7.5') & (df_aux['Haplotipo2'] == 'DQ2.2')
-               , 'HLA: grupos de riesgo'] =  'DQ2.5 una dosis'
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.2') & (df_aux['Haplotipo2'] == 'DQ7.5')
-               , 'HLA: grupos de riesgo'] =  'DQ2.5 una dosis'
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.5') | (df_aux['Haplotipo2'] == 'DQ2.5')
-               , 'HLA: grupos de riesgo'] =  'DQ2.5 una dosis'
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.2') & (df_aux['Haplotipo2'] == 'DQ2.5')
-               , 'HLA: grupos de riesgo'] =  'DQ2.5 doble dosis'
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.5') & (df_aux['Haplotipo2'] == 'DQ2.2')
-               , 'HLA: grupos de riesgo'] =  'DQ2.5 doble dosis'
-    df_aux.loc[ (df_aux['Haplotipo1'] == 'DQ2.5') & (df_aux['Haplotipo2'] == 'DQ2.5')
-               , 'HLA: grupos de riesgo'] =  'DQ2.5 doble dosis'
+    data = np.array([(operator.or_, 'SIN RIESGO', 'SIN RIESGO', 'SIN RIESGO'),
+            (operator.or_, 'DQ7.5', 'DQ7.5', 'DQ7.5'), (operator.or_, 'DQ2.2', 'DQ2.2', 'DQ2.2'), 
+            (operator.and_, 'DQ8', 'DQ8', 'DQ8 doble dosis'), (operator.or_, 'DQ8', 'DQ8', 'DQ8 una dosis'), 
+            (operator.and_, 'DQ7.5', 'DQ2.2', 'DQ2.5 una dosis'), (operator.and_,'DQ2.2', 'DQ7.5','DQ2.5 una dosis'), 
+            (operator.or_, 'DQ2.5', 'DQ2.5', 'DQ2.5 una dosis'), (operator.and_, 'DQ2.2', 'DQ2.5', 'DQ2.5 doble dosis'), 
+            (operator.and_,'DQ2.5', 'DQ2.2', 'DQ2.5 doble dosis'), (operator.and_, 'DQ2.5', 'DQ2.5', 'DQ2.5 doble dosis')])
+    
+    for element in data:
+        df_aux.loc[element[0]((df_aux['Haplotipo1'] == element[1]) ,(df_aux['Haplotipo2'] == element[2]))
+               , 'HLA: grupos de riesgo'] = element[3]
     
     df_aux['HLA: grupos de riesgo'] = df_aux['HLA: grupos de riesgo'].fillna('HLA NO HECHO')
     df_aux = df_aux.drop(columns = ['Haplotipo1', 'Haplotipo2'])
@@ -376,8 +365,8 @@ def LIEs_DCG_formating(df_aux, columns, new_names, records_number):
     return df_aux
 
 '''
-Function that formats columns "Valoración DCG LIEs1", "Valoración LIEs2", 
-"Valoración DSG LIEs1", "Valoración DSG LIEs2", "Valoración DSG LIEs3"
+Function that join columns, in column new_name, with null_value for the nan 
+giving priority to values
 '''
 def join_columns(df_aux, columns, new_name,null_value, values,records_number):
     pd.concat([df_aux,pd.DataFrame(columns=new_name, index = range(records_number))])

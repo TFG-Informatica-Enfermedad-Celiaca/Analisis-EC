@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Created on Wed Feb 24 16:29:51 2021
 
@@ -11,26 +9,13 @@ import pandas as pd
 import numpy as np
 from utils import european_countries, take_the_highest_value_columns, lies_dcg_numerical,lies_dsg_numerical
 from utils import lies_valoracion, biopsias_AP, biopsias_LIEs, dates, biopsias_delete_dsg, join_biopsias
-from sklearn import preprocessing
+from utils import process_column_names, fill_nan_value
 import datetime as dt
 import operator
-'''
-Read data from .csv file stored in local and creates dataframe
-'''
-def read_data_from_local():
-    try:
-        df=pd.read_csv(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Datos.csv')
-        return df
-    except:
-        try:
-            df=pd.read_csv(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\Datos.csv')
-            return df
-        except:
-            print("It was not possible to load data 1")
 
-
+##################################################################
+#           IMPORT DATA
+##################################################################
 '''
 Read the relevant columns form .xlsx stored in local and creates deaframe
 '''
@@ -66,6 +51,18 @@ def read_columns_from_local():
             print("It was not possible to load data 3")
 
 '''
+Given a file with the relevant columns name, it selects them in the dataframe
+'''
+def selectImportantColumns(df_aux):
+    important_columns = read_columns_from_local()
+    important_columns = list(important_columns.iloc[:,1])
+    df_aux = df_aux.loc[:,important_columns]
+    return df_aux
+
+##################################################################
+#           PROCESS KINDSHIP
+##################################################################
+'''
 Insert columns in the dataframe that show if the patient has celiac family. 
 There are 4 levels of kindship so we create 4 columns, each of which contains
 0 in case there isn't any celiac relative in that level or 1 in other case.
@@ -86,7 +83,11 @@ def process_kindship(df_aux):
     df_aux = df_aux.drop(columns=['Grado de parentesco', 'Grado de parentesco (si hay más de 1)'])
     return df_aux
 
-
+##################################################################
+#           PROCESS IMMUNOLOGICAL DESEASES
+#           PROCESS SYMPTOMS
+#           PROCESS SIGNS
+##################################################################
 '''
 Fill the dataframes with the new cloumns with 1s
 '''
@@ -124,125 +125,20 @@ def process_columns_to_binary(df_aux, delete_more, records_number, previous_colu
     df_aux = df_aux.drop(columns=previous_columns)
     return df_aux
 
+##################################################################
+#           PROCESS GENDER
+#           PROCESS HELICOBACTER PILORY
+##################################################################
 '''
-Given a list of columns this creates a one binary column per value
-IMPORTANT: the values in the columns should be disjoint, if not it 
-will create as many new columns as it appears in a different colums
+Function that fills the nan cells with nan_value
 '''
-def simple_process_columns_to_binary(df_aux, columns_list):
-    df_aux = pd.get_dummies(df_aux, columns=columns_list)
+def fill_nan_with_value(df_aux, column, nan_value):
+    df_aux[column] = df_aux[column].fillna(nan_value)
     return df_aux
 
-
-'''
-Changes the value of a column to binary when it only has 2 possible values
-'''
-def change_column_to_binary(df_aux, column_list):
-    df_aux = pd.get_dummies(df_aux, columns ={column_list[0]})
-    df_aux = df_aux.drop(columns=column_list[1], axis=1)
-    df_aux = df_aux.rename(columns={column_list[2]: column_list[0]})
-    return df_aux
-
-'''
-Given a column containing numerical data this fills the mising values with ceros
-and normalizes the data
-'''
-def fill_nan_with_zero_and_scale(df_aux, column_list):
-    for column in column_list:
-        #df_aux[column] = df_aux[column].fillna(0)
-        df_aux[column] = df_aux[column].astype(str)
-        df_aux[column] = df_aux[column].apply(lambda x: float(x.replace(',', '.')))
-  
-    
-    min_max = preprocessing.MinMaxScaler()
-    scaled_df = min_max.fit_transform(df_aux[column_list].values)
-    final_df = pd.DataFrame(scaled_df,columns=column_list)
-    df_aux = df_aux.drop(columns= column_list)
-    
-
-    df_aux = pd.concat([df_aux, final_df], axis = 1)
-    
-
-    return df_aux
-
-'''
-Given some columns, take the last column avaliable
-'''
-def take_last_column_avaliable(df_aux, column_list):
-    new_colum = df_aux.loc[:, column_list[len(column_list)-1]]
-    for i in reversed(column_list):
-        new_colum = new_colum.replace(np.nan, df_aux.loc[:,i])
-        
-    df_aux = df_aux.drop(columns= column_list)
-    df_aux = pd.concat([df_aux, new_colum], axis = 1)
-    
-    return df_aux
-
-'''
-Given some columns, parse the values and create the necessary columns
-'''
-def parse_values_create_columns_and_fill(df_aux, column_list, records_number):
-    val = []
-    newColumns = []
-    for column in column_list:
-        val = df_aux.loc[:,column].values
-    
-    val = pd.unique(val)
-    val = pd.DataFrame(val).dropna()
-    val = val.values.tolist()
-    
-    for i in range(0, len(val)):
-        aux = val[i][0].split(',')
-        for j in range(0, len(aux)):
-            if aux[j] not in newColumns:
-                newColumns.append(aux[j])
-    
-    df_aux = fill_table(newColumns, records_number, column_list, df_aux)
-    df_aux = df_aux.drop(columns = column_list)
-
-    return df_aux
-
-'''
-Given a file with the relevant columns name, it selects them in the dataframe
-'''
-def selectImportantColumns(df_aux):
-    important_columns = read_columns_from_local()
-    important_columns = list(important_columns.iloc[:,1])
-    df_aux = df_aux.loc[:,important_columns]
-    return df_aux
-    
-'''
-Preprocessing for column column_name so we only have as values possible_values
-'''
-def preprocessing_1(df_aux, records_number, column_name, possible_values):
-    data_aux = pd.DataFrame(columns = [column_name],
-                                index = range(records_number))
-
-    data_aux[column_name] = df_aux[column_name]
-    # Get only the first word 
-    data_aux[column_name] = data_aux[column_name].apply(lambda x: np.where(pd.isnull(x), x, str(x).split()[0]))
-
-    for j in range(records_number):
-        if (~pd.isnull(data_aux.loc[:,column_name].iloc[j])):
-            # If the word contains special characters at the end delete them
-            if (((data_aux.loc[:,column_name].iloc[j])[-1] == "?") |
-            ((data_aux.loc[:,column_name].iloc[j])[-1] == ":") |
-            ((data_aux.loc[:,column_name].iloc[j])[-1] == ",") ):
-                data_aux.loc[:,column_name].iloc[j] = data_aux.loc[:,column_name].iloc[j][:-1]
-            # If we have a value diferent from DSG DCG and Provocación delete it
-            enter = 0
-            for value in possible_values:
-                if data_aux.loc[:,column_name].iloc[j] == value:
-                    enter = 1
-                    break
-            if enter == 0:
-                data_aux.loc[:,column_name].iloc[j] = np.nan
-
-    df_aux = df_aux.drop(columns=[column_name])
-    df_aux = pd.concat([df_aux, data_aux], axis = 1)
-    return df_aux
-
-
+##################################################################
+#           PROCESS NACIONALITY
+##################################################################
 '''
 Function that group countries by European or not
 '''
@@ -262,7 +158,6 @@ def countries_preprocesing(df_aux, european_countries, records_number):
         ] = "Otro" 
 
     return df_aux
-
 
 
 '''
@@ -315,6 +210,9 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
     
     return df_aux
 
+##################################################################
+#           PROCESS HLA AND HAPLOTIPOS
+##################################################################
 '''
 Function that formats HLA
 '''
@@ -334,6 +232,12 @@ def HLA_formating(df_aux):
     df_aux = df_aux.drop(columns = ['Haplotipo1', 'Haplotipo2'])
     return df_aux 
 
+##################################################################
+#           PROCESS LIEs DCG %GD, LIEs DCG %iNK
+#           PROCESS LIEs DSG %GD, LIEs DSG %iNK
+#           PROCESS Valoración DCG LIEs
+#           PROCESS Valoración DSG LIEs
+##################################################################
 '''
 Function that formats columns "LIEs DCG %GD_1  ", "LIEs DCG %iNK_1  ", "LIEs DCG %GD_2  ", 
 "LIEs DCG %iNK_2  "
@@ -362,28 +266,6 @@ def LIEs_DCG_formating(df_aux, columns, new_names, records_number):
         df_aux.loc[i:i,new_names[1]] = y
         
     df_aux = df_aux.drop(columns = columns)
-    return df_aux
-
-'''
-Function that join columns, in column new_name, with null_value for the nan 
-giving priority to values
-'''
-def join_columns(df_aux, columns, new_name,null_value, values,records_number):
-    pd.concat([df_aux,pd.DataFrame(columns=new_name, index = range(records_number))])
-    df_aux[new_name] =null_value 
-
-    for i in range(records_number):
-        for value in values:
-            aux = 0
-            for column in columns:
-                if df_aux[column].iloc[i] == value :
-                   df_aux.loc[i:i, new_name] = value
-                   aux = 1
-                   break;
-            if aux == 1: break
-           
-    df_aux = df_aux.drop(columns = columns)
-
     return df_aux
 
 '''
@@ -420,6 +302,45 @@ def LIEs_DSG_formating(df_aux, columns, new_names, records_number):
         
     df_aux = df_aux.drop(columns = columns)
     return df_aux
+
+'''
+Function that join columns, in column new_name, with null_value for the nan 
+giving priority to values
+'''
+def join_columns(df_aux, columns, new_name,null_value, values,records_number):
+    pd.concat([df_aux,pd.DataFrame(columns=new_name, index = range(records_number))])
+    df_aux[new_name] =null_value 
+
+    for i in range(records_number):
+        for value in values:
+            aux = 0
+            for column in columns:
+                if df_aux[column].iloc[i] == value :
+                   df_aux.loc[i:i, new_name] = value
+                   aux = 1
+                   break;
+            if aux == 1: break
+           
+    df_aux = df_aux.drop(columns = columns)
+
+    return df_aux
+
+
+def process_LIEs (df_aux, records_number):
+    df_aux = LIEs_DCG_formating(df_aux, lies_dcg_numerical[0], lies_dcg_numerical[1],
+                                records_number)
+    
+    df_aux = LIEs_DSG_formating(df_aux, lies_dsg_numerical[0], lies_dsg_numerical[1],
+                                records_number)
+    
+    for value in lies_valoracion.values():
+        df_aux = join_columns(df_aux, value[0], value[1], 
+                                           value[2][0],value[3], records_number)
+    return df_aux
+
+##################################################################
+#           PROCESS DCG Biopsia, DSG Biopsia, Biopsia DCG LIEs, Biopsia DCG LIEs
+##################################################################
 
 '''
 Function that preprocesses columns "DCG Biopsia-AP1  ", "DCG Biopsia-AP2  ", 
@@ -493,6 +414,28 @@ def delete_DSG_biopsias(df_aux, dcg_dates, dsg_dates, dsg_biopsias, records_numb
     df_aux = df_aux.drop(columns=dsg_dates)
     return df_aux
 
+def process_biopsias(df_aux, records_number):
+    for value in biopsias_AP.values():
+        df_aux = preprocess_Biopsias_AP(df_aux, value[0], value[1][0], value[2][0],
+                                     records_number)
+    for value in biopsias_LIEs.values():
+        df_aux = preprocess_Biopsias_LIEs(df_aux, value[0], value[1][0], 
+                                          records_number)
+        
+    df_aux = preprocess_dates(df_aux, dates)
+        
+    df_aux = delete_DSG_biopsias(df_aux,biopsias_delete_dsg[0], biopsias_delete_dsg[1],
+                                 biopsias_delete_dsg[2], records_number)
+    
+    for value in join_biopsias.values():
+        df_aux = join_columns(df_aux, value[0], value[1], 
+                                           value[2][0],value[3],records_number)
+    return df_aux
+
+##################################################################
+#           PROCESS DCG EMA, DSG EMA
+##################################################################
+
 '''
 Function that fix the EMA columns
 '''
@@ -521,63 +464,35 @@ def filtering (df_aux):
     records_number = df_aux.iloc[:,0].size
     
     df_aux = countries_preprocesing(df_aux, european_countries, records_number)
-
+    
+    df_aux = process_kindship(df_aux)
+    
+    for element in fill_nan_value.values():
+        df_aux = fill_nan_with_value(df_aux, element[0], element[1])
+    
+    for column in process_column_names.values():
+        df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
+        
+    
     df_aux = proces_EMA_column(df_aux, "DCG EMA")
-    
-   # df_aux = fill_nan_with_zero_and_scale(df_aux, fill_nan_with_zero_column_names)
 
-    df_aux = HLA_formating(df_aux)
-    
+    df_aux = HLA_formating(df_aux)    
     
     for column in take_the_highest_value_columns.values():
         df_aux = take_highest_value(df_aux, column[0], column[1], column[2],
                                     column[3], column[4], column[5])
     
-    df_aux = LIEs_DCG_formating(df_aux, lies_dcg_numerical[0], lies_dcg_numerical[1],
-                                records_number)
+    df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
     
-    df_aux = LIEs_DSG_formating(df_aux, lies_dsg_numerical[0], lies_dsg_numerical[1],
-                                records_number)
+    df_aux = process_LIEs(df_aux, records_number)
     
-    for value in lies_valoracion.values():
-        df_aux = join_columns(df_aux, value[0], value[1], 
-                                           value[2][0],value[3], records_number)
-    for value in biopsias_AP.values():
-        df_aux = preprocess_Biopsias_AP(df_aux, value[0], value[1][0], value[2][0],
-                                     records_number)
-    for value in biopsias_LIEs.values():
-        df_aux = preprocess_Biopsias_LIEs(df_aux, value[0], value[1][0], 
-                                          records_number)
-        
-    df_aux = preprocess_dates(df_aux, dates)
-        
-    df_aux = delete_DSG_biopsias(df_aux,biopsias_delete_dsg[0], biopsias_delete_dsg[1],
-                                 biopsias_delete_dsg[2], records_number)
-    
-    for value in join_biopsias.values():
-        df_aux = join_columns(df_aux, value[0], value[1], 
-                                           value[2][0],value[3],records_number)
-        
-    #for column in columns_to_be_joined.values():
-    #    df_aux = take_last_column_avaliable(df_aux, column)
-
-    
-    #df_aux = process_kindship(df_aux)
-    #df_aux = simple_process_columns_to_binary(df_aux, simple_process_column_names)
-    
-    #for column in column_to_binary_column_names.values():
-    #    df_aux = change_column_to_binary(df_aux, column)
-    
-    #df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
-    #for column in process_column_names.values():
-    #    df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
-    
+    df_aux = process_biopsias(df_aux, records_number)
+            
     return df_aux
 
 
 
 def main():
-    #df = read_data_from_local()
     df = read_new_data_from_local()
     df_aux = df
     df_aux = selectImportantColumns(df_aux)

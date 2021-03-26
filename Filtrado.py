@@ -226,10 +226,10 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
     
     #insert the new columns into the dataframe and remove the old ones
     aux = pd.DataFrame({finalName1[0]:auxPorN, finalName2[0]:corrValu})
+    aux[finalName2[0]] = aux[finalName2[0]].fillna(-1)
     columns_to_delete = posOrNeg + numericalValues + kits
     df_aux = fill_and_concatenate_columns(df_aux, aux,
             columns_to_delete, kitsAccepted, finalName1, finalName2, cut_point)
-    
     
     return df_aux
 
@@ -270,11 +270,11 @@ def take_lower_value(df_aux, posOrNeg, numericalValues, kits,
     
     #insert the new columns into the dataframe and remove the old ones
     aux = pd.DataFrame({finalName1[0]:auxPorN, finalName2[0]:corrValu})
+    aux[finalName2[0]] = aux[finalName2[0]].fillna(-1)
     columns_to_delete = posOrNeg + numericalValues + kits
     df_aux = fill_and_concatenate_columns (df_aux, aux,
             columns_to_delete, kitsAccepted, finalName1, finalName2, cut_point)
     
-
     return df_aux
 
 ##################################################################

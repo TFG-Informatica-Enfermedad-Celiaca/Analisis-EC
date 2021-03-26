@@ -177,6 +177,7 @@ def fill_and_concatenate_columns(df_aux, aux, columns_to_delete,
     df_aux.loc[df_aux[finalName2[0]] > cut_point, finalName1[0]] = "Positivo"
     
     df_aux[finalName1[0]] = df_aux[finalName1[0]].fillna("No hecho")
+    df_aux[finalName2[0]] = df_aux[finalName1[0]].fillna(-1)
     
     return df_aux
 

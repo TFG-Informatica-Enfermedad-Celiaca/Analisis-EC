@@ -12,6 +12,7 @@ from utils import european_countries, take_the_highest_value_columns, lies_dcg_n
 from utils import lies_valoracion, biopsias_AP, biopsias_LIEs, dates, biopsias_delete_dsg, join_biopsias
 from utils import process_column_names,fill_nan_value, take_the_lower_value_columns
 from utils import final_columns_to_numeric
+from utils import final_column_to_one_hot
 import datetime as dt
 import operator
 
@@ -177,7 +178,7 @@ def fill_and_concatenate_columns(df_aux, aux, columns_to_delete,
     df_aux.loc[df_aux[finalName2[0]] > cut_point, finalName1[0]] = "Positivo"
     
     df_aux[finalName1[0]] = df_aux[finalName1[0]].fillna("No hecho")
-    df_aux[finalName2[0]] = df_aux[finalName1[0]].fillna(-1)
+    df_aux[finalName2[0]] = df_aux[finalName2[0]].fillna(-1)
     
     return df_aux
 
@@ -229,7 +230,6 @@ def take_highest_value(df_aux, posOrNeg, numericalValues, kits,
     
     #insert the new columns into the dataframe and remove the old ones
     aux = pd.DataFrame({finalName1[0]:auxPorN, finalName2[0]:corrValu})
-    aux[finalName2[0]] = aux[finalName2[0]].fillna(-1)
     columns_to_delete = posOrNeg + numericalValues + kits
     df_aux = fill_and_concatenate_columns(df_aux, aux,
             columns_to_delete, kitsAccepted, finalName1, finalName2, cut_point)
@@ -273,7 +273,6 @@ def take_lower_value(df_aux, posOrNeg, numericalValues, kits,
     
     #insert the new columns into the dataframe and remove the old ones
     aux = pd.DataFrame({finalName1[0]:auxPorN, finalName2[0]:corrValu})
-    aux[finalName2[0]] = aux[finalName2[0]].fillna(-1)
     columns_to_delete = posOrNeg + numericalValues + kits
     df_aux = fill_and_concatenate_columns (df_aux, aux,
             columns_to_delete, kitsAccepted, finalName1, finalName2, cut_point)
@@ -616,7 +615,14 @@ def to_numerical(df_aux_numerical):
     ord_enc = OrdinalEncoder()
     for column in final_columns_to_numeric:
         df_aux_numerical[column] = ord_enc.fit_transform(df_aux_numerical[[column]])
+     
+    for column in final_column_to_one_hot:
+        aux = pd.get_dummies(df_aux_numerical[column])
+        df_aux_numerical = df_aux_numerical.drop(columns= column)
+        df_aux_numerical = pd.concat([df_aux_numerical, aux], axis = 1)
         
+        
+    
     return df_aux_numerical
 
 

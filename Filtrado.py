@@ -7,9 +7,11 @@ Created on Wed Feb 24 16:29:51 2021
 
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import OrdinalEncoder
 from utils import european_countries, take_the_highest_value_columns, lies_dcg_numerical,lies_dsg_numerical
 from utils import lies_valoracion, biopsias_AP, biopsias_LIEs, dates, biopsias_delete_dsg, join_biopsias
 from utils import process_column_names,fill_nan_value, take_the_lower_value_columns
+from utils import final_columns_to_numeric
 import datetime as dt
 import operator
 
@@ -175,6 +177,7 @@ def fill_and_concatenate_columns(df_aux, aux, columns_to_delete,
     df_aux.loc[df_aux[finalName2[0]] > cut_point, finalName1[0]] = "Positivo"
     
     df_aux[finalName1[0]] = df_aux[finalName1[0]].fillna("No hecho")
+    df_aux[finalName2[0]] = df_aux[finalName1[0]].fillna(-1)
     
     return df_aux
 
@@ -609,15 +612,28 @@ def filtering (df_aux):
 
 
 
+def to_numerical(df_aux_numerical):
+    ord_enc = OrdinalEncoder()
+    for column in final_columns_to_numeric:
+        df_aux_numerical[column] = ord_enc.fit_transform(df_aux_numerical[[column]])
+        
+    return df_aux_numerical
+
+
 def main():
     df = read_new_data_from_local()
     df_aux = df
+    
     df_aux = selectImportantColumns(df_aux)
     df_aux.to_excel("unfilterData.xlsx")
 
     df_aux = filtering(df_aux)
     
     df_aux.to_excel("filterData.xlsx")
+    
+    df_aux_numerical = df_aux
+    df_aux_numerical = to_numerical(df_aux_numerical)
+    df_aux_numerical.to_excel("filterDataNumerical.xlsx")
     
 
 if __name__ == "__main__":

@@ -93,3 +93,11 @@ join_biopsias = {
 
 
 
+final_columns_to_numeric = ["Indique país de origen o en su defecto la información disponible",
+                            "Sexo", "Edad diagnóstico", "HLA: grupos de riesgo",
+                            "DCG EMA", "DSG EMA  ",
+                            "Helicobacter pylori en el momento de la biopsia",
+                            "Fecha nacimiento", "DCG_ATG2", "DCG A-PDG", 
+                            "DSG ATG2", "DSG A-PDG"]
+
+

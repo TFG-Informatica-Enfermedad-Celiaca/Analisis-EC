@@ -146,12 +146,13 @@ def fill_nan_with_value(df_aux, column, nan_value):
 Function that group countries by European or not
 '''
 def countries_preprocesing(df_aux, european_countries, records_number):
+    
     df_aux["Indique país de origen o en su defecto la información disponible"] = df_aux[
         "Indique país de origen o en su defecto la información disponible"
         ].replace(np.nan, "Desconocido")
     df_aux["Indique país de origen o en su defecto la información disponible"] = df_aux[
         "Indique país de origen o en su defecto la información disponible"
-        ].replace([european_countries], "Europeo")
+        ].replace(european_countries, "Europeo")
 
     df_aux.loc[(df_aux["Indique país de origen o en su defecto la información disponible"]
         != "Europeo") & 
@@ -617,7 +618,7 @@ def to_numerical(df_aux_numerical):
         df_aux_numerical[column] = ord_enc.fit_transform(df_aux_numerical[[column]])
      
     for column in final_column_to_one_hot:
-        aux = pd.get_dummies(df_aux_numerical[column])
+        aux = pd.get_dummies(df_aux_numerical[column], prefix=column)
         df_aux_numerical = df_aux_numerical.drop(columns= column)
         df_aux_numerical = pd.concat([df_aux_numerical, aux], axis = 1)
         

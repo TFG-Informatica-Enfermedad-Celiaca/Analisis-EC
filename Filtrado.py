@@ -15,43 +15,8 @@ from utils import final_columns_to_numeric
 from utils import final_column_to_one_hot
 import datetime as dt
 import operator
+from loadData import read_new_data_from_local, read_columns_from_local
 
-##################################################################
-#           IMPORT DATA
-##################################################################
-'''
-Read the relevant columns form .xlsx stored in local and creates deaframe
-'''
-def read_new_data_from_local():
-    try:
-        df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Datos actualizados.xlsx')
-        return df
-    except:
-        try:
-            df=pd.read_excel(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\Datos actualizados.xlsx')
-            return df
-        except:
-            print("It was not possible to load data 2")
-
-
-
-'''
-Read the relevant columns form .xlsx stored in local and creates deaframe
-'''
-def read_columns_from_local():
-    try:
-        df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Important columns.xlsx')
-        return df
-    except:
-        try:
-            df=pd.read_excel(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\Important columns.xlsx')
-            return df
-        except:
-            print("It was not possible to load data 3")
 
 '''
 Given a file with the relevant columns name, it selects them in the dataframe
@@ -638,15 +603,15 @@ def main():
     df_aux = df
     
     df_aux = selectImportantColumns(df_aux)
-    df_aux.to_excel("unfilterData.xlsx")
+    df_aux.to_excel("unfilterData.xlsx", index = False)
 
     df_aux = filtering(df_aux)
     
-    df_aux.to_excel("filterData.xlsx")
+    df_aux.to_excel("filterData.xlsx", index = False)
     
     df_aux_numerical = df_aux
     df_aux_numerical = to_numerical(df_aux_numerical)
-    df_aux_numerical.to_excel("filterDataNumerical.xlsx")
+    df_aux_numerical.to_excel("filterDataNumerical.xlsx", index = False)
     
 
 if __name__ == "__main__":

@@ -103,5 +103,5 @@ final_column_to_one_hot = ["Indique país de origen o en su defecto la informaci
                             "Helicobacter pylori en el momento de la biopsia",
                             "DCG_ATG2", "DCG A-PDG", 
                             "DSG ATG2", "DSG A-PDG",
-    ]
+]
 

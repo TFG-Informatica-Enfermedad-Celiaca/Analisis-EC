@@ -565,7 +565,13 @@ def calculate_age(df_aux, age, age_diagnostic):
     
     return df_aux
 
-
+##################################################################
+#           PROCESS Diagnóstico
+##################################################################
+def process_diagnostico(df_aux):
+    df_aux['Diagnóstico']= df_aux['Diagnóstico'].fillna('Sin diagnostico')
+    
+    return df_aux
 '''
 Function that makes the filtering by columns
 '''
@@ -606,7 +612,7 @@ def filtering (df_aux):
     
     df_aux = process_biopsias(df_aux, records_number)
     
-    
+    df_aux = process_diagnostico(df_aux)
             
     return df_aux
 

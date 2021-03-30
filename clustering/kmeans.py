@@ -30,7 +30,7 @@ def main ():
     # PCA
     pca = PCA(n_components="mle", random_state=42)
     data = pca.fit_transform(data)
-    K_MAX = 10
+    K_MAX = 20
     silhouette= []
     for i in tqdm(range(2, K_MAX)):
         kmeans = KMeans(n_clusters=i, init='random', n_init=1, random_state=0, max_iter=1000) 

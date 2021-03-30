@@ -7,7 +7,8 @@ Created on Wed Feb 24 16:29:51 2021
 
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import OrdinalEncoder
+import sklearn as sklearn
+from sklearn.preprocessing import OrdinalEncoder, StandardScaler
 from utils import european_countries, take_the_highest_value_columns, lies_dcg_numerical,lies_dsg_numerical
 from utils import lies_valoracion, biopsias_AP, biopsias_LIEs, dates, biopsias_delete_dsg, join_biopsias
 from utils import process_column_names,fill_nan_value, take_the_lower_value_columns
@@ -16,7 +17,7 @@ from utils import final_column_to_one_hot
 import datetime as dt
 import operator
 from loadData import read_new_data_from_local, read_columns_from_local
-
+from sklearn_pandas import DataFrameMapper
 
 '''
 Given a file with the relevant columns name, it selects them in the dataframe
@@ -568,8 +569,7 @@ def filtering (df_aux):
         df_aux = fill_nan_with_value(df_aux, element[0], element[1])
     
     for column in process_column_names.values():
-        df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])
-        
+        df_aux = process_columns_to_binary(df_aux,column[1], records_number, column[0])  
     
     df_aux = df_aux.loc[:,~df_aux.columns.duplicated()]
     
@@ -578,18 +578,37 @@ def filtering (df_aux):
     df_aux = process_biopsias(df_aux, records_number)
     
     df_aux = process_diagnostico(df_aux)
+    df_aux = standarize(df_aux)
             
     return df_aux
 
 
+def standarize(df):
+    columns = ['DCG_ATG2_VALUE', 'DCG A-PDG_VALUE', 'DSG ATG2 VALUE', 
+          'DSG A-PDG VALUE', 'LIEs DCG %GD', 'LIEs DCG %iNK', 
+          'LIEs DSG %GD', 'LIEs DSG %iNK']
+    mapper = DataFrameMapper([
+        (columns, sklearn.preprocessing.StandardScaler())])
+    
+    standarized_numpy = mapper.fit_transform(df) 
+    standarized_df = pd.DataFrame(data=standarized_numpy, columns=columns)
+    df = df.drop(columns=columns)
+    df = pd.concat((df,standarized_df),axis=1)
+    return df
 
 def to_numerical(df_aux_numerical):
-
+    '''
     ord_enc = OrdinalEncoder()
     for column in final_columns_to_numeric:
         df_aux_numerical[column] = ord_enc.fit_transform(df_aux_numerical[[column]])
-
+    '''
+    
     for column in final_column_to_one_hot:
+        aux = pd.get_dummies(df_aux_numerical[column], prefix=column)
+        df_aux_numerical = df_aux_numerical.drop(columns= column)
+        df_aux_numerical = pd.concat([df_aux_numerical, aux], axis = 1)
+        
+    for column in final_columns_to_numeric:
         aux = pd.get_dummies(df_aux_numerical[column], prefix=column)
         df_aux_numerical = df_aux_numerical.drop(columns= column)
         df_aux_numerical = pd.concat([df_aux_numerical, aux], axis = 1)

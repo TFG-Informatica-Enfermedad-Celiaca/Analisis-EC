@@ -51,6 +51,7 @@ def reduce_dimension_after_clustering(clusters, number_of_clusters):
     x = pd.DataFrame(data={'x_axis':embedding[:, 0]})
     y = pd.DataFrame(data={'y_axis':embedding[:, 1]})
     cluster = pd.DataFrame(data={'cluster':clusters})
+    cluster = cluster.astype({'cluster': object})
     data = pd.concat((data,x, y, cluster),axis=1)
     fig = px.scatter(data, x='x_axis', y='y_axis', 
                      color="cluster", symbol= "Diagnóstico", hover_data={'x_axis' : False, 'y_axis': False, 
@@ -62,11 +63,5 @@ def reduce_dimension_after_clustering(clusters, number_of_clusters):
                       xaxis_title='',
                       yaxis_title='')    
     fig.show()
-    
-def main ():
-    reduce_dimension_global_data_plotly()
-    
-if __name__ == "__main__":
-    main()
-    
+
     

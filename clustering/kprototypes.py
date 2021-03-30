@@ -16,7 +16,8 @@ sys.path.append(r'../')
 from loadData import read_data_from_local
 from utils import final_columns_to_numeric, final_column_to_one_hot
 from reduceDimension import reduce_dimension_global_data_plotly, reduce_dimension_after_clustering
-    
+from scoreF1 import f1_score
+
 def main ():
     reduce_dimension_global_data_plotly()
     full_data = read_data_from_local()
@@ -63,6 +64,7 @@ def main ():
     clusters = kproto.fit_predict(X, categorical=categories_numbers)
 
     reduce_dimension_after_clustering(clusters, N_CLUSTER)
+    f1_score(clusters)
     
 if __name__ == "__main__":
     main()

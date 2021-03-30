@@ -21,7 +21,7 @@ def read_new_data_from_local():
     except:
         try:
             df=pd.read_excel(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\Datos actualizados.xlsx')
+                r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\Datos actualizados.xlsx')
             return df
         except:
             print("It was not possible to load data 2")
@@ -39,7 +39,7 @@ def read_columns_from_local():
     except:
         try:
             df=pd.read_excel(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\Important columns.xlsx')
+                r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\Important columns.xlsx')
             return df
         except:
             print("It was not possible to load data 3")
@@ -60,7 +60,7 @@ def read_data_from_local():
     except:
         try:
             df=pd.read_excel(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\filterData.xlsx')
+                r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\filterData.xlsx')
             return df
         except:
             print("It was not possible to load data 2")
@@ -73,7 +73,7 @@ def read_numerical_data_from_local():
     except:
         try:
             df=pd.read_excel(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\filterDataNumerical.xlsx')
+                r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\filterDataNumerical.xlsx')
             return df
         except:
             print("It was not possible to load data 2")

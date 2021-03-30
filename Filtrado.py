@@ -584,16 +584,15 @@ def filtering (df_aux):
 
 
 def to_numerical(df_aux_numerical):
+
     ord_enc = OrdinalEncoder()
     for column in final_columns_to_numeric:
         df_aux_numerical[column] = ord_enc.fit_transform(df_aux_numerical[[column]])
-     
+
     for column in final_column_to_one_hot:
         aux = pd.get_dummies(df_aux_numerical[column], prefix=column)
         df_aux_numerical = df_aux_numerical.drop(columns= column)
         df_aux_numerical = pd.concat([df_aux_numerical, aux], axis = 1)
-        
-        
     
     return df_aux_numerical
 

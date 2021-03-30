@@ -56,7 +56,7 @@ def main ():
                    yaxis_title='Suma distancias de cada punto a su centro')
     fig.show()
     
-    N_CLUSTER = 5
+    N_CLUSTER = 4
     # When we see the Elbow plot it is clear that the elbow is in 4
     # So we are going to use n_cluster = 4
     kproto = KPrototypes(n_clusters=N_CLUSTER, init='Huang', verbose=0, random_state = 0)

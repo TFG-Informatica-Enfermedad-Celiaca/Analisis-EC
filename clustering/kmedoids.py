@@ -62,13 +62,15 @@ def main ():
         reduce_dimension_after_clustering(kmedoids.labels_, numberClustes)
         f1_score(kmedoids.labels_)
         
-    
-        kmedoids = kmedoids.predict(data)
-        copy = pd.DataFrame()
-        copy['label'] = kmedoids;
-        cantidadGrupo =  pd.DataFrame()
-        cantidadGrupo['cantidad']=copy.groupby('label').size()
-        print(cantidadGrupo)
+        
+        
+        aux = pd.DataFrame()
+        aux['Cluster']=kmedoids.labels_
+        aux['Diagnóstico'] = full_data['Diagnóstico']
+        print(aux)
+        mostrar = pd.DataFrame()
+        mostrar['result'] = aux.groupby(['Cluster', 'Diagnóstico']).size()
+        print(mostrar)
    
     
     

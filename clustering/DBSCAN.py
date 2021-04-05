@@ -51,20 +51,21 @@ def main ():
     clusters = db.fit_predict(data)
     aux = len(db.core_sample_indices_)
     
-    print(aux)
+   
     
     reduce_dimension_after_clustering(clusters, aux)
                                 
     f1_score(clusters)
     
     
-    copy = pd.DataFrame()
-    copy['label'] = clusters;
-    cantidadGrupo =  pd.DataFrame()
-    cantidadGrupo['cantidad']=copy.groupby('label').size()
-    print(cantidadGrupo)
-    
-    
+
+    aux = pd.DataFrame()
+    aux['Cluster']=clusters
+    aux['Diagnóstico'] = full_data['Diagnóstico']
+    print(aux)
+    mostrar = pd.DataFrame()
+    mostrar['result'] = aux.groupby(['Cluster', 'Diagnóstico']).size()
+    print(mostrar)    
     
     
     

@@ -6,6 +6,7 @@ Created on Fri Mar 26 11:58:12 2021
 @author: Carla
 """
 
+import pandas as pd
 from kmodes.kprototypes import KPrototypes
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -65,6 +66,15 @@ def main ():
 
     reduce_dimension_after_clustering(clusters, N_CLUSTER)
     f1_score(clusters)
+    
+    aux = pd.DataFrame()
+    aux['Cluster']=clusters
+    aux['Diagnóstico'] = full_data['Diagnóstico']
+    print(aux)
+    mostrar = pd.DataFrame()
+    mostrar['result'] = aux.groupby(['Cluster', 'Diagnóstico']).size()
+    print(mostrar)
+    
     
 if __name__ == "__main__":
     main()

@@ -32,12 +32,14 @@ def main ():
    
     clusters = opt.fit_predict(data)
 
-
-    copy = pd.DataFrame()
-    copy['label'] = clusters;
-    cantidadGrupo =  pd.DataFrame()
-    cantidadGrupo['cantidad']=copy.groupby('label').size()
-    print(cantidadGrupo)
+    
+    aux = pd.DataFrame()
+    aux['Cluster']=clusters
+    aux['Diagnóstico'] = full_data['Diagnóstico']
+    print(aux)
+    mostrar = pd.DataFrame()
+    mostrar['result'] = aux.groupby(['Cluster', 'Diagnóstico']).size()
+    print(mostrar) 
    
                                 
     f1_score(clusters)

@@ -12,7 +12,7 @@ import plotly.express as px
 pio.renderers.default='browser'
 import sys
 sys.path.append(r'../')
-from loadData import read_numerical_data_from_local, read_data_from_local
+from load_data import read_numerical_data_from_local, read_data_from_local
 
 def reduce_dimension_global_data_plotly(): 
     data = read_data_from_local()
@@ -40,6 +40,7 @@ def reduce_dimension_global_data_plotly():
 
 def reduce_dimension_after_clustering(clusters, number_of_clusters):
     data = read_data_from_local()
+    data = data.fillna("Desconocido")
     numeric_data = read_numerical_data_from_local()
     aux_data = numeric_data.drop(columns = ['Diagnóstico'])
     numeric_numpy = aux_data.to_numpy()

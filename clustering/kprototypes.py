@@ -13,21 +13,18 @@ pio.renderers.default='browser'
 from tqdm import tqdm
 import sys
 sys.path.append(r'../')
-from loadData import read_data_from_local
-from utils import final_columns_to_numeric, final_column_to_one_hot
+from utils import categorical_columns
 from reduceDimension import reduce_dimension_global_data_plotly, reduce_dimension_after_clustering
 from scoreF1 import f1_score
 
-def main ():
+def kprototypes(df):
     reduce_dimension_global_data_plotly()
-    full_data = read_data_from_local()
-    data = full_data.drop(columns = ['Diagnóstico'])
-    train_numpy = full_data.to_numpy()
+    data = df.drop(columns = ['Diagnóstico'])
 
     categories_numbers = [data.columns.get_loc(col) for col in 
-                          final_columns_to_numeric + final_column_to_one_hot]
+                          categorical_columns]
     
-    X = train_numpy[:, 1:]
+    X = data.to_numpy()
     #y = train_numpy[:, 0]
     
     K_MAX = 10
@@ -65,7 +62,3 @@ def main ():
 
     reduce_dimension_after_clustering(clusters, N_CLUSTER)
     f1_score(clusters)
-    
-if __name__ == "__main__":
-    main()
-    

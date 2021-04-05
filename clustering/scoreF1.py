@@ -7,7 +7,7 @@ Created on Tue Mar 30 10:47:07 2021
 from lightgbm import LGBMClassifier
 from sklearn.model_selection import cross_val_score
 import numpy as np
-from loadData import read_numerical_data_from_local
+from load_data import read_numerical_data_from_local
 import re
 import shap
 

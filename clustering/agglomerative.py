@@ -6,22 +6,17 @@ Created on Fri Mar 26 11:58:12 2021
 @author: Carla
 """
 
-import pandas as pd
 import numpy as np
 import plotly.io as pio
 pio.renderers.default='browser'
 import sys
 sys.path.append(r'../')
-from loadData import read_numerical_data_from_local
 from reduceDimension import reduce_dimension_global_data_plotly, reduce_dimension_after_clustering
 from scoreF1 import f1_score
 from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import dendrogram
 from matplotlib import pyplot as plt
-
-
-
-
+from rater import rate
 
 def plot_dendrogram(model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
@@ -44,24 +39,19 @@ def plot_dendrogram(model, **kwargs):
     # Plot the corresponding dendrogram
     dendrogram(linkage_matrix, **kwargs)
 
-    
 
 
-
-
-def main ():
-    reduce_dimension_global_data_plotly()
-    full_data = read_numerical_data_from_local()
-    data = full_data.drop(columns = ['Diagnóstico'])
+def agglomerative(df):
+    data = df.drop(columns = ['Diagnóstico'])
     
     number_clusters = 6;
 
     for metric in ['ward', 'complete', 'average', 'single']:
         model = AgglomerativeClustering(
             n_clusters = number_clusters, affinity='euclidean', memory = None, connectivity = None,
-            compute_full_tree='auto', linkage = metric, distance_threshold = None,
+            compute_full_tree='auto', linkage = metric, distance_threshold = None, 
             compute_distances=True)
-        
+            
         clusters = model.fit_predict(data)
         reduce_dimension_after_clustering(clusters, number_clusters)
         f1_score(clusters)
@@ -69,7 +59,5 @@ def main ():
         plt.title(metric)
         plt.xlabel("Number of points in node (or index of point if no parenthesis).")
         plt.show()
-    
-if __name__ == "__main__":
-    main()
-    
+        
+        rate(df, clusters)

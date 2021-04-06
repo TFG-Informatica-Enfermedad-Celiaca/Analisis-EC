@@ -6,6 +6,7 @@ Created on Fri Mar 26 11:58:12 2021
 @author: Carla
 """
 
+import pandas as pd
 from kmodes.kprototypes import KPrototypes
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -14,11 +15,10 @@ from tqdm import tqdm
 import sys
 sys.path.append(r'../')
 from utils import categorical_columns
-from reduceDimension import reduce_dimension_global_data_plotly, reduce_dimension_after_clustering
+from reduceDimension import reduce_dimension_after_clustering
 from scoreF1 import f1_score
 
 def kprototypes(df):
-    reduce_dimension_global_data_plotly()
     data = df.drop(columns = ['Diagnóstico'])
 
     categories_numbers = [data.columns.get_loc(col) for col in 
@@ -62,3 +62,12 @@ def kprototypes(df):
 
     reduce_dimension_after_clustering(clusters, N_CLUSTER)
     f1_score(clusters)
+    
+    aux = pd.DataFrame()
+    aux['Cluster']=clusters
+    aux['Diagnóstico'] = df['Diagnóstico']
+    print(aux)
+    mostrar = pd.DataFrame()
+    mostrar['result'] = aux.groupby(['Cluster', 'Diagnóstico']).size()
+    print(mostrar)
+    

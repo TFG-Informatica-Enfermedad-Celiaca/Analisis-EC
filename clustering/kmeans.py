@@ -4,7 +4,7 @@ Created on Tue Mar 30 11:44:41 2021
 
 @author: Carla
 """
-
+import pandas as pd
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 import plotly.graph_objects as go
@@ -14,10 +14,11 @@ from tqdm import tqdm
 #import sys
 import numpy as np
 #sys.path.append(r'../')
-from reduceDimension import reduce_dimension_after_clustering
+from reduceDimension import reduce_dimension_global_data_plotly, reduce_dimension_after_clustering
 from scoreF1 import f1_score
 
 def kmeans (df):
+    reduce_dimension_global_data_plotly()
     data = df.drop(columns = ['Diagnóstico'])
 
     K_MAX = 20
@@ -37,7 +38,15 @@ def kmeans (df):
     fig.show()
     
     kmeans = KMeans(n_clusters=n_clusters, init='random', n_init=1, random_state=0, max_iter=1000) 
-    kmeans.fit(data)
+    clusters = kmeans.fit_predict(data)
     
-    reduce_dimension_after_clustering(kmeans.labels_, n_clusters)
+    reduce_dimension_after_clustering(clusters, n_clusters)
     f1_score(kmeans.labels_)
+    
+    aux = pd.DataFrame()
+    aux['Cluster']=clusters
+    aux['Diagnóstico'] = df['Diagnóstico']
+    print(aux)
+    mostrar = pd.DataFrame()
+    mostrar['result'] = aux.groupby(['Cluster', 'Diagnóstico']).size()
+    print(mostrar)

@@ -11,7 +11,7 @@ import plotly.io as pio
 import plotly.express as px
 pio.renderers.default='browser'
 import sys
-sys.path.append(r'../')
+sys.path.append(r'../preprocessing')
 from load_data import read_numerical_data_from_local, read_data_from_local
 
 def reduce_dimension_global_data_plotly(): 

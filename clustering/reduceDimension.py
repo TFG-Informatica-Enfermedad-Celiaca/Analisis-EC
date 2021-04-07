@@ -38,7 +38,7 @@ def reduce_dimension_global_data_plotly():
                       yaxis_title='')    
     fig.show()
 
-def reduce_dimension_after_clustering(clusters, number_of_clusters):
+def reduce_dimension_after_clustering(clusters, number_of_clusters, tit):
     data = read_data_from_local()
     data = data.fillna("Desconocido")
     numeric_data = read_numerical_data_from_local()
@@ -60,7 +60,7 @@ def reduce_dimension_after_clustering(clusters, number_of_clusters):
                     "DSG EMA  ": True, "DCG_ATG2": True, "DCG A-PDG": True,
                     "DSG ATG2": True, "DSG A-PDG": True, "Valoracion LIEs DCG": True, 
                     "Valoracion LIEs DSG": True, "Biopsia DCG": True, "Biopsia DSG": True})
-    fig.update_layout(title='Reducción de la dimensionalidad con UMAP', 
+    fig.update_layout(title=tit, 
                       xaxis_title='',
                       yaxis_title='')    
     fig.show()

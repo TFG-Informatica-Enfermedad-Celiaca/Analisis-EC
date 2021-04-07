@@ -7,6 +7,7 @@ Created on Fri Mar 26 11:58:12 2021
 """
 
 import plotly.io as pio
+import numpy as np
 pio.renderers.default='browser'
 import sys
 sys.path.append(r'../')
@@ -22,8 +23,10 @@ def optics (df):
    
     clusters = opt.fit_predict(data)
 
-    rate(df, clusters)
+    rate(df, clusters, 'Optics')
 
     f1_score(clusters)
+    aux = len(np.unique(opt.labels_))
+    reduce_dimension_after_clustering(clusters, aux, 'Optics')
     
     

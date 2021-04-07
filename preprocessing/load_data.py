@@ -55,7 +55,7 @@ Read the relevant columns form .xlsx stored in local and creates deaframe
 def read_data_from_local():
     try:
         df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/formated_data.xlsx')
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Analisis-EC/formated_data.xlsx')
         return df
     except:
         try:
@@ -68,7 +68,7 @@ def read_data_from_local():
 def read_numerical_data_from_local():
     try:
         df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/formated_imputed_scaled_numerical_data.xlsx')
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Analisis-EC/formated_imputed_scaled_numerical_data.xlsx')
         return df
     except:
         try:

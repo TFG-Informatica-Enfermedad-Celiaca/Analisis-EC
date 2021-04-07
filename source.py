@@ -12,7 +12,7 @@ from preprocess import preprocess
 from kmeans import kmeans
 from kprototypes import kprototypes
 from agglomerative import agglomerative
-from dbscan import dbscan
+from DBSCAN import dbscan
 from kmedoids import kmedoids
 from optics import optics
 
@@ -24,6 +24,7 @@ def main():
     dbscan(df_numerical)
     kmedoids(df_numerical)
     optics(df_numerical)
+    
     
 if __name__ == "__main__":
     main()

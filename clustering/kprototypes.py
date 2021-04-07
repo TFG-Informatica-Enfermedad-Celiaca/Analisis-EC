@@ -17,6 +17,7 @@ sys.path.append(r'../')
 from utils import categorical_columns
 from reduceDimension import reduce_dimension_after_clustering
 from scoreF1 import f1_score
+from rater import rate
 
 def kprototypes(df):
     data = df.drop(columns = ['Diagnóstico'])
@@ -60,14 +61,10 @@ def kprototypes(df):
     kproto = KPrototypes(n_clusters=N_CLUSTER, init='Huang', verbose=0, random_state = 0)
     clusters = kproto.fit_predict(X, categorical=categories_numbers)
 
-    reduce_dimension_after_clustering(clusters, N_CLUSTER)
+    reduce_dimension_after_clustering(clusters, N_CLUSTER, 'K-Prototive')
     f1_score(clusters)
     
-    aux = pd.DataFrame()
-    aux['Cluster']=clusters
-    aux['Diagnóstico'] = df['Diagnóstico']
-    print(aux)
-    mostrar = pd.DataFrame()
-    mostrar['result'] = aux.groupby(['Cluster', 'Diagnóstico']).size()
-    print(mostrar)
+    
+    rate(df, clusters, 'K-Prototive')
+    
     

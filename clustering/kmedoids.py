@@ -46,9 +46,9 @@ def kmedoids (df):
         
         kmedoids = kmedoids.fit(data)
         
-        reduce_dimension_after_clustering(kmedoids.labels_, numberClustes)
+        reduce_dimension_after_clustering(kmedoids.labels_, numberClustes, 'K-Medoids '+metr)
         f1_score(kmedoids.labels_)
         
-        rate(df, kmedoids.labels_)
+        rate(df, kmedoids.labels_, 'K-Medoids '+metr)
    
     

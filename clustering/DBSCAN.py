@@ -46,8 +46,8 @@ def dbscan (df):
     aux = len(db.core_sample_indices_)
    
     
-    reduce_dimension_after_clustering(clusters, aux)
+    reduce_dimension_after_clustering(clusters, aux, 'DBSCAN')
     f1_score(clusters)
     
-    rate(df, clusters)  
+    rate(df, clusters, 'DBSCAN')  
     

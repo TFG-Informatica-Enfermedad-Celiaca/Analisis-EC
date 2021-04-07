@@ -53,11 +53,16 @@ def agglomerative(df):
             compute_distances=True)
             
         clusters = model.fit_predict(data)
-        reduce_dimension_after_clustering(clusters, number_clusters)
+        reduce_dimension_after_clustering(clusters, number_clusters, 'Agglomerative ' + metric)
         f1_score(clusters)
         plot_dendrogram(model, truncate_mode='level', p=number_clusters)
         plt.title(metric)
         plt.xlabel("Number of points in node (or index of point if no parenthesis).")
         plt.show()
         
-        rate(df, clusters)
+        rate(df, clusters, 'Agglomerative '+metric)
+        
+        
+        
+        
+        

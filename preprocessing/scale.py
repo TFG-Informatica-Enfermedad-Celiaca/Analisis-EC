@@ -56,7 +56,7 @@ def power_transformer(df):
     df = df.drop(columns=["Diagnóstico"])
     columns = df.columns
     
-    transformer = PowerTransformer()
+    transformer = PowerTransformer(method='yeo-johnson')
     df = transformer.fit_transform(df)
     
     df = pd.DataFrame(df, columns = columns)

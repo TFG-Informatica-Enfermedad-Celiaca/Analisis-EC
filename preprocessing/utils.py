@@ -43,6 +43,12 @@ european_countries = [ "Alemania", "Austria", "Bélgica", "Bulgaria",
 hla_haplotipos = [['SIN RIESGO', 'SIN RIESGO', 'SIN RIESGO'], ['DQ7.5', 'DQ7.5', 'DQ7.5'], 
                   ['DQ2.2', 'DQ2.2', 'DQ2.2'], ['DQ8', 'DQ8', 'DQ8 doble dosis'], 
                   'DQ8']
+lies_valoracion_preprocess = [["LIEs DCG %GD_1  ", "LIEs DCG %iNK_1  ", "Valoración DCG LIEs1"], 
+                              ["LIEs DCG %GD_2  ", "LIEs DCG %iNK_2  ", "Valoración LIEs2"], 
+                              ["LIEs DSG %GD_1  ", "LIEs DSG %iNK_1  ", "Valoración DSG LIEs1"],
+                              ["LIEs DSG %GD_2  ", "LIEs DSG %iNK_2  ", "Valoración DSG LIEs2"],
+                              [ "LIEs DSG %GD_3  ", "LIEs DSG %iNK_3  ","Valoración DSG LIEs3"]]
+
 lies_dcg_numerical = [["LIEs DCG %GD_1  ", "LIEs DCG %iNK_1  ", "LIEs DCG %GD_2  ", 
                   "LIEs DCG %iNK_2  "], ["LIEs DCG %GD", "LIEs DCG %iNK"]]
 lies_dsg_numerical = [["LIEs DSG %GD_1  ", "LIEs DSG %iNK_1  ", "LIEs DSG %GD_2  ", 
@@ -95,12 +101,12 @@ to_drop_values = {
     "1" : ["Indique país de origen o en su defecto la información disponible", 
            "Desconocido"], 
     "2" : ["Sexo", "Desconocido"], 
-    "3" : ["Edad diagnóstico", "0"], 
+    "3" : ["Edad diagnóstico", "Desconocido"], 
     "4" : ["HLA: grupos de riesgo", "HLA NO HECHO"], 
     "5" : ["DCG EMA", "No hecho"],
     "6" : ["DSG EMA  ", "No hecho"], 
     "7" : ["Helicobacter pylori en el momento de la biopsia", "Desconocido"], 
-    "8" : ["Fecha nacimiento", "0"],
+    "8" : ["Fecha nacimiento", "Desconocido"],
     "9" : ["DCG_ATG2", "No hecho"], 
     "10": ["DCG A-PDG", "No hecho"], 
     "11": ["DSG ATG2", "No hecho"], 

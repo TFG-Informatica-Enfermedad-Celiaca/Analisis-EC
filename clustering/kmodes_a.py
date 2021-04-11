@@ -1,33 +1,28 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Mar 26 11:58:12 2021
+Created on Sun Apr 11 12:08:08 2021
 
-@author: pablo
 @author: Carla
+@author: pablo
 """
 
-import pandas as pd
-from kmodes.kprototypes import KPrototypes
+from kmodes.kmodes import KModes
 import plotly.graph_objects as go
 import plotly.io as pio
 pio.renderers.default='browser'
 from tqdm import tqdm
 import sys
 sys.path.append(r'../')
-from utils import categorical_columns
 from reduceDimension import reduce_dimension_after_clustering
 from scoreF1 import f1_score
 from rater import rate
 
-def kprototypes(df):
+def kmodes(df):
     data = df.drop(columns = ['Diagnóstico'])
-
-    categories_numbers = [data.columns.get_loc(col) for col in 
-                          categorical_columns]
     
     X = data.to_numpy()
     #y = train_numpy[:, 0]
-    '''
+    
     K_MAX = 10
     #Elbow plot: must find the value at wich the cost starts decreasing in 
     # a lineal way
@@ -39,32 +34,32 @@ def kprototypes(df):
         try:
             # The model will select the i first different elements 
             # in the dataset as centroids
-            kproto = KPrototypes(n_clusters=i, init='Huang', verbose=0, random_state = 0)
-            clusters = kproto.fit_predict(X, categorical=categories_numbers)
+            kmodes = KModes(n_clusters=i, init='Huang', verbose=0, random_state = 0)
+            clusters = kmodes.fit_predict(X)
             # Cost is defined as the sum of the distance from all the points 
             # to the centroid
-            costs.append(kproto.cost_)
+            costs.append(kmodes.cost_)
             n_clusters.append(i)
             clusters_assigned.append(clusters)
         except:
             print(f"Can't cluster with {i} clusters")
             
     fig = go.Figure(data=go.Scatter(x=n_clusters, y=costs))
-    fig.update_layout(title='Elbow plot para KPrototypes',
+    fig.update_layout(title='Elbow plot para KModes',
                    xaxis_title='Número clusters',
                    yaxis_title='Suma distancias de cada punto a su centro')
     fig.show()
-    '''
+    
     N_CLUSTER = 2
     # When we see the Elbow plot it is clear that the elbow is in 4
     # So we are going to use n_cluster = 4
-    kproto = KPrototypes(n_clusters=N_CLUSTER, init='Huang', verbose=0, random_state = 0)
-    clusters = kproto.fit_predict(X, categorical=categories_numbers)
+    kmodes = KModes(n_clusters=N_CLUSTER, init='Huang', verbose=0, random_state = 0)
+    clusters = kmodes.fit_predict(X)
 
-    reduce_dimension_after_clustering(clusters, N_CLUSTER, 'K-Prototype')
+    reduce_dimension_after_clustering(clusters, N_CLUSTER, 'K-Modes')
     f1_score(clusters)
     
     
-    rate(df, clusters, 'K-Prototype')
+    rate(df, clusters, 'K-Modes')
     
     

@@ -10,6 +10,7 @@ import numpy as np
 from utils import european_countries, take_the_highest_value_columns, lies_dcg_numerical,lies_dsg_numerical
 from utils import lies_valoracion, biopsias_AP, biopsias_LIEs, dates, biopsias_delete_dsg, join_biopsias
 from utils import process_column_names,fill_nan_value, take_the_lower_value_columns, to_drop_values
+from utils import lies_valoracion_preprocess
 import datetime as dt
 import operator
 from load_data import read_new_data_from_local, read_columns_from_local
@@ -269,6 +270,22 @@ def HLA_formating(df):
 #           PROCESS Valoración DSG LIEs
 ##################################################################
 '''
+Preprocess valoracion LIEs. If there is a value in the numerical column 
+then we fill Valoracion column with "Resultado no claro"
+'''
+def preprocess_LIEs_valoracion(df):
+    for item in lies_valoracion_preprocess:
+        df.loc[((df[item[0]] >= 10)  & (df[item[1]]< 10)) & (df[item[2]].isnull()),
+               item[2]]= "Compatible con EC activa"
+        df.loc[((df[item[0]] >= 10)  & (df[item[1]]> 10)) & (df[item[2]].isnull()),
+               item[2]]= "Compatible con EC en DSG"
+        df.loc[(df[item[0]] < 10) & (df[item[2]].isnull()),
+               item[2]]= "No compatible con EC"
+        #df.loc[(~df[item[0]].isnull()) & (~df[item[1]].isnull())& (df[item[2]].isnull()),
+        #       item[2]]= "Resultado no claro"
+
+    return df
+'''
 Function that formats columns "LIEs DCG %GD_1  ", "LIEs DCG %iNK_1  ", "LIEs DCG %GD_2  ", 
 "LIEs DCG %iNK_2  "
 '''
@@ -357,6 +374,8 @@ def join_columns(df, columns, new_name, null_value, values,records_number):
 
 
 def process_LIEs (df, records_number):
+    df = preprocess_LIEs_valoracion(df)
+    
     df= LIEs_DCG_formating(df, lies_dcg_numerical[0], lies_dcg_numerical[1],
                                 records_number)
     
@@ -374,7 +393,7 @@ def process_LIEs (df, records_number):
 
 '''
 Function that preprocesses columns "DCG Biopsia-AP1  ", "DCG Biopsia-AP2  ", 
-["DSG Biopsia AP1", "DSG Biopsia AP2". It converts M3b/c in M3v and fills 
+["DSG Biopsia AP1", "DSG Biopsia AP2". It converts M3b/c in M3b and fills 
 nan values with "Sin biopsia hecha"
 '''    
 def preprocess_Biopsias_AP(df, columns, current_nan_value, final_nan_value, records_number):
@@ -439,8 +458,8 @@ def delete_DSG_biopsias(df, dcg_dates, dsg_dates, dsg_biopsias, records_number):
         df.loc[df[dsg_dates[i]] - df['max_dcg'] < 15811171, 
                    dsg_biopsias[i]] = "Sin biopsia hecha"
         #Borrar cuando se descomente la linea anterior
-        df.loc[df[dsg_dates[i]] - df['max_dcg'] < 15811171, 
-                   dsg_biopsias[i]] = np.NAN
+        #df.loc[df[dsg_dates[i]] - df['max_dcg'] < 15811171, 
+        #           dsg_biopsias[i]] = np.NAN
         
     df = df.drop(columns=['max_dcg'])
     df = df.drop(columns=dcg_dates)
@@ -524,7 +543,8 @@ def calculate_age(df, age, age_diagnostic):
     df[age]=(dt.datetime.now() - df[age]).dt.total_seconds()//(31536000)
     
     df = split_by_strips(df, [age, age_diagnostic])
-    
+    df = df[~(df['Fecha nacimiento'].str.contains("-18"))]
+    df = df.reset_index(drop=True)
     return df
 
 ##################################################################
@@ -544,9 +564,9 @@ Function that makes the filtering by columns
 '''
 def filtering (df_aux):
     
-    records_number = df_aux.iloc[:,0].size
-    
     df_aux = calculate_age(df_aux, "Fecha nacimiento", "Edad diagnóstico")
+    
+    records_number = df_aux.iloc[:,0].size
     
     df_aux = countries_preprocesing(df_aux, european_countries, records_number)
 
@@ -583,23 +603,6 @@ def filtering (df_aux):
     df_aux = drop_values(df_aux)
     return df_aux
 
-def main():
-    df = read_new_data_from_local()
-    df_aux = df
-    
-    df_aux = selectImportantColumns(df_aux)
-    df_aux.to_excel("unfilterData.xlsx", index = False)
-
-    df_aux = filtering(df_aux)
-    #df_aux.to_excel("filterData.xlsx", index = False)
-    return df_aux
-    
-
-    
-
-if __name__ == "__main__":
-    main()
-    
     
     
     

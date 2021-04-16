@@ -18,11 +18,16 @@ from kmedoids import kmedoids
 from optics import optics
 from spectral import spectral
 from reduceDimension import reduce_dimension_global_data_plotly
+from hopkins_statistics import hopkins_test
 
 def main():
     [df_numerical, df_numerical_short,df_missing, df_mix, df_categorical] = preprocess()
-    reduce_dimension_global_data_plotly()
-    kmeans(df_numerical)
+    
+    for df in [df_numerical, df_numerical_short] :
+        hopkins_test(df)
+        
+    #reduce_dimension_global_data_plotly()
+    #kmeans(df_numerical)
     #kmeans(df_numerical_short)
     #kpod(df_numerical, df_missing)
     #kprototypes(df_numerical, df_mix)

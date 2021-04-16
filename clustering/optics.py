@@ -17,18 +17,18 @@ from sklearn.cluster import OPTICS
 from rater import rate
 from sklearn.metrics import silhouette_score
 
-def optics (df):
+def optics (df, extended_information):
     data = df.drop(columns = ['Diagnóstico'])
      
     opt = OPTICS(min_samples=2, xi=0.006, min_cluster_size=0.02).fit(data)
    
     clusters = opt.fit_predict(data)
 
-    #rate(df, clusters, 'Optics')
-
-    #f1_score(clusters)
-    #aux = len(np.unique(opt.labels_))
-    #reduce_dimension_after_clustering(clusters, aux, 'Optics')
-    
+    if (extended_information):
+        rate(df, clusters, 'Optics')
+        f1_score(clusters)
+        aux = len(np.unique(opt.labels_))
+        reduce_dimension_after_clustering(clusters, aux, 'Optics')
+        
     return {"Optics": silhouette_score(data, opt.labels_)}
     

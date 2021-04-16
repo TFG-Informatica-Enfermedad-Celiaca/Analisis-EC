@@ -20,7 +20,7 @@ from sklearn.neighbors import kneighbors_graph
 from rater import rate
 from sklearn.metrics import silhouette_score
 
-def dbscan (df):
+def dbscan (df, extended_information):
     data = df.drop(columns = ['Diagnóstico'])
     
     ## Parametrización de DBSCAN.
@@ -38,18 +38,18 @@ def dbscan (df):
             if Ar[i][j] != 0:
                 seq.append(matsim[i][j])
     seq.sort()
-    plt.plot(seq)
-    plt.show()
+    if (extended_information):
+        plt.plot(seq)
+        plt.show()
     
 
     db = DBSCAN(eps=0.7, min_samples=2, algorithm='auto').fit(data)
     clusters = db.fit_predict(data)
     aux = len(db.core_sample_indices_)
    
-    
-    #reduce_dimension_after_clustering(clusters, aux, 'DBSCAN')
-    #f1_score(clusters)
-    
-    #rate(df, clusters, 'DBSCAN')  
+    if (extended_information):
+        reduce_dimension_after_clustering(clusters, aux, 'DBSCAN')
+        f1_score(clusters)
+        rate(df, clusters, 'DBSCAN')  
     
     return {"DBScan": silhouette_score(data, db.labels_)}

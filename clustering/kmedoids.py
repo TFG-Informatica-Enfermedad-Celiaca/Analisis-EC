@@ -16,13 +16,13 @@ from sklearn_extra.cluster import KMedoids
 from rater import rate
 from silhouette import silhouette
 
-def kmedoids (df):
+def kmedoids (df, extended_information):
     data = df.drop(columns = ['Diagnóstico'])
     
     max_silh_dict = {}
     for metr in ['manhattan', 'euclidean', 'cosine']:
         [n_clusters,max_silhouette] = silhouette("K-Medoids "+ metr, data, 
-                                None, None, None, KMedoids, None,
+                                None, None, None, KMedoids, None, extended_information, 
                                 metric=metr, init='heuristic', random_state= 0, 
                                 max_iter=1000)
         
@@ -31,12 +31,12 @@ def kmedoids (df):
                                 max_iter=1000)
         
         kmedoids = kmedoids.fit(data)
-        
-        #reduce_dimension_after_clustering(kmedoids.labels_, n_clusters, 
-        #                                  'K-Medoids '+metr)
-        #f1_score(kmedoids.labels_)
-        
-        #rate(df, kmedoids.labels_, 'K-Medoids '+metr)
+        if (extended_information):
+            reduce_dimension_after_clustering(kmedoids.labels_, n_clusters, 
+                                              'K-Medoids '+metr)
+            f1_score(kmedoids.labels_)
+            
+            rate(df, kmedoids.labels_, 'K-Medoids '+metr)
 
         max_silh_dict["K-Medoids - " + metr] = max_silhouette
    

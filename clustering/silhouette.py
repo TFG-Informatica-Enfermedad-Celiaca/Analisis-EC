@@ -14,7 +14,7 @@ import numpy as np
 from kPOD import k_pod
 
 def silhouette(name, data, data_prototypes, data_modes, data_pod,
-               cluster_prod,categories_numbers, **kwargs):
+               cluster_prod,categories_numbers, extended_information,  **kwargs):
     
     K_MAX = 20
     silhouette= []
@@ -42,10 +42,11 @@ def silhouette(name, data, data_prototypes, data_modes, data_pod,
     
     n_clusters = silhouette.index(max(silhouette)) + 2
     
-    #fig = go.Figure(data=go.Scatter(x=np.arange(2,K_MAX), y=silhouette))
-    #fig.update_layout(title='Coeficiente de Silhouette ' + name,
-    #               xaxis_title='Número de clusters',
-    #               yaxis_title='Coeficiente de Silhouette')
-    #fig.show()
+    if (extended_information):
+        fig = go.Figure(data=go.Scatter(x=np.arange(2,K_MAX), y=silhouette))
+        fig.update_layout(title='Coeficiente de Silhouette ' + name,
+                       xaxis_title='Número de clusters',
+                       yaxis_title='Coeficiente de Silhouette')
+        fig.show()
     
     return [n_clusters,max(silhouette)]

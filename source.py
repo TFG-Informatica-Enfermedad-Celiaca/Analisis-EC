@@ -32,43 +32,43 @@ def main():
     
     #reduce_dimension_global_data_plotly()
     silhouette = {}
-    c_kmeans = kmeans(df_numerical)
+    c_kmeans = kmeans(df_numerical, False)
     for key in c_kmeans.keys():
         silhouette[key] = c_kmeans[key]
     
-    c_kmeans2 = kmeans(df_numerical_short)
+    c_kmeans2 = kmeans(df_numerical_short, False)
     for key in c_kmeans2.keys():
         silhouette[key + " 2"] = c_kmeans2[key]
     
-    c_pod = kpod(df_numerical, df_missing)
+    c_pod = kpod(df_numerical, df_missing, False)
     for key in c_pod.keys():
         silhouette[key] = c_pod[key]
-        '''
-    c_prototypes= kprototypes(df_numerical, df_mix)
+        
+    c_prototypes= kprototypes(df_numerical, df_mix, False)
     for key in c_prototypes.keys():
         silhouette[key] = c_prototypes[key]
-        '''
-    c_modes = kmodes(df_numerical, df_categorical)
+        
+    c_modes = kmodes(df_numerical, df_categorical, False)
     for key in c_modes.keys():
         silhouette[key] = c_modes[key]
     
-    c_spec = spectral(df_numerical)
+    c_spec = spectral(df_numerical, False)
     for key in c_spec.keys():
         silhouette[key] = c_spec[key]
     
-    c_aggl = agglomerative(df_numerical)
+    c_aggl = agglomerative(df_numerical, False)
     for key in c_aggl.keys():
         silhouette[key] = c_aggl[key]
     
-    c_dbscan = dbscan(df_numerical)
+    c_dbscan = dbscan(df_numerical, False)
     for key in c_dbscan.keys():
         silhouette[key] = c_dbscan[key]
     
-    c_optics = optics(df_numerical)
+    c_optics = optics(df_numerical, False)
     for key in c_optics.keys():
         silhouette[key] = c_optics[key]
     
-    c_kmedoids = kmedoids(df_numerical)
+    c_kmedoids = kmedoids(df_numerical, False)
     for key in c_kmedoids.keys():
         silhouette[key] = c_kmedoids[key]
     

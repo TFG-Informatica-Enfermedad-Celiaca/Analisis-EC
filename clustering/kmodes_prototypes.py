@@ -22,26 +22,27 @@ from rater import rate
 from utils import categorical_columns
 from silhouette import silhouette
 
-def kmodes(df_numerical, df):
+def kmodes(df_numerical, df, extended_information):
     data = df.drop(columns = ['Diagnóstico'])
     data_numerical = df_numerical.drop(columns = ['Diagnóstico'])
     
     X = data.to_numpy()
 
     [n_clusters,max_silhouette] = silhouette("K-Modes", data_numerical, None, X,None, 
-                                    KModes,None, init='Huang', verbose=0, random_state = 0)
+                                    KModes,None,extended_information, init='Huang', verbose=0, random_state = 0)
 
     kmodes = KModes(n_clusters=n_clusters, init='Huang', verbose=0, random_state = 0)
     clusters = kmodes.fit_predict(X)
-
-    #reduce_dimension_after_clustering(clusters, n_clusters, 'K-Modes')
-    #f1_score(clusters)
     
-    #rate(df, clusters, 'K-Modes')
+    if (extended_information):
+        reduce_dimension_after_clustering(clusters, n_clusters, 'K-Modes')
+        f1_score(clusters)
+        rate(df, clusters, 'K-Modes')
+        
     return {"K-Modes": max_silhouette}
     
 
-def kprototypes(df_numerical, df):
+def kprototypes(df_numerical, df, extended_information):
     data = df.drop(columns = ['Diagnóstico'])
     data_numerical = df_numerical.drop(columns = ['Diagnóstico'])
     categories_numbers = [data.columns.get_loc(col) for col in 
@@ -50,15 +51,17 @@ def kprototypes(df_numerical, df):
     X = data.to_numpy()
     [n_clusters,max_silhouette] = silhouette("K-Prototypes", data_numerical, X, None, 
                                             None, KPrototypes, categories_numbers, 
+                                            extended_information,
                                              init='Huang', verbose=0, random_state = 0)
 
  
     kproto = KPrototypes(n_clusters=n_clusters, init='Huang', verbose=0, random_state = 0)
     clusters = kproto.fit_predict(X, categorical=categories_numbers)
-
-    #reduce_dimension_after_clustering(clusters, n_clusters, 'K-Prototype')
-    #f1_score(clusters)
     
-    #rate(df, clusters, 'K-Prototype')
+    if(extended_information):
+        reduce_dimension_after_clustering(clusters, n_clusters, 'K-Prototype')
+        f1_score(clusters)
+        
+        rate(df, clusters, 'K-Prototype')
     return {"K-Prototypes": max_silhouette}
     

@@ -19,25 +19,67 @@ from optics import optics
 from spectral import spectral
 from reduceDimension import reduce_dimension_global_data_plotly
 from hopkins_statistics import hopkins_test
+import plotly.graph_objects as go
+import plotly.io as pio
+pio.renderers.default='browser'
+import numpy as np
 
 def main():
     [df_numerical, df_numerical_short,df_missing, df_mix, df_categorical] = preprocess()
     
     for df in [df_numerical, df_numerical_short] :
         hopkins_test(df)
-        
+    
     #reduce_dimension_global_data_plotly()
-    #kmeans(df_numerical)
-    #kmeans(df_numerical_short)
-    #kpod(df_numerical, df_missing)
-    #kprototypes(df_numerical, df_mix)
-    #kmodes(df_numerical, df_categorical)
-    #spectral(df_numerical)
-    #agglomerative(df_numerical)
-    #dbscan(df_numerical)
-    #kmedoids(df_numerical)
-    #optics(df_numerical)
+    silhouette = {}
+    c_kmeans = kmeans(df_numerical)
+    for key in c_kmeans.keys():
+        silhouette[key] = c_kmeans[key]
+    
+    c_kmeans2 = kmeans(df_numerical_short)
+    for key in c_kmeans2.keys():
+        silhouette[key + " 2"] = c_kmeans2[key]
+    
+    c_pod = kpod(df_numerical, df_missing)
+    for key in c_pod.keys():
+        silhouette[key] = c_pod[key]
+        '''
+    c_prototypes= kprototypes(df_numerical, df_mix)
+    for key in c_prototypes.keys():
+        silhouette[key] = c_prototypes[key]
+        '''
+    c_modes = kmodes(df_numerical, df_categorical)
+    for key in c_modes.keys():
+        silhouette[key] = c_modes[key]
+    
+    c_spec = spectral(df_numerical)
+    for key in c_spec.keys():
+        silhouette[key] = c_spec[key]
+    
+    c_aggl = agglomerative(df_numerical)
+    for key in c_aggl.keys():
+        silhouette[key] = c_aggl[key]
+    
+    c_dbscan = dbscan(df_numerical)
+    for key in c_dbscan.keys():
+        silhouette[key] = c_dbscan[key]
+    
+    c_optics = optics(df_numerical)
+    for key in c_optics.keys():
+        silhouette[key] = c_optics[key]
+    
+    c_kmedoids = kmedoids(df_numerical)
+    for key in c_kmedoids.keys():
+        silhouette[key] = c_kmedoids[key]
     
     
+    silhouette = dict(sorted(silhouette.items(), key=lambda item: item[1], reverse=True))
+
+    fig = go.Figure(data=[go.Table(header=dict(values=[['<b>Algoritmo</b>'],
+                  ['<b>Coeficiente de Silhouette</b>']],),
+                     cells=dict(values=[np.array(list(silhouette.keys())), np.array(list(silhouette.values()))]))
+                         ])
+    fig.show()
+
 if __name__ == "__main__":
     main()

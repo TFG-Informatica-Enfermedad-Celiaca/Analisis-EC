@@ -15,13 +15,17 @@ from silhouette import silhouette
 def kmeans (df):
     data = df.drop(columns = ['Diagnóstico'])
 
-    n_clusters = silhouette("K-Means", data, KMeans, init='random', n_init=1, 
+    [n_clusters,max_silhouette]= silhouette("K-Means", data, None, None, None, 
+                            KMeans, None, init='random', n_init=1, 
                             random_state=0, max_iter=1000)
     
     kmeans = KMeans(n_clusters=n_clusters, init='random', n_init=1, random_state=0, max_iter=1000) 
     clusters = kmeans.fit_predict(data)
     
-    reduce_dimension_after_clustering(clusters, n_clusters, 'K-Means')
-    f1_score(kmeans.labels_)
+    #reduce_dimension_after_clustering(clusters, n_clusters, 'K-Means')
+    #f1_score(kmeans.labels_)
     
-    rate(df, clusters, 'K-Means')
+    #rate(df, clusters, 'K-Means')
+
+    return {"K-Means": max_silhouette}
+

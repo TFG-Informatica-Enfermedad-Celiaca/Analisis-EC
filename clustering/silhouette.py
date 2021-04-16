@@ -11,15 +11,29 @@ import plotly.graph_objects as go
 import plotly.io as pio
 pio.renderers.default='browser'
 import numpy as np
+from kPOD import k_pod
 
-def silhouette(name, data, cluster_prod, **kwargs):
+def silhouette(name, data, data_prototypes, data_modes, data_pod,
+               cluster_prod,categories_numbers, **kwargs):
     
     K_MAX = 20
     silhouette= []
     for i in tqdm(range(2, K_MAX)):
-        spec = cluster_prod(i, **kwargs) 
-        spec.fit(data)
-        labels = spec.labels_
+        if (cluster_prod.__name__ == "KPrototypes"):
+            kprot= cluster_prod(n_clusters=i, **kwargs)
+            labels = kprot.fit_predict(data_prototypes, categorical=categories_numbers)
+            
+        elif (cluster_prod.__name__ == "KModes"):
+            kmodes = cluster_prod(n_clusters=i, **kwargs)
+            labels = kmodes.fit_predict(data_modes)
+            
+        elif(cluster_prod.__name__ == "k_pod"):
+            spec = k_pod(data_pod,i) 
+            labels = spec[0]
+        else:
+            algorithm = cluster_prod(i, **kwargs) 
+            algorithm.fit(data)
+            labels = algorithm.labels_
 
         if (len(np.unique(labels)) > 1):
             silhouette.append(silhouette_score(data, labels))
@@ -28,10 +42,10 @@ def silhouette(name, data, cluster_prod, **kwargs):
     
     n_clusters = silhouette.index(max(silhouette)) + 2
     
-    fig = go.Figure(data=go.Scatter(x=np.arange(2,K_MAX), y=silhouette))
-    fig.update_layout(title='Coeficiente de Silhouette ' + name,
-                   xaxis_title='Número de clusters',
-                   yaxis_title='Coeficiente de Silhouette')
-    fig.show()
+    #fig = go.Figure(data=go.Scatter(x=np.arange(2,K_MAX), y=silhouette))
+    #fig.update_layout(title='Coeficiente de Silhouette ' + name,
+    #               xaxis_title='Número de clusters',
+    #               yaxis_title='Coeficiente de Silhouette')
+    #fig.show()
     
-    return n_clusters
+    return [n_clusters,max(silhouette)]

@@ -19,8 +19,10 @@ from silhouette import silhouette
 def kmedoids (df):
     data = df.drop(columns = ['Diagnóstico'])
     
+    max_silh_dict = {}
     for metr in ['manhattan', 'euclidean', 'cosine']:
-        n_clusters = silhouette("K-Medoids "+ metr, data, KMedoids, 
+        [n_clusters,max_silhouette] = silhouette("K-Medoids "+ metr, data, 
+                                None, None, None, KMedoids, None,
                                 metric=metr, init='heuristic', random_state= 0, 
                                 max_iter=1000)
         
@@ -30,10 +32,12 @@ def kmedoids (df):
         
         kmedoids = kmedoids.fit(data)
         
-        reduce_dimension_after_clustering(kmedoids.labels_, n_clusters, 
-                                          'K-Medoids '+metr)
-        f1_score(kmedoids.labels_)
+        #reduce_dimension_after_clustering(kmedoids.labels_, n_clusters, 
+        #                                  'K-Medoids '+metr)
+        #f1_score(kmedoids.labels_)
         
-        rate(df, kmedoids.labels_, 'K-Medoids '+metr)
+        #rate(df, kmedoids.labels_, 'K-Medoids '+metr)
+
+        max_silh_dict["K-Medoids - " + metr] = max_silhouette
    
-    
+    return max_silh_dict

@@ -44,9 +44,11 @@ def plot_dendrogram(model, **kwargs):
 
 def agglomerative(df):
     data = df.drop(columns = ['Diagnóstico'])
-
+    
+    max_silh_dict = {}
     for metric in ['ward', 'complete', 'average', 'single']:
-        n_clusters = silhouette("Aglomerative " + metric, data, AgglomerativeClustering,
+        [n_clusters,max_silhouette] = silhouette("Aglomerative " + metric, 
+            data, None, None, None, AgglomerativeClustering, None,
             affinity='euclidean', memory = None, connectivity = None,
             compute_full_tree='auto', linkage = metric, distance_threshold = None, 
             compute_distances=True)
@@ -57,16 +59,17 @@ def agglomerative(df):
             compute_distances=True)
             
         clusters = model.fit_predict(data)
-        reduce_dimension_after_clustering(clusters, n_clusters, 'Agglomerative ' + metric)
-        f1_score(clusters)
-        plot_dendrogram(model, truncate_mode='level', p=n_clusters)
-        plt.title(metric)
-        plt.xlabel("Number of points in node (or index of point if no parenthesis).")
-        plt.show()
+        max_silh_dict["Agglomerative - " + metric] = max_silhouette
+        #reduce_dimension_after_clustering(clusters, n_clusters, 'Agglomerative ' + metric)
+        #f1_score(clusters)
+        #plot_dendrogram(model, truncate_mode='level', p=n_clusters)
+        #plt.title(metric)
+        #plt.xlabel("Number of points in node (or index of point if no parenthesis).")
+        #plt.show()
         
-        rate(df, clusters, 'Agglomerative '+metric)
-        
-        
+        #rate(df, clusters, 'Agglomerative '+metric)
+    
+    return max_silh_dict
         
         
         

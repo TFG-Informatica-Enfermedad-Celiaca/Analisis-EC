@@ -21,6 +21,7 @@ from scoreF1 import f1_score
 from rater import rate
 from utils import categorical_columns
 from silhouette import silhouette
+from sklearn import metrics
 
 def kmodes(df_numerical, df, extended_information):
     data = df.drop(columns = ['Diagnóstico'])
@@ -38,8 +39,13 @@ def kmodes(df_numerical, df, extended_information):
         reduce_dimension_after_clustering(clusters, n_clusters, 'K-Modes')
         f1_score(clusters)
         rate(df, clusters, 'K-Modes')
-        
-    return {"K-Modes": max_silhouette}
+    
+    df['cluster'] = clusters
+    df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
+    labels_true = df_con_diagnostico['Diagnóstico'].values
+    labels_pred = df_con_diagnostico['cluster'].values
+    
+    return {"K-Modes": [max_silhouette, metrics.homogeneity_completeness_v_measure(labels_true, labels_pred)]}
     
 
 def kprototypes(df_numerical, df, extended_information):
@@ -63,5 +69,11 @@ def kprototypes(df_numerical, df, extended_information):
         f1_score(clusters)
         
         rate(df, clusters, 'K-Prototype')
-    return {"K-Prototypes": max_silhouette}
+    
+    df['cluster'] = clusters
+    df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
+    labels_true = df_con_diagnostico['Diagnóstico'].values
+    labels_pred = df_con_diagnostico['cluster'].values
+    
+    return {"K-Prototypes": [max_silhouette, metrics.homogeneity_completeness_v_measure(labels_true, labels_pred)]}
     

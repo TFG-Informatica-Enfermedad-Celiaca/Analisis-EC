@@ -19,6 +19,7 @@ import sklearn as sklearn
 from sklearn.neighbors import kneighbors_graph
 from rater import rate
 from sklearn.metrics import silhouette_score
+from sklearn import metrics
 
 def dbscan (df, extended_information):
     data = df.drop(columns = ['Diagnóstico'])
@@ -52,4 +53,10 @@ def dbscan (df, extended_information):
         f1_score(clusters)
         rate(df, clusters, 'DBSCAN')  
     
-    return {"DBScan": silhouette_score(data, db.labels_)}
+    df['cluster'] = clusters
+    df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
+    labels_true = df_con_diagnostico['Diagnóstico'].values
+    labels_pred = df_con_diagnostico['cluster'].values
+    
+    return {"DBScan": [silhouette_score(data, db.labels_),
+                       metrics.homogeneity_completeness_v_measure(labels_true, labels_pred)]}

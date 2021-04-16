@@ -20,6 +20,7 @@ import plotly.io as pio
 pio.renderers.default='browser'
 import numpy as np
 from silhouette import silhouette
+from sklearn import metrics
 
 def kpod(df_complete, df, extended_information):
     data = df.drop(columns = ['Diagnóstico'])
@@ -39,7 +40,12 @@ def kpod(df_complete, df, extended_information):
         f1_score(cluster_assignments)
     
         rate(df, cluster_assignments, 'K-POD')
+        
+    df['cluster'] = cluster_assignments
+    df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
+    labels_true = df_con_diagnostico['Diagnóstico'].values
+    labels_pred = df_con_diagnostico['cluster'].values
     
-    return {"K-POD": max_silhouette}
+    return {"K-POD": [max_silhouette, metrics.homogeneity_completeness_v_measure(labels_true, labels_pred)]}
 
     

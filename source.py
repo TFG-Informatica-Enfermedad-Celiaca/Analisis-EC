@@ -23,6 +23,16 @@ import plotly.graph_objects as go
 import plotly.io as pio
 pio.renderers.default='browser'
 import numpy as np
+from plotly.subplots import make_subplots
+
+def fill_dict(clustering, silhouette, homogeneity, completeness, v_measure):
+    for cluster_method in clustering:
+        for key in cluster_method.keys():
+            silhouette[key] = cluster_method[key][0]
+            homogeneity[key] = cluster_method[key][1][0]
+            completeness[key] = cluster_method[key][1][1]
+            v_measure[key] = cluster_method[key][1][2]
+    return [silhouette, homogeneity, completeness, v_measure]
 
 def main():
     [df_numerical, df_numerical_short,df_missing, df_mix, df_categorical] = preprocess()
@@ -31,54 +41,70 @@ def main():
         hopkins_test(df)
     
     #reduce_dimension_global_data_plotly()
+    clustering = []
+    
     silhouette = {}
-    c_kmeans = kmeans(df_numerical, False)
-    for key in c_kmeans.keys():
-        silhouette[key] = c_kmeans[key]
+    homogeneity = {}
+    completeness = {}
+    v_measure = {}
     
-    c_kmeans2 = kmeans(df_numerical_short, False)
-    for key in c_kmeans2.keys():
-        silhouette[key + " 2"] = c_kmeans2[key]
+    clustering.append(kmeans(df_numerical, False))
+    clustering.append(kmeans(df_numerical_short, False, "/ Short data"))
+    clustering.append(kpod(df_numerical, df_missing, False))
+    #clustering.append(kprototypes(df_numerical, df_mix, False))
+    clustering.append(kmodes(df_numerical, df_categorical, False))
+    clustering.append(spectral(df_numerical, False))
+    clustering.append(agglomerative(df_numerical, False))
+    clustering.append(dbscan(df_numerical, False))
+    clustering.append(optics(df_numerical, False))
+    clustering.append(kmedoids(df_numerical, False))
     
-    c_pod = kpod(df_numerical, df_missing, False)
-    for key in c_pod.keys():
-        silhouette[key] = c_pod[key]
-        
-    c_prototypes= kprototypes(df_numerical, df_mix, False)
-    for key in c_prototypes.keys():
-        silhouette[key] = c_prototypes[key]
-        
-    c_modes = kmodes(df_numerical, df_categorical, False)
-    for key in c_modes.keys():
-        silhouette[key] = c_modes[key]
-    
-    c_spec = spectral(df_numerical, False)
-    for key in c_spec.keys():
-        silhouette[key] = c_spec[key]
-    
-    c_aggl = agglomerative(df_numerical, False)
-    for key in c_aggl.keys():
-        silhouette[key] = c_aggl[key]
-    
-    c_dbscan = dbscan(df_numerical, False)
-    for key in c_dbscan.keys():
-        silhouette[key] = c_dbscan[key]
-    
-    c_optics = optics(df_numerical, False)
-    for key in c_optics.keys():
-        silhouette[key] = c_optics[key]
-    
-    c_kmedoids = kmedoids(df_numerical, False)
-    for key in c_kmedoids.keys():
-        silhouette[key] = c_kmedoids[key]
-    
-    
-    silhouette = dict(sorted(silhouette.items(), key=lambda item: item[1], reverse=True))
+    [silhouette, homogeneity, completeness, v_measure] = fill_dict(
+        clustering, silhouette,homogeneity, completeness, v_measure)
 
-    fig = go.Figure(data=[go.Table(header=dict(values=[['<b>Algoritmo</b>'],
-                  ['<b>Coeficiente de Silhouette</b>']],),
-                     cells=dict(values=[np.array(list(silhouette.keys())), np.array(list(silhouette.values()))]))
-                         ])
+    silhouette = dict(sorted(silhouette.items(), key=lambda item: item[1], reverse=True))
+    
+    fig = make_subplots(
+    rows=2, cols=1,
+    shared_xaxes=True,
+    vertical_spacing=0.03,
+    specs=[[{"type": "table"}],
+           [{"type": "table"}]]
+    )
+    
+    fig.add_trace(
+    go.Table(
+        header=dict(
+            values=[['<b>Algoritmo</b>'],
+                  ['<b>Coeficiente de Silhouette</b>']]
+        ),
+        cells=dict(
+            values=[np.array(list(silhouette.keys())), np.array(list(silhouette.values()))],
+            align = "left")
+    ),
+    row=1, col=1
+    )
+    
+    fig.add_trace(
+    go.Table(
+        header=dict(
+            values=[['<b>Algoritmo</b>'],
+                  ['<b>Homogeneidad</b>'],['<b>Completitud</b>'],['<b>Medida V</b>']]
+        ),
+        cells=dict(
+            values=[np.array(list(homogeneity.keys())), 
+                                        np.array(list(homogeneity.values())), 
+                                        np.array(list(completeness.values())), 
+                                        np.array(list(v_measure.values()))],
+            align = "left")
+    ),
+    row=2, col=1
+    )
+
+    fig.update_layout(
+    title_text="Evaluación de los métodos de clustering",
+    height=800,
+    )
     fig.show()
 
 if __name__ == "__main__":

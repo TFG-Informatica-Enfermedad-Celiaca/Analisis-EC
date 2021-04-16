@@ -18,6 +18,7 @@ from scipy.cluster.hierarchy import dendrogram
 from matplotlib import pyplot as plt
 from rater import rate
 from silhouette import silhouette
+from sklearn import metrics
 
 def plot_dendrogram(model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
@@ -59,7 +60,8 @@ def agglomerative(df, extended_information):
             compute_distances=True)
             
         clusters = model.fit_predict(data)
-        max_silh_dict["Agglomerative - " + metric] = max_silhouette
+        max_silh_dict["Agglomerative - " + metric]=[]
+        max_silh_dict["Agglomerative - " + metric].append(max_silhouette)
         
         if (extended_information):
             reduce_dimension_after_clustering(clusters, n_clusters, 'Agglomerative ' + metric)
@@ -71,6 +73,13 @@ def agglomerative(df, extended_information):
         
             rate(df, clusters, 'Agglomerative '+metric)
     
+        df['cluster'] = clusters
+        df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
+        labels_true = df_con_diagnostico['Diagnóstico'].values
+        labels_pred = df_con_diagnostico['cluster'].values
+        
+        max_silh_dict["Agglomerative - " + metric].append(
+            metrics.homogeneity_completeness_v_measure(labels_true, labels_pred))
     return max_silh_dict
         
         

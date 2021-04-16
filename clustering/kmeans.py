@@ -11,11 +11,12 @@ from reduceDimension import reduce_dimension_after_clustering
 from scoreF1 import f1_score
 from rater import rate
 from silhouette import silhouette
+from sklearn import metrics
 
-def kmeans (df, extended_information):
+def kmeans (df, extended_information, name=''):
     data = df.drop(columns = ['Diagnóstico'])
 
-    [n_clusters,max_silhouette]= silhouette("K-Means", data, None, None, None, 
+    [n_clusters,max_silhouette]= silhouette("K-Means" + name, data, None, None, None, 
                             KMeans, None, extended_information, init='random', n_init=1, 
                             random_state=0, max_iter=1000)
     
@@ -23,9 +24,14 @@ def kmeans (df, extended_information):
     clusters = kmeans.fit_predict(data)
     
     if (extended_information):
-        reduce_dimension_after_clustering(clusters, n_clusters, 'K-Means')
+        reduce_dimension_after_clustering(clusters, n_clusters, 'K-Means'+ name)
         f1_score(kmeans.labels_)
-        rate(df, clusters, 'K-Means')
+        rate(df, clusters, 'K-Means'+ name)
+    
+    df['cluster'] = clusters
+    df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
+    labels_true = df_con_diagnostico['Diagnóstico'].values
+    labels_pred = df_con_diagnostico['cluster'].values
 
-    return {"K-Means": max_silhouette}
+    return {"K-Means"+ name: [max_silhouette, metrics.homogeneity_completeness_v_measure(labels_true, labels_pred)]}
 

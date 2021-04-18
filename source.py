@@ -25,14 +25,14 @@ pio.renderers.default='browser'
 import numpy as np
 from plotly.subplots import make_subplots
 
-def fill_dict(clustering, silhouette, homogeneity, completeness, v_measure):
+def fill_dict(clustering, silhouette, f_measure, precision, recall):
     for cluster_method in clustering:
         for key in cluster_method.keys():
             silhouette[key] = cluster_method[key][0]
-            homogeneity[key] = cluster_method[key][1][0]
-            completeness[key] = cluster_method[key][1][1]
-            v_measure[key] = cluster_method[key][1][2]
-    return [silhouette, homogeneity, completeness, v_measure]
+            f_measure[key] = cluster_method[key][1][0]
+            precision[key] = cluster_method[key][1][1]
+            recall[key] = cluster_method[key][1][2]
+    return [silhouette, f_measure, precision, recall]
 
 def main():
     [df_numerical, df_numerical_short,df_missing, df_mix, df_categorical] = preprocess()
@@ -44,9 +44,9 @@ def main():
     clustering = []
     
     silhouette = {}
-    homogeneity = {}
-    completeness = {}
-    v_measure = {}
+    f_measure = {}
+    precision = {}
+    recall = {}
     
     clustering.append(kmeans(df_numerical, False))
     clustering.append(kmeans(df_numerical_short, False, "/ Short data"))
@@ -59,8 +59,8 @@ def main():
     clustering.append(optics(df_numerical, False))
     clustering.append(kmedoids(df_numerical, False))
     
-    [silhouette, homogeneity, completeness, v_measure] = fill_dict(
-        clustering, silhouette,homogeneity, completeness, v_measure)
+    [silhouette, f_measure, precision, recall] = fill_dict(
+        clustering, silhouette,f_measure, precision, recall)
 
     silhouette = dict(sorted(silhouette.items(), key=lambda item: item[1], reverse=True))
     
@@ -89,13 +89,13 @@ def main():
     go.Table(
         header=dict(
             values=[['<b>Algoritmo</b>'],
-                  ['<b>Homogeneidad</b>'],['<b>Completitud</b>'],['<b>Medida V</b>']]
+                  ['<b>Valor-F</b>'],['<b>Precisión</b>'],['<b>Exhaustividad</b>']]
         ),
         cells=dict(
-            values=[np.array(list(homogeneity.keys())), 
-                                        np.array(list(homogeneity.values())), 
-                                        np.array(list(completeness.values())), 
-                                        np.array(list(v_measure.values()))],
+            values=[np.array(list(f_measure.keys())), 
+                                        np.array(list(f_measure.values())), 
+                                        np.array(list(precision.values())), 
+                                        np.array(list(recall.values()))],
             align = "left")
     ),
     row=2, col=1

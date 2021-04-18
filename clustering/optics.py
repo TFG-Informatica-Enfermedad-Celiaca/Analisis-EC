@@ -17,6 +17,7 @@ from sklearn.cluster import OPTICS
 from rater import rate
 from sklearn.metrics import silhouette_score
 from sklearn import metrics
+import b3
 
 def optics (df, extended_information):
     data = df.drop(columns = ['Diagnóstico'])
@@ -37,5 +38,5 @@ def optics (df, extended_information):
     labels_pred = df_con_diagnostico['cluster'].values
     
     return {"Optics": [silhouette_score(data, opt.labels_), 
-                       metrics.homogeneity_completeness_v_measure(labels_true, labels_pred)]}
+                       b3.calc_b3(labels_true, labels_pred)]}
     

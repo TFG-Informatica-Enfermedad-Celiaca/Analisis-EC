@@ -12,6 +12,7 @@ from scoreF1 import f1_score
 from rater import rate
 from silhouette import silhouette
 from sklearn import metrics
+import b3
 
 def kmeans (df, extended_information, name=''):
     data = df.drop(columns = ['Diagnóstico'])
@@ -33,5 +34,5 @@ def kmeans (df, extended_information, name=''):
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
 
-    return {"K-Means"+ name: [max_silhouette, metrics.homogeneity_completeness_v_measure(labels_true, labels_pred)]}
+    return {"K-Means"+ name: [max_silhouette, b3.calc_b3(labels_true, labels_pred)]}
 

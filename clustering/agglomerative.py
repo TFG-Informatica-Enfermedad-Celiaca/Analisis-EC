@@ -19,6 +19,7 @@ from matplotlib import pyplot as plt
 from rater import rate
 from silhouette import silhouette
 from sklearn import metrics
+import b3
 
 def plot_dendrogram(model, **kwargs):
     # Create linkage matrix and then plot the dendrogram
@@ -78,8 +79,7 @@ def agglomerative(df, extended_information):
         labels_true = df_con_diagnostico['Diagnóstico'].values
         labels_pred = df_con_diagnostico['cluster'].values
         
-        max_silh_dict["Agglomerative - " + metric].append(
-            metrics.homogeneity_completeness_v_measure(labels_true, labels_pred))
+        max_silh_dict["Agglomerative - " + metric].append(b3.calc_b3(labels_true, labels_pred))
     return max_silh_dict
         
         

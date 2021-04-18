@@ -16,6 +16,7 @@ from sklearn_extra.cluster import KMedoids
 from rater import rate
 from silhouette import silhouette
 from sklearn import metrics
+import b3
 
 def kmedoids (df, extended_information):
     data = df.drop(columns = ['Diagnóstico'])
@@ -33,13 +34,13 @@ def kmedoids (df, extended_information):
         
         clusters = kmedoids.fit_predict(data)
         if (extended_information):
-            reduce_dimension_after_clustering(clusters.labels_, n_clusters, 
+            reduce_dimension_after_clustering(clusters, n_clusters, 
                                               'K-Medoids '+metr)
-            f1_score(clusters.labels_)
+            f1_score(clusters)
             
-            rate(df, clusters.labels_, 'K-Medoids '+metr)
+            rate(df, clusters, 'K-Medoids '+metr)
         
-        df['cluster'] = clusters.labels_
+        df['cluster'] = clusters
         df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
         labels_true = df_con_diagnostico['Diagnóstico'].values
         labels_pred = df_con_diagnostico['cluster'].values
@@ -47,6 +48,5 @@ def kmedoids (df, extended_information):
         
         max_silh_dict["K-Medoids - " + metr] = []
         max_silh_dict["K-Medoids - " + metr].append(max_silhouette)
-        max_silh_dict["K-Medoids - " + metr].append(
-            metrics.homogeneity_completeness_v_measure(labels_true, labels_pred))
+        max_silh_dict["K-Medoids - " + metr].append(b3.calc_b3(labels_true, labels_pred))
     return max_silh_dict

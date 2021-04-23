@@ -17,10 +17,10 @@ from silhouette import silhouette
 from sklearn import metrics
 import b3
 
-def spectral(df, extended_information):
+def spectral(df, extended_information, name):
     data = df.drop(columns = ['Diagnóstico'])
     
-    [n_clusters,max_silhouette] = silhouette("Spectral", data, None, None, None, 
+    [n_clusters,max_silhouette] = silhouette("Spectral" + name, data, None, None, None, 
                             SpectralClustering, None, extended_information, random_state=42,
                             affinity="nearest_neighbors", n_neighbors=10)
     X = data.to_numpy()
@@ -29,14 +29,14 @@ def spectral(df, extended_information):
     clusters = spectral.fit_predict(X)
 
     if (extended_information):
-        reduce_dimension_after_clustering(clusters, n_clusters, 'Spectral')
+        reduce_dimension_after_clustering(clusters, n_clusters, 'Spectral' + name)
         f1_score(clusters)
     
-        rate(df, clusters, 'Spectral')
+        rate(df, clusters, 'Spectral' + name)
     
     df['cluster'] = clusters
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
     
-    return {"Spectral": [max_silhouette, b3.calc_b3(labels_true, labels_pred)]}
+    return {"Spectral" + name: [max_silhouette, b3.calc_b3(labels_true, labels_pred)]}

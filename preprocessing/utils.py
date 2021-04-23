@@ -133,3 +133,12 @@ categorical_columns = ["Indique país de origen o en su defecto la información 
         "Helicobacter pylori en el momento de la biopsia", "Fecha nacimiento", 
         "DCG_ATG2", "DCG A-PDG", "DSG ATG2", "DSG A-PDG", "Valoracion LIEs DCG", 
         "Valoracion LIEs DSG", "Biopsia DCG", "Biopsia DSG"]
+
+
+try1_columns = ['Indique país de origen o en su defecto la información disponible_Europeo',
+                'Indique país de origen o en su defecto la información disponible_Otro',
+                'Sexo_Hombre', 'Sexo_Mujer', 'Edad diagnóstico_+70', 'Edad diagnóstico_-18',
+                'Edad diagnóstico_18 - 27', 'Edad diagnóstico_28 - 37', 'Edad diagnóstico_38 - 47',
+                'Edad diagnóstico_48 - 57', 'Edad diagnóstico_58 - 70']
+
+

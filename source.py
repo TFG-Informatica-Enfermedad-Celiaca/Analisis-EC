@@ -25,6 +25,7 @@ pio.renderers.default='browser'
 import numpy as np
 from plotly.subplots import make_subplots
 
+
 def fill_dict(clustering, silhouette, f_measure, precision, recall):
     for cluster_method in clustering:
         for key in cluster_method.keys():
@@ -34,36 +35,57 @@ def fill_dict(clustering, silhouette, f_measure, precision, recall):
             recall[key] = cluster_method[key][1][2]
     return [silhouette, f_measure, precision, recall]
 
-def main():
-    [df_numerical, df_numerical_short,df_missing, df_mix, df_categorical] = preprocess()
-    
-    for df in [df_numerical, df_numerical_short] :
-        hopkins_test(df)
-    
-    #reduce_dimension_global_data_plotly()
-    clustering = []
-    
-    silhouette = {}
-    f_measure = {}
-    precision = {}
-    recall = {}
-    
-    clustering.append(kmeans(df_numerical, False))
-    clustering.append(kmeans(df_numerical_short, False, "/ Short data"))
-    clustering.append(kpod(df_numerical, df_missing, False))
-    #clustering.append(kprototypes(df_numerical, df_mix, False))
-    clustering.append(kmodes(df_numerical, df_categorical, False))
-    clustering.append(spectral(df_numerical, False))
-    clustering.append(agglomerative(df_numerical, False))
-    clustering.append(dbscan(df_numerical, False))
-    clustering.append(optics(df_numerical, False))
-    clustering.append(kmedoids(df_numerical, False))
-    
-    [silhouette, f_measure, precision, recall] = fill_dict(
-        clustering, silhouette,f_measure, precision, recall)
 
-    silhouette = dict(sorted(silhouette.items(), key=lambda item: item[1], reverse=True))
-    
+
+
+def executeKMeans(clustering, numericals_dfs, titles_numerical):
+    for i in range(len(numericals_dfs)) :
+        clustering.append(kmeans(numericals_dfs[i], False, titles_numerical[i]))
+    return clustering
+
+
+def executeKPod(clustering, numericals_dfs, df_missing, titles_numerical):
+    for i in range(len(numericals_dfs)) :
+        clustering.append(kpod(numericals_dfs[i], df_missing, False, titles_numerical[i]))
+    return clustering
+
+def executeKPrototypes(clustering, numericals_dfs, df_mix, titles_numerical):
+    for i in range(len(numericals_dfs)) :
+        clustering.append(kprototypes(numericals_dfs[i], df_mix, False, titles_numerical[i]))
+    return clustering
+
+def executeKModes(clustering, numericals_dfs, df_categorical, titles_numerical):
+    for i in range(len(numericals_dfs)):
+        clustering.append(kmodes(numericals_dfs[i], df_categorical,False, titles_numerical[i]))
+    return clustering
+
+def executeSPECTRAL(clustering, numericals_dfs, titles_numerical):
+    for i in range(len(numericals_dfs)):
+        clustering.append(spectral(numericals_dfs[i],False, titles_numerical[i]))
+    return clustering
+
+def executeAgglomerative(clustering, numericals_dfs, titles_numerical):
+    for i in range(len(numericals_dfs)):
+        clustering.append(agglomerative(numericals_dfs[i],False, titles_numerical[i]))
+    return clustering
+
+def executeDBSCAN(clustering, numericals_dfs, titles_numerical):
+    for i in range(len(numericals_dfs)):
+        clustering.append(dbscan(numericals_dfs[i],False, titles_numerical[i]))
+    return clustering
+
+def executeOPTICS(clustering, numericals_dfs, titles_numerical):
+    for i in range(len(numericals_dfs)):
+        clustering.append(optics(numericals_dfs[i],False, titles_numerical[i]))
+    return clustering
+
+def executeMedoids(clustering, numericals_dfs, titles_numerical):
+    for i in range(len(numericals_dfs)):
+        clustering.append(kmedoids(numericals_dfs[i],False, titles_numerical[i]))
+    return clustering
+
+
+def plotResults(clustering, silhouette, f_measure, precision, recall, title):
     fig = make_subplots(
     rows=2, cols=1,
     shared_xaxes=True,
@@ -102,10 +124,105 @@ def main():
     )
 
     fig.update_layout(
-    title_text="Evaluación de los métodos de clustering",
+    title_text = title,
     height=800,
     )
     fig.show()
+    
+    
+
+
+def main():
+    [numericals_dfs ,df_missing, df_mix, df_categorical] = preprocess()
+    
+    
+    
+    #reduce_dimension_global_data_plotly()
+    clustering = []
+    
+    silhouette = {}
+    f_measure = {}
+    precision = {}
+    recall = {}
+    clustering_method_results = []
+    
+    
+    titles_numerical = ["", " Short data", " Sin país, sexo ni edad", 
+                      " Sin país, sexo ni edad acortado", " Sin sintomas ni signos",
+                      " Sin sintomas ni signos acortado",
+                      " Sin país, sexo, edad, sintomas ni signos",
+                      " Sin país, sexo, edad, sintomas ni signos acortado"]
+    
+    for i in range(len(numericals_dfs)) :
+        hopkins_test(numericals_dfs[i], titles_numerical[i])
+    
+    #KMEANS
+    clustering_method_results.append(
+        executeKMeans(clustering, numericals_dfs, titles_numerical))
+    
+    #KPOD
+    clustering = []
+    clustering_method_results.append(
+        executeKPod(clustering, numericals_dfs, df_missing, titles_numerical))
+    
+    
+    #KPrototypes
+    clustering = []
+    clustering_method_results.append(
+        executeKPrototypes(clustering, numericals_dfs, df_mix, titles_numerical))
+    
+    
+    #KModes
+    clustering = []
+    clustering_method_results.append(
+        executeKModes(clustering, numericals_dfs, df_categorical, titles_numerical))
+    
+    
+    #SPECTRAL
+    clustering = []
+    clustering_method_results.append(
+        executeSPECTRAL(clustering, numericals_dfs, titles_numerical))
+    
+    
+    #Agglomerative
+    clustering = []
+    clustering_method_results.append(
+        executeAgglomerative(clustering, numericals_dfs, titles_numerical))
+    
+    
+    #DBSCAN
+    clustering = []
+    clustering_method_results.append(
+        executeDBSCAN(clustering, numericals_dfs, titles_numerical))
+    
+    
+    #OPTICS
+    clustering = []
+    clustering_method_results.append(
+        executeOPTICS(clustering, numericals_dfs, titles_numerical))
+    
+    
+    #KMedoids
+    clustering = []
+    clustering_method_results.append(
+        executeMedoids(clustering, numericals_dfs, titles_numerical))
+
+    
+    title_methods = ["K-Means", "K-POD", "K-Prototypes", "K-Modes",
+                     "Spectral", "Agglomerative", "DBSCAN", "OPTICS", "K-Medoids"]
+    
+    for i in range(len(clustering_method_results)):
+        silhouette = {}
+        f_measure = {}
+        precision = {}
+        recall = {}
+        [silhouette, f_measure, precision, recall] = fill_dict(
+            clustering_method_results[i], silhouette,f_measure, precision, recall)
+        silhouette = dict(sorted(silhouette.items(), key=lambda item: item[1], reverse=True))
+        plotResults(clustering_method_results[i], silhouette, f_measure, precision, recall, title_methods[i])
+    
+    
+    
 
 if __name__ == "__main__":
     main()

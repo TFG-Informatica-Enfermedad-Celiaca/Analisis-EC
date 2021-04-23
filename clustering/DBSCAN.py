@@ -21,7 +21,7 @@ from rater import rate
 from sklearn.metrics import silhouette_score
 from sklearn import metrics
 import b3
-def dbscan (df, extended_information):
+def dbscan (df, extended_information, name):
     data = df.drop(columns = ['Diagnóstico'])
     
     ## Parametrización de DBSCAN.
@@ -49,14 +49,14 @@ def dbscan (df, extended_information):
     aux = len(db.core_sample_indices_)
    
     if (extended_information):
-        reduce_dimension_after_clustering(clusters, aux, 'DBSCAN')
+        reduce_dimension_after_clustering(clusters, aux, 'DBSCAN' + name)
         f1_score(clusters)
-        rate(df, clusters, 'DBSCAN')  
+        rate(df, clusters, 'DBSCAN' + name)  
     
     df['cluster'] = clusters
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
     
-    return {"DBScan": [silhouette_score(data, db.labels_),
+    return {"DBScan" + name: [silhouette_score(data, db.labels_),
                        b3.calc_b3(labels_true, labels_pred)]}

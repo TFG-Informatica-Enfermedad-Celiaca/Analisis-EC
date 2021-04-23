@@ -12,6 +12,7 @@ import plotly.io as pio
 pio.renderers.default='browser'
 import numpy as np
 from kPOD import k_pod
+from sklearn_extra.cluster import KMedoids
 
 def silhouette(name, data, data_prototypes, data_modes, data_pod,
                cluster_prod,categories_numbers, extended_information,  **kwargs):
@@ -30,6 +31,9 @@ def silhouette(name, data, data_prototypes, data_modes, data_pod,
         elif(cluster_prod.__name__ == "k_pod"):
             spec = k_pod(data_pod,i) 
             labels = spec[0]
+        elif(cluster_prod.__name__ == "k_medoids"):
+            kmedoids = KMedoids(n_clusters=i, **kwargs).fit(data)
+            labels = kmedoids.labels_
         else:
             algorithm = cluster_prod(i, **kwargs) 
             algorithm.fit(data)

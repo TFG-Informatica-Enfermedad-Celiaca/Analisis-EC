@@ -44,12 +44,12 @@ def plot_dendrogram(model, **kwargs):
 
 
 
-def agglomerative(df, extended_information):
+def agglomerative(df, extended_information, name):
     data = df.drop(columns = ['Diagnóstico'])
     
     max_silh_dict = {}
     for metric in ['ward', 'complete', 'average', 'single']:
-        [n_clusters,max_silhouette] = silhouette("Aglomerative " + metric, 
+        [n_clusters,max_silhouette] = silhouette("Aglomerative " + metric + name, 
             data, None, None, None, AgglomerativeClustering, None, extended_information,
             affinity='euclidean', memory = None, connectivity = None,
             compute_full_tree='auto', linkage = metric, distance_threshold = None, 
@@ -61,25 +61,25 @@ def agglomerative(df, extended_information):
             compute_distances=True)
             
         clusters = model.fit_predict(data)
-        max_silh_dict["Agglomerative - " + metric]=[]
-        max_silh_dict["Agglomerative - " + metric].append(max_silhouette)
+        max_silh_dict["Agglomerative - " + metric + name]=[]
+        max_silh_dict["Agglomerative - " + metric + name].append(max_silhouette)
         
         if (extended_information):
-            reduce_dimension_after_clustering(clusters, n_clusters, 'Agglomerative ' + metric)
+            reduce_dimension_after_clustering(clusters, n_clusters, 'Agglomerative ' + metric + name)
             f1_score(clusters)
             plot_dendrogram(model, truncate_mode='level', p=n_clusters)
             plt.title(metric)
             plt.xlabel("Number of points in node (or index of point if no parenthesis).")
             plt.show()
         
-            rate(df, clusters, 'Agglomerative '+metric)
+            rate(df, clusters, 'Agglomerative '+metric + name)
     
         df['cluster'] = clusters
         df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
         labels_true = df_con_diagnostico['Diagnóstico'].values
         labels_pred = df_con_diagnostico['cluster'].values
         
-        max_silh_dict["Agglomerative - " + metric].append(b3.calc_b3(labels_true, labels_pred))
+        max_silh_dict["Agglomerative - " + metric + name].append(b3.calc_b3(labels_true, labels_pred))
     return max_silh_dict
         
         

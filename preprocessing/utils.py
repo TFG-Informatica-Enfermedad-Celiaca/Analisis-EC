@@ -139,6 +139,11 @@ try1_columns = ['Indique país de origen o en su defecto la información disponi
                 'Indique país de origen o en su defecto la información disponible_Otro',
                 'Sexo_Hombre', 'Sexo_Mujer', 'Edad diagnóstico_+70', 'Edad diagnóstico_-18',
                 'Edad diagnóstico_18 - 27', 'Edad diagnóstico_28 - 37', 'Edad diagnóstico_38 - 47',
-                'Edad diagnóstico_48 - 57', 'Edad diagnóstico_58 - 70']
+                'Edad diagnóstico_48 - 57', 'Edad diagnóstico_58 - 70', 
+                '1º grado', '2º grado', '3º grado', '4º grado']
+
+try_cat_columns = ['Indique país de origen o en su defecto la información disponible',
+                   'Sexo', 'Edad diagnóstico', '1º grado', '2º grado', '3º grado', '4º grado']
+
 
 

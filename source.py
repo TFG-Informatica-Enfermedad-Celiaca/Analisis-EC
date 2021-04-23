@@ -38,50 +38,50 @@ def fill_dict(clustering, silhouette, f_measure, precision, recall):
 
 
 
-def executeKMeans(clustering, numericals_dfs, titles_numerical):
+def executeKMeans(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)) :
-        clustering.append(kmeans(numericals_dfs[i], False, titles_numerical[i]))
+        clustering.append(kmeans(numericals_dfs[i], False, titles_dfs[i]))
     return clustering
 
 
-def executeKPod(clustering, numericals_dfs, df_missing, titles_numerical):
+def executeKPod(clustering, numericals_dfs, df_missing, titles_dfs):
     for i in range(len(numericals_dfs)) :
-        clustering.append(kpod(numericals_dfs[i], df_missing, False, titles_numerical[i]))
+        clustering.append(kpod(numericals_dfs[i], df_missing, False, titles_dfs[i]))
     return clustering
 
-def executeKPrototypes(clustering, numericals_dfs, df_mix, titles_numerical):
+def executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs):
     for i in range(len(numericals_dfs)) :
-        clustering.append(kprototypes(numericals_dfs[i], df_mix, False, titles_numerical[i]))
+        clustering.append(kprototypes(numericals_dfs[i], mixs_dfs[0], False, titles_dfs[i]))
     return clustering
 
-def executeKModes(clustering, numericals_dfs, df_categorical, titles_numerical):
+def executeKModes(clustering, numericals_dfs, categoricals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(kmodes(numericals_dfs[i], df_categorical,False, titles_numerical[i]))
+        clustering.append(kmodes(numericals_dfs[i], categoricals_dfs[i] ,False, titles_dfs[i]))
     return clustering
 
-def executeSPECTRAL(clustering, numericals_dfs, titles_numerical):
+def executeSPECTRAL(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(spectral(numericals_dfs[i],False, titles_numerical[i]))
+        clustering.append(spectral(numericals_dfs[i],False, titles_dfs[i]))
     return clustering
 
-def executeAgglomerative(clustering, numericals_dfs, titles_numerical):
+def executeAgglomerative(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(agglomerative(numericals_dfs[i],False, titles_numerical[i]))
+        clustering.append(agglomerative(numericals_dfs[i],True, titles_dfs[i]))
     return clustering
 
-def executeDBSCAN(clustering, numericals_dfs, titles_numerical):
+def executeDBSCAN(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(dbscan(numericals_dfs[i],False, titles_numerical[i]))
+        clustering.append(dbscan(numericals_dfs[i],False, titles_dfs[i]))
     return clustering
 
-def executeOPTICS(clustering, numericals_dfs, titles_numerical):
+def executeOPTICS(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(optics(numericals_dfs[i],False, titles_numerical[i]))
+        clustering.append(optics(numericals_dfs[i],False, titles_dfs[i]))
     return clustering
 
-def executeMedoids(clustering, numericals_dfs, titles_numerical):
+def executeMedoids(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(kmedoids(numericals_dfs[i],False, titles_numerical[i]))
+        clustering.append(kmedoids(numericals_dfs[i],False, titles_dfs[i]))
     return clustering
 
 
@@ -133,7 +133,7 @@ def plotResults(clustering, silhouette, f_measure, precision, recall, title):
 
 
 def main():
-    [numericals_dfs ,df_missing, df_mix, df_categorical] = preprocess()
+    [numericals_dfs ,df_missing, mixs_dfs, categoricals_dfs] = preprocess()
     
     
     
@@ -147,69 +147,75 @@ def main():
     clustering_method_results = []
     
     
-    titles_numerical = ["", " Short data", " Sin país, sexo ni edad", 
+    titles_dfs = ["", " Short data", " Sin país, sexo ni edad", 
                       " Sin país, sexo ni edad acortado", " Sin sintomas ni signos",
                       " Sin sintomas ni signos acortado",
                       " Sin país, sexo, edad, sintomas ni signos",
                       " Sin país, sexo, edad, sintomas ni signos acortado"]
     
-    for i in range(len(numericals_dfs)) :
-        hopkins_test(numericals_dfs[i], titles_numerical[i])
+    for i in range(len(titles_dfs)) :
+        hopkins_test(numericals_dfs[i], titles_dfs[i])
     
+    
+    '''
     #KMEANS
     clustering_method_results.append(
-        executeKMeans(clustering, numericals_dfs, titles_numerical))
+        executeKMeans(clustering, numericals_dfs, titles_dfs))
     
     #KPOD
     clustering = []
     clustering_method_results.append(
-        executeKPod(clustering, numericals_dfs, df_missing, titles_numerical))
+        executeKPod(clustering, numericals_dfs, df_missing, titles_dfs))
     
-    
+    '''
     #KPrototypes
     clustering = []
     clustering_method_results.append(
-        executeKPrototypes(clustering, numericals_dfs, df_mix, titles_numerical))
+        executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs))
     
-    
+    '''
     #KModes
     clustering = []
     clustering_method_results.append(
-        executeKModes(clustering, numericals_dfs, df_categorical, titles_numerical))
+        executeKModes(clustering, numericals_dfs, categoricals_dfs, titles_dfs))
     
     
     #SPECTRAL
     clustering = []
     clustering_method_results.append(
-        executeSPECTRAL(clustering, numericals_dfs, titles_numerical))
+        executeSPECTRAL(clustering, numericals_dfs, titles_dfs))
     
     
     #Agglomerative
     clustering = []
     clustering_method_results.append(
-        executeAgglomerative(clustering, numericals_dfs, titles_numerical))
+        executeAgglomerative(clustering, numericals_dfs, titles_dfs))
     
     
     #DBSCAN
     clustering = []
     clustering_method_results.append(
-        executeDBSCAN(clustering, numericals_dfs, titles_numerical))
+        executeDBSCAN(clustering, numericals_dfs, titles_dfs))
     
     
     #OPTICS
     clustering = []
     clustering_method_results.append(
-        executeOPTICS(clustering, numericals_dfs, titles_numerical))
+        executeOPTICS(clustering, numericals_dfs, titles_dfs))
     
     
     #KMedoids
     clustering = []
     clustering_method_results.append(
-        executeMedoids(clustering, numericals_dfs, titles_numerical))
-
+        executeMedoids(clustering, numericals_dfs, titles_dfs))
+'''
     
     title_methods = ["K-Means", "K-POD", "K-Prototypes", "K-Modes",
                      "Spectral", "Agglomerative", "DBSCAN", "OPTICS", "K-Medoids"]
+    
+    
+    #Si se quiere hacer pruebas descomentar el array de abajo y ponerle el nombre de los metodos
+    title_methods = ['KPrototype']
     
     for i in range(len(clustering_method_results)):
         silhouette = {}

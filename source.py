@@ -36,8 +36,6 @@ def fill_dict(clustering, silhouette, f_measure, precision, recall):
     return [silhouette, f_measure, precision, recall]
 
 
-
-
 def executeKMeans(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)) :
         clustering.append(kmeans(numericals_dfs[i], False, titles_dfs[i]))
@@ -51,12 +49,12 @@ def executeKPod(clustering, numericals_dfs, missings_dfs, titles_dfs):
 
 def executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs):
     for i in range(len(numericals_dfs)) :
-        clustering.append(kprototypes(numericals_dfs[i], mixs_dfs[0], False, titles_dfs[i]))
+        clustering.append(kprototypes(numericals_dfs[i], mixs_dfs[i], i, True, titles_dfs[i]))
     return clustering
 
 def executeKModes(clustering, numericals_dfs, categoricals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(kmodes(numericals_dfs[i], categoricals_dfs[i] ,False, titles_dfs[i]))
+        clustering.append(kmodes(numericals_dfs[i], categoricals_dfs[i], False, titles_dfs[i]))
     return clustering
 
 def executeSPECTRAL(clustering, numericals_dfs, titles_dfs):
@@ -149,11 +147,31 @@ def chooseFinalResult(final_clustering, numericals_dfs,
 
     return final_clustering
 
-
+def plot_hopkins(hopkins):
+    fig = make_subplots(
+    rows=2, cols=1,
+    shared_xaxes=True,
+    vertical_spacing=0.03,
+    specs=[[{"type": "table"}],
+           [{"type": "table"}]]
+    )
+    
+    fig.add_trace(
+    go.Table(
+        header=dict(
+            values=[['<b>Dataset</b>'],
+                  ['<b>Estadístico de Hopkins</b>']]
+        ),
+        cells=dict(
+            values=[np.array(list(hopkins.keys())), np.array(list(hopkins.values()))],
+            align = "left")
+    ),
+    row=1, col=1
+    )
+    fig.show()
+    
 def main():
     [numericals_dfs ,missings_dfs, mixs_dfs, categoricals_dfs] = preprocess()
-    
-    
     
     #reduce_dimension_global_data_plotly()
     clustering = []
@@ -162,18 +180,22 @@ def main():
     f_measure = {}
     precision = {}
     recall = {}
+    hopkins_numeric = {}
     clustering_method_results = []
     
     
-    titles_dfs = ["", " Short data", " Sin país, sexo ni edad", 
+    titles_dfs = ["", " Acortado", " Sin país, sexo ni edad", 
                       " Sin país, sexo ni edad acortado", " Sin sintomas ni signos",
                       " Sin sintomas ni signos acortado",
                       " Sin país, sexo, edad, sintomas ni signos",
                       " Sin país, sexo, edad, sintomas ni signos acortado"]
     
     for i in range(len(titles_dfs)) :
-        hopkins_test(numericals_dfs[i], titles_dfs[i])
-    
+        aux = hopkins_test(numericals_dfs[i], "Numérico-"+ titles_dfs[i])
+        hopkins_numeric["Numérico-"+ titles_dfs[i]] = aux
+        
+    hopkins_numeric = dict(sorted(hopkins_numeric.items(), key=lambda item: item[1]))
+    plot_hopkins(hopkins_numeric);
     
     '''
     #KMEANS
@@ -226,12 +248,12 @@ def main():
     clustering = []
     clustering_method_results.append(
         executeMedoids(clustering, numericals_dfs, titles_dfs))
-
-    '''
+    
+    
     title_methods = ["K-Means", "K-POD", "K-Prototypes", "K-Modes",
                      "Spectral", "Agglomerative", "DBSCAN", "OPTICS", "K-Medoids"]
     
-    '''
+    
     #Si se quiere hacer pruebas descomentar el array de abajo y ponerle el nombre de los metodos
     #title_methods = ['KPrototype']
     
@@ -246,12 +268,12 @@ def main():
         plotResults(clustering_method_results[i], silhouette, f_measure, precision, recall, title_methods[i])
     
     
-    '''
+    
     final_clustering = []
     final_clustering = chooseFinalResult(final_clustering, numericals_dfs,
                       categoricals_dfs, mixs_dfs, missings_dfs, titles_dfs)
     
-    
+    '''
 
     
     

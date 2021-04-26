@@ -8,12 +8,12 @@ import pandas as pd
 from utils import categorical_columns
 
 def transform_categorical_to_numerical(df):
-    for column in categorical_columns:
+    for column in categorical_columns["0"]:
         aux = pd.get_dummies(df[column], prefix=column)
         df = df.drop(columns= column)
         df = pd.concat([df, aux], axis = 1)
     return df
 
 def fill_null_value_categorical(df):
-    df[categorical_columns] = df[categorical_columns].fillna("Desconocido")
+    df[categorical_columns["0"]] = df[categorical_columns["0"]].fillna("Desconocido")
     return df

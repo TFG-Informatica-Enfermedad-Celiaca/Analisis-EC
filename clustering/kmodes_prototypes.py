@@ -46,14 +46,14 @@ def kmodes(df_numerical, df, extended_information, name=''):
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
     
-    return {"K-Modes"+name: [max_silhouette, metrics.homogeneity_completeness_v_measure(labels_true, labels_pred)]}
+    return {"K-Modes"+name: [max_silhouette,  b3.calc_b3(labels_true, labels_pred)]}
     
 
-def kprototypes(df_numerical, df, extended_information, name=''):
+def kprototypes(df_numerical, df, index, extended_information, name=''):
     data = df.drop(columns = ['Diagnóstico'])
     data_numerical = df_numerical.drop(columns = ['Diagnóstico'])
     categories_numbers = [data.columns.get_loc(col) for col in 
-                          categorical_columns]
+                          categorical_columns[str(index)]]
     
     X = data.to_numpy()
     [n_clusters,max_silhouette] = silhouette("K-Prototypes"+name, data_numerical, X, None, 

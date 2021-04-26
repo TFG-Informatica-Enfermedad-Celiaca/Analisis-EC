@@ -24,17 +24,12 @@ def preprocess():
     df_mix = fill_null_value_categorical(df)
     df_missing = df_numerical
     df_numerical.to_excel("formated_numerical_data.xlsx", index = False)
-
-    
-    
-    
     
     #Experiments with delete
     #calculate_information(df)
     #delete_null_columns(df)
     #delete_null_rows(df)
     #delete_percentages(df)
-    
     
     df_numerical = imputation(df_numerical)
     df_mix[numerical_columns] = df_numerical[numerical_columns]
@@ -58,8 +53,6 @@ def preprocess():
     df_mix.to_excel("mix.xlsx", index = False)
     #df_categorical.to_excel("formated_imputed_scaled_categorical_data.xlsx", index = False)
     
-    
-    
     #Numerical Experiments 
     df_try1 = df_numerical.drop(columns=try1_columns)
     df_try2 = df_numerical_short.drop(columns=try1_columns)
@@ -77,26 +70,13 @@ def preprocess():
     numericals_dfs = [df_numerical, df_numerical_short, df_try1, df_try2, 
                      df_try3, df_try4, df_try5, df_try6]
     
-    
-    
     #Categorical Experiments
-    df_cat_short = df_categorical.drop(columns = ["DCG_ATG2", "DSG ATG2",
-        "DCG A-PDG", "DSG A-PDG", "Valoracion LIEs DCG",
-         "Valoracion LIEs DSG"])
     df_cat_try1 = df_categorical.drop(columns=try_cat_columns)
-    df_cat_try2 = df_cat_short.drop(columns = try_cat_columns)
-    df_cat_try3 = pd.concat([df_categorical.iloc[:, 0:17], df_categorical.iloc[:, 57:70]], axis = 1)
-    df_cat_try4 = df_cat_try3.drop(columns = ["DCG_ATG2", "DSG ATG2",
-        "DCG A-PDG", "DSG A-PDG", "Valoracion LIEs DCG",
-         "Valoracion LIEs DSG"])
-    df_cat_try5 = df_cat_try3.drop(columns=try_cat_columns)
-    df_cat_try6 = df_cat_try4.drop(columns = try_cat_columns)
+    df_cat_try2 = pd.concat([df_categorical.iloc[:, 0:17], df_categorical.iloc[:, 57:70]], axis = 1)
+    df_cat_try3 = df_cat_try2.drop(columns=try_cat_columns)
     
-    
-    categorical_dfs = [df_categorical, df_cat_short, df_cat_try1, df_cat_try2,
-                       df_cat_try3, df_cat_try4, df_cat_try5, df_cat_try6]
-    
-    
+    categorical_dfs = [df_categorical,df_cat_try1, df_cat_try2,
+                       df_cat_try3]
     
     #Mix experiments
     df_mix_short = df_mix.drop(columns = ["DCG_ATG2", "DSG ATG2",
@@ -114,8 +94,6 @@ def preprocess():
 
     mixs_dfs = [df_mix, df_mix_short, df_mix_try1, df_mix_try2,
                        df_mix_try3, df_mix_try4, df_mix_try5, df_mix_try6]
-    
-    
     
     
     #Missing Experiments

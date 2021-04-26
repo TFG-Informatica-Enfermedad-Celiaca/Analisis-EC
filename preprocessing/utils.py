@@ -128,11 +128,42 @@ to_drop_values = {
 numerical_columns = ["DCG_ATG2_VALUE", "DCG A-PDG_VALUE", "DSG ATG2 VALUE", "DSG A-PDG VALUE", 
         "LIEs DCG %GD", "LIEs DCG %iNK", "LIEs DSG %GD", "LIEs DSG %iNK"]
 
-categorical_columns = ["Indique país de origen o en su defecto la información disponible", 
+categorical_columns = {
+    "0": ["Indique país de origen o en su defecto la información disponible", 
         "Sexo", "Edad diagnóstico", "HLA: grupos de riesgo", "DCG EMA", "DSG EMA  ", 
         "Helicobacter pylori en el momento de la biopsia", "Fecha nacimiento", 
         "DCG_ATG2", "DCG A-PDG", "DSG ATG2", "DSG A-PDG", "Valoracion LIEs DCG", 
-        "Valoracion LIEs DSG", "Biopsia DCG", "Biopsia DSG"]
+        "Valoracion LIEs DSG", "Biopsia DCG", "Biopsia DSG"],
+    "1": ["Indique país de origen o en su defecto la información disponible", 
+        "Sexo", "Edad diagnóstico", "HLA: grupos de riesgo", "DCG EMA", "DSG EMA  ", 
+        "Helicobacter pylori en el momento de la biopsia", "Fecha nacimiento", 
+        "Biopsia DCG", "Biopsia DSG"],
+    "2": ["HLA: grupos de riesgo", "DCG EMA", "DSG EMA  ", 
+        "Helicobacter pylori en el momento de la biopsia", "Fecha nacimiento", 
+        "DCG_ATG2", "DCG A-PDG", "DSG ATG2", "DSG A-PDG", "Valoracion LIEs DCG", 
+        "Valoracion LIEs DSG", "Biopsia DCG", "Biopsia DSG"],
+    "3": ["HLA: grupos de riesgo", "DCG EMA", "DSG EMA  ", 
+        "Helicobacter pylori en el momento de la biopsia", "Fecha nacimiento", 
+        "Biopsia DCG", "Biopsia DSG"],
+    
+    "4": ["Indique país de origen o en su defecto la información disponible", 
+        "Sexo", "Edad diagnóstico", "HLA: grupos de riesgo", "DCG EMA", "DSG EMA  ", 
+        "Helicobacter pylori en el momento de la biopsia", "Fecha nacimiento", 
+        "DCG_ATG2", "DCG A-PDG", "DSG ATG2", "DSG A-PDG", "Valoracion LIEs DCG", 
+        "Valoracion LIEs DSG", "Biopsia DCG", "Biopsia DSG"], 
+    "5": ["Indique país de origen o en su defecto la información disponible", 
+        "Sexo", "Edad diagnóstico", "HLA: grupos de riesgo", "DCG EMA", "DSG EMA  ", 
+        "Helicobacter pylori en el momento de la biopsia", "Fecha nacimiento", 
+        "Biopsia DCG", "Biopsia DSG"],
+    "6": ["HLA: grupos de riesgo", "DCG EMA", "DSG EMA  ", 
+        "Helicobacter pylori en el momento de la biopsia", "Fecha nacimiento", 
+        "DCG_ATG2", "DCG A-PDG", "DSG ATG2", "DSG A-PDG", "Valoracion LIEs DCG", 
+        "Valoracion LIEs DSG", "Biopsia DCG", "Biopsia DSG"],
+    "7": ["HLA: grupos de riesgo", "DCG EMA", "DSG EMA  ", 
+        "Helicobacter pylori en el momento de la biopsia", "Fecha nacimiento", 
+        "Biopsia DCG", "Biopsia DSG"],
+    }
+    
 
 
 try1_columns = ['Indique país de origen o en su defecto la información disponible_Europeo',
@@ -140,7 +171,9 @@ try1_columns = ['Indique país de origen o en su defecto la información disponi
                 'Sexo_Hombre', 'Sexo_Mujer', 'Edad diagnóstico_+70', 'Edad diagnóstico_-18',
                 'Edad diagnóstico_18 - 27', 'Edad diagnóstico_28 - 37', 'Edad diagnóstico_38 - 47',
                 'Edad diagnóstico_48 - 57', 'Edad diagnóstico_58 - 70', 
-                '1º grado', '2º grado', '3º grado', '4º grado']
+                '1º grado', '2º grado', '3º grado', '4º grado', 'Fecha nacimiento_+70', 
+                'Fecha nacimiento_18 - 27', 'Fecha nacimiento_28 - 37', 'Fecha nacimiento_38 - 47', 
+                'Fecha nacimiento_48 - 57', 'Fecha nacimiento_58 - 70']
 
 try_cat_columns = ['Indique país de origen o en su defecto la información disponible',
                    'Sexo', 'Edad diagnóstico', '1º grado', '2º grado', '3º grado', '4º grado']

@@ -116,7 +116,34 @@ def preprocess():
                        df_mix_try3, df_mix_try4, df_mix_try5, df_mix_try6]
     
     
-    return [numericals_dfs, df_missing, mixs_dfs, categorical_dfs]
+    
+    
+    #Missing Experiments
+    df_missing_short = df_missing.drop(columns = ["DCG_ATG2_Negativo", "DCG_ATG2_Positivo", 
+        "DSG ATG2_Negativo", "DSG ATG2_Positivo","DCG A-PDG_Negativo","DCG A-PDG_Positivo",
+        "DSG A-PDG_Negativo","DSG A-PDG_Positivo", "Valoracion LIEs DCG_Compatible con EC activa",
+        "Valoracion LIEs DCG_Compatible con EC en DSG", "Valoracion LIEs DCG_No compatible con EC", 
+        "Valoracion LIEs DSG_Compatible con EC activa", "Valoracion LIEs DSG_Compatible con EC en DSG",
+        "Valoracion LIEs DSG_No compatible con EC"])
+    df_missing_try1 = df_missing.drop(columns=try1_columns)
+    df_missing_try2 = df_missing_short.drop(columns=try1_columns)
+    df_missing_try3 = pd.concat([df_numerical.iloc[:, 0:8], df_numerical.iloc[:, 48:108]], axis = 1)
+    df_missing_try4 = df_missing_try3.drop(columns = ["DCG_ATG2_Negativo", "DCG_ATG2_Positivo", 
+        "DSG ATG2_Negativo", "DSG ATG2_Positivo","DCG A-PDG_Negativo","DCG A-PDG_Positivo",
+        "DSG A-PDG_Negativo","DSG A-PDG_Positivo", "Valoracion LIEs DCG_Compatible con EC activa",
+        "Valoracion LIEs DCG_Compatible con EC en DSG", "Valoracion LIEs DCG_No compatible con EC", 
+        "Valoracion LIEs DSG_Compatible con EC activa", "Valoracion LIEs DSG_Compatible con EC en DSG",
+        "Valoracion LIEs DSG_No compatible con EC"])
+    
+    df_missing_try5 = df_missing_try3.drop(columns=try1_columns)
+    df_missing_try6 = df_missing_try4.drop(columns = try1_columns)
+    
+    missings_dfs = [df_missing, df_missing_short, df_missing_try1, df_missing_try2, 
+                     df_missing_try3, df_missing_try4, df_missing_try5, df_missing_try6]
+    
+    
+    
+    return [numericals_dfs, missings_dfs, mixs_dfs, categorical_dfs]
 
 
 

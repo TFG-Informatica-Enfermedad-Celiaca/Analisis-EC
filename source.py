@@ -44,9 +44,9 @@ def executeKMeans(clustering, numericals_dfs, titles_dfs):
     return clustering
 
 
-def executeKPod(clustering, numericals_dfs, df_missing, titles_dfs):
+def executeKPod(clustering, numericals_dfs, missings_dfs, titles_dfs):
     for i in range(len(numericals_dfs)) :
-        clustering.append(kpod(numericals_dfs[i], df_missing, False, titles_dfs[i]))
+        clustering.append(kpod(numericals_dfs[i], missings_dfs[i], False, titles_dfs[i]))
     return clustering
 
 def executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs):
@@ -66,7 +66,7 @@ def executeSPECTRAL(clustering, numericals_dfs, titles_dfs):
 
 def executeAgglomerative(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(agglomerative(numericals_dfs[i],True, titles_dfs[i]))
+        clustering.append(agglomerative(numericals_dfs[i], False, titles_dfs[i]))
     return clustering
 
 def executeDBSCAN(clustering, numericals_dfs, titles_dfs):
@@ -130,10 +130,28 @@ def plotResults(clustering, silhouette, f_measure, precision, recall, title):
     fig.show()
     
     
+def chooseFinalResult(final_clustering, numericals_dfs,
+                      categoricals_dfs, mixs_dfs, missings_dfs, titles_dfs):
+
+    final_clustering.append(kmeans(numericals_dfs[6], True, titles_dfs[6]))
+    final_clustering.append(kpod(numericals_dfs[6], missings_dfs[6], True, titles_dfs[5]))
+    
+    #KProto fallaba
+    ##final_clustering.
+    
+    final_clustering.append(kmodes(numericals_dfs[2], categoricals_dfs[2], True, titles_dfs[3]))
+    final_clustering.append(spectral(numericals_dfs[7], True, titles_dfs[7]))
+    
+    #Agglomerative salen 4. Hay que quedarse con ward creo (no estoy seguro)
+    final_clustering.append(agglomerative(numericals_dfs[7], True, titles_dfs[7]))
+    
+    
+
+    return final_clustering
 
 
 def main():
-    [numericals_dfs ,df_missing, mixs_dfs, categoricals_dfs] = preprocess()
+    [numericals_dfs ,missings_dfs, mixs_dfs, categoricals_dfs] = preprocess()
     
     
     
@@ -165,15 +183,15 @@ def main():
     #KPOD
     clustering = []
     clustering_method_results.append(
-        executeKPod(clustering, numericals_dfs, df_missing, titles_dfs))
+        executeKPod(clustering, numericals_dfs, missings_dfs, titles_dfs))
     
-    '''
+    
     #KPrototypes
     clustering = []
     clustering_method_results.append(
         executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs))
     
-    '''
+    
     #KModes
     clustering = []
     clustering_method_results.append(
@@ -208,14 +226,14 @@ def main():
     clustering = []
     clustering_method_results.append(
         executeMedoids(clustering, numericals_dfs, titles_dfs))
-'''
-    
+
+    '''
     title_methods = ["K-Means", "K-POD", "K-Prototypes", "K-Modes",
                      "Spectral", "Agglomerative", "DBSCAN", "OPTICS", "K-Medoids"]
     
-    
+    '''
     #Si se quiere hacer pruebas descomentar el array de abajo y ponerle el nombre de los metodos
-    title_methods = ['KPrototype']
+    #title_methods = ['KPrototype']
     
     for i in range(len(clustering_method_results)):
         silhouette = {}
@@ -227,6 +245,14 @@ def main():
         silhouette = dict(sorted(silhouette.items(), key=lambda item: item[1], reverse=True))
         plotResults(clustering_method_results[i], silhouette, f_measure, precision, recall, title_methods[i])
     
+    
+    '''
+    final_clustering = []
+    final_clustering = chooseFinalResult(final_clustering, numericals_dfs,
+                      categoricals_dfs, mixs_dfs, missings_dfs, titles_dfs)
+    
+    
+
     
     
 

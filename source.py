@@ -49,12 +49,12 @@ def executeKPod(clustering, numericals_dfs, missings_dfs, titles_dfs):
 
 def executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs):
     for i in range(len(numericals_dfs)) :
-        clustering.append(kprototypes(numericals_dfs[i], mixs_dfs[i], i, True, titles_dfs[i]))
+        clustering.append(kprototypes(numericals_dfs[i], mixs_dfs[i], i, False, titles_dfs[i]))
     return clustering
 
 def executeKModes(clustering, numericals_dfs, categoricals_dfs, titles_dfs):
-    for i in range(len(numericals_dfs)):
-        clustering.append(kmodes(numericals_dfs[i], categoricals_dfs[i], False, titles_dfs[i]))
+    for i in range(len(categoricals_dfs)):
+        clustering.append(kmodes(numericals_dfs[2*i], categoricals_dfs[i], False, titles_dfs[i]))
     return clustering
 
 def executeSPECTRAL(clustering, numericals_dfs, titles_dfs):
@@ -197,7 +197,7 @@ def main():
     hopkins_numeric = dict(sorted(hopkins_numeric.items(), key=lambda item: item[1]))
     plot_hopkins(hopkins_numeric);
     
-    '''
+    
     #KMEANS
     clustering_method_results.append(
         executeKMeans(clustering, numericals_dfs, titles_dfs))
@@ -273,7 +273,7 @@ def main():
     final_clustering = chooseFinalResult(final_clustering, numericals_dfs,
                       categoricals_dfs, mixs_dfs, missings_dfs, titles_dfs)
     
-    '''
+    
 
     
     

@@ -29,10 +29,10 @@ from plotly.subplots import make_subplots
 def fill_dict(clustering, silhouette, f_measure, precision, recall):
     for cluster_method in clustering:
         for key in cluster_method.keys():
-            silhouette[key] = cluster_method[key][0]
-            f_measure[key] = cluster_method[key][1][0]
-            precision[key] = cluster_method[key][1][1]
-            recall[key] = cluster_method[key][1][2]
+            silhouette[key] = round(cluster_method[key][0], 3)
+            f_measure[key] = round(cluster_method[key][1][0], 3)
+            precision[key] = round(cluster_method[key][1][1], 3)
+            recall[key] = round(cluster_method[key][1][2], 3)
     return [silhouette, f_measure, precision, recall]
 
 
@@ -94,6 +94,7 @@ def plotResults(clustering, silhouette, f_measure, precision, recall, title):
     
     fig.add_trace(
     go.Table(
+        columnwidth = [150,90],
         header=dict(
             values=[['<b>Algoritmo</b>'],
                   ['<b>Coeficiente de Silhouette</b>']]
@@ -107,6 +108,7 @@ def plotResults(clustering, silhouette, f_measure, precision, recall, title):
     
     fig.add_trace(
     go.Table(
+        columnwidth = [150,30,30,30],
         header=dict(
             values=[['<b>Algoritmo</b>'],
                   ['<b>Valor-F</b>'],['<b>Precisión</b>'],['<b>Exhaustividad</b>']]
@@ -123,7 +125,8 @@ def plotResults(clustering, silhouette, f_measure, precision, recall, title):
 
     fig.update_layout(
     title_text = title,
-    height=800,
+    height=600,
+    width=950
     )
     fig.show()
     
@@ -168,6 +171,7 @@ def plot_hopkins(hopkins):
     ),
     row=1, col=1
     )
+    fig.update_layout(width=500, height=1000)
     fig.show()
     
 def main():
@@ -189,19 +193,51 @@ def main():
                       " Sin sintomas ni signos acortado",
                       " Sin país, sexo, edad, sintomas ni signos",
                       " Sin país, sexo, edad, sintomas ni signos acortado"]
+    titles_categorical_dfs = ["", " Sin país, sexo ni edad", 
+                      " Sin sintomas ni signos", " Sin país, sexo, edad, sintomas ni signos"]
     
     for i in range(len(titles_dfs)) :
         aux = hopkins_test(numericals_dfs[i], "Numérico-"+ titles_dfs[i])
-        hopkins_numeric["Numérico-"+ titles_dfs[i]] = aux
+        hopkins_numeric["Numérico-"+ titles_dfs[i]] = round(aux, 3)
         
     hopkins_numeric = dict(sorted(hopkins_numeric.items(), key=lambda item: item[1]))
     plot_hopkins(hopkins_numeric);
     
     
+    
+    '''
+    PRUEBA DE CONCEPTO
+    numerical_df = numericals_dfs[0].drop(numericals_dfs[0][(numericals_dfs[0]['Diagnóstico'] != 'EC') &
+                    (numericals_dfs[0]['Diagnóstico'] != 'no EC ni SGNC')].index)
+    
+    missing_df = missings_dfs[0].drop(missings_dfs[0][(missings_dfs[0]['Diagnóstico'] != 'EC') &
+                    (missings_dfs[0]['Diagnóstico'] != 'no EC ni SGNC')].index)
+    
+    categorical_df = categoricals_dfs[0].drop(categoricals_dfs[0][(categoricals_dfs[0]['Diagnóstico'] != 'EC') &
+                    (categoricals_dfs[0]['Diagnóstico'] != 'no EC ni SGNC')].index)
+    
+    filter_col = [col for col in numerical_df if (col.startswith('HLA: grupos de riesgo') |
+                    col.startswith('DCG EMA') | col.startswith('DSG EMA') |
+                    col.startswith('Biopsia DCG') | col.startswith('Biopsia DSG'))]
+    
+    numerical_df = numerical_df.filter(filter_col +['DCG_ATG2_VALUE', 'DCG A-PDG_VALUE', 'DSG ATG2 VALUE', 
+        'DSG A-PDG VALUE', 'LIEs DCG %GD', 'LIEs DCG %iNK', 'LIEs DSG %GD', 'LIEs DSG %iNK', 'Diagnóstico'])
+    
+    missing_df = missing_df.filter(filter_col +['DCG_ATG2_VALUE', 'DCG A-PDG_VALUE', 'DSG ATG2 VALUE', 
+        'DSG A-PDG VALUE', 'LIEs DCG %GD', 'LIEs DCG %iNK', 'LIEs DSG %GD', 'LIEs DSG %iNK', 'Diagnóstico'])
+    
+    categorical_df = categorical_df.filter(['DCG_ATG2', 'DCG A-PDG', 'DSG ATG2', 
+        'DSG A-PDG', 'Valoracion LIEs DCG', 'Valoracion LIEs DSG','Biopsia DCG','Biopsia DSG',
+        'DCG EMA','DSG EMA  ','Diagnóstico'])
+    
+    kmeans(numerical_df,  True, " -Columnas importantes")
+    '''
+    
     #KMEANS
     clustering_method_results.append(
         executeKMeans(clustering, numericals_dfs, titles_dfs))
     
+
     #KPOD
     clustering = []
     clustering_method_results.append(
@@ -217,7 +253,7 @@ def main():
     #KModes
     clustering = []
     clustering_method_results.append(
-        executeKModes(clustering, numericals_dfs, categoricals_dfs, titles_dfs))
+        executeKModes(clustering, numericals_dfs, categoricals_dfs, titles_categorical_dfs))
     
     
     #SPECTRAL
@@ -268,14 +304,12 @@ def main():
         plotResults(clustering_method_results[i], silhouette, f_measure, precision, recall, title_methods[i])
     
     
-    
+    '''
     final_clustering = []
     final_clustering = chooseFinalResult(final_clustering, numericals_dfs,
                       categoricals_dfs, mixs_dfs, missings_dfs, titles_dfs)
     
-    
-
-    
+    '''
     
 
 if __name__ == "__main__":

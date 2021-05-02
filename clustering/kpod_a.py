@@ -36,16 +36,15 @@ def kpod(df_complete, df, extended_information, name=''):
     # save the cluster assignments and centers
     cluster_assignments = clustered_data[0]
     
-    if (extended_information):
-        reduce_dimension_after_clustering(cluster_assignments, n_clusters, 'K-POD' + name)
-        f1_score(cluster_assignments)
-    
-        rate(df, cluster_assignments, 'K-POD'+name)
-        
     df['cluster'] = cluster_assignments
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
+    
+    if (extended_information):
+        #reduce_dimension_after_clustering(cluster_assignments, n_clusters, 'K-POD' + name)
+        #f1_score(cluster_assignments)
+        rate(df, cluster_assignments, 'K-POD'+name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
     
     return {"K-POD"+name: [max_silhouette, b3.calc_b3(labels_true, labels_pred)]}
 

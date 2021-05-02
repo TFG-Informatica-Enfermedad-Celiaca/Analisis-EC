@@ -64,22 +64,21 @@ def agglomerative(df, extended_information, name):
         max_silh_dict["Agglomerative - " + metric + name]=[]
         max_silh_dict["Agglomerative - " + metric + name].append(max_silhouette)
         
-        if (extended_information):
-            reduce_dimension_after_clustering(clusters, n_clusters, 'Agglomerative ' + metric + name)
-            f1_score(clusters)
-            plot_dendrogram(model, truncate_mode='level', p=n_clusters)
-            plt.title(metric)
-            plt.xlabel("Number of points in node (or index of point if no parenthesis).")
-            plt.show()
-        
-            rate(df, clusters, 'Agglomerative '+metric + name)
-    
         df['cluster'] = clusters
         df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
         labels_true = df_con_diagnostico['Diagnóstico'].values
         labels_pred = df_con_diagnostico['cluster'].values
         
         max_silh_dict["Agglomerative - " + metric + name].append(b3.calc_b3(labels_true, labels_pred))
+        if (extended_information):
+            #reduce_dimension_after_clustering(clusters, n_clusters, 'Agglomerative ' + metric + name)
+            #f1_score(clusters)
+            #plot_dendrogram(model, truncate_mode='level', p=n_clusters)
+            #plt.title(metric)
+            #plt.xlabel("Number of points in node (or index of point if no parenthesis).")
+            #plt.show()
+            rate(df, clusters, 'Agglomerative '+metric + name, max_silhouette, b3.calc_b3(labels_true, labels_pred))  
+        
     return max_silh_dict
         
         

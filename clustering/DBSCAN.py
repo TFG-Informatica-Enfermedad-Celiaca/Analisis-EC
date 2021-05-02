@@ -47,16 +47,17 @@ def dbscan (df, extended_information, name):
     db = DBSCAN(eps=0.7, min_samples=2, algorithm='auto').fit(data)
     clusters = db.fit_predict(data)
     aux = len(db.core_sample_indices_)
-   
-    if (extended_information):
-        reduce_dimension_after_clustering(clusters, aux, 'DBSCAN' + name)
-        f1_score(clusters)
-        rate(df, clusters, 'DBSCAN' + name)  
     
     df['cluster'] = clusters
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
+   
+    if (extended_information):
+        #reduce_dimension_after_clustering(clusters, aux, 'DBSCAN' + name)
+        #f1_score(clusters)
+        rate(df, clusters, 'DBSCAN' + name, silhouette_score(data, db.labels_),
+                       b3.calc_b3(labels_true, labels_pred))  
     
     return {"DBScan" + name: [silhouette_score(data, db.labels_),
                        b3.calc_b3(labels_true, labels_pred)]}

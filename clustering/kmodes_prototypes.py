@@ -36,15 +36,15 @@ def kmodes(df_numerical, df, extended_information, name=''):
     kmodes = KModes(n_clusters=n_clusters, init='Huang', verbose=0, random_state = 0)
     clusters = kmodes.fit_predict(X)
     
-    if (extended_information):
-        reduce_dimension_after_clustering(clusters, n_clusters, 'K-Modes'+name)
-        f1_score(clusters)
-        rate(df, clusters, 'K-Modes'+name)
-    
     df['cluster'] = clusters
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
+    
+    if (extended_information):
+        #reduce_dimension_after_clustering(clusters, n_clusters, 'K-Modes'+name)
+        #f1_score(clusters)
+        rate(df, clusters, 'K-Modes'+name, max_silhouette,  b3.calc_b3(labels_true, labels_pred))
     
     return {"K-Modes"+name: [max_silhouette,  b3.calc_b3(labels_true, labels_pred)]}
     
@@ -65,16 +65,15 @@ def kprototypes(df_numerical, df, index, extended_information, name=''):
     kproto = KPrototypes(n_clusters=n_clusters, init='Huang', verbose=0, random_state = 0)
     clusters = kproto.fit_predict(X, categorical=categories_numbers)
     
-    if(extended_information):
-        reduce_dimension_after_clustering(clusters, n_clusters, 'K-Prototype'+name)
-        f1_score(clusters)
-        
-        rate(df, clusters, 'K-Prototype'+name)
-    
     df['cluster'] = clusters
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
+    
+    if(extended_information):
+        #reduce_dimension_after_clustering(clusters, n_clusters, 'K-Prototype'+name)
+        #f1_score(clusters)
+        rate(df, clusters, 'K-Prototype'+name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
     
     return {"K-Prototypes" + name: [max_silhouette, b3.calc_b3(labels_true, labels_pred)]}
     

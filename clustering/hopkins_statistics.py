@@ -13,8 +13,6 @@ import pandas as pd
 def hopkins_test(df, name):
     X = df.drop(columns = ['Diagnóstico']).values
     aux = hopkins(X, X.shape[0])
-    print("El valor del estadístico de hopkins es :",aux ,
-           " para el dataset :", name)
     
     return aux
     

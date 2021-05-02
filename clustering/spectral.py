@@ -27,16 +27,16 @@ def spectral(df, extended_information, name):
     spectral = SpectralClustering(n_clusters= n_clusters, 
         random_state=42, affinity="nearest_neighbors", n_neighbors=10)
     clusters = spectral.fit_predict(X)
-
-    if (extended_information):
-        reduce_dimension_after_clustering(clusters, n_clusters, 'Spectral' + name)
-        f1_score(clusters)
-    
-        rate(df, clusters, 'Spectral' + name)
     
     df['cluster'] = clusters
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
+
+    if (extended_information):
+        #reduce_dimension_after_clustering(clusters, n_clusters, 'Spectral' + name)
+        #f1_score(clusters)
+        rate(df, clusters, 'Spectral' + name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
+    
     
     return {"Spectral" + name: [max_silhouette, b3.calc_b3(labels_true, labels_pred)]}

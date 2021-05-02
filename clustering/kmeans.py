@@ -24,15 +24,15 @@ def kmeans (df, extended_information, name=''):
     kmeans = KMeans(n_clusters=n_clusters, init='random', n_init=1, random_state=0, max_iter=1000) 
     clusters = kmeans.fit_predict(data)
     
-    if (extended_information):
-        reduce_dimension_after_clustering(clusters, n_clusters, 'K-Means'+ name)
-        f1_score(kmeans.labels_)
-        rate(df, clusters, 'K-Means'+ name)
-    
     df['cluster'] = clusters
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
-
+    
+    if (extended_information):
+        #reduce_dimension_after_clustering(clusters, n_clusters, 'K-Means'+ name)
+        #f1_score(kmeans.labels_)
+        rate(df, clusters, 'K-Means'+ name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
+    
     return {"K-Means"+ name: [max_silhouette, b3.calc_b3(labels_true, labels_pred)]}
 

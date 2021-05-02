@@ -37,12 +37,7 @@ def kmedoids (df, extended_information, name):
                                 max_iter=1000)
         
         clusters = kmedoids.fit_predict(data)
-        if (extended_information):
-            reduce_dimension_after_clustering(clusters, n_clusters, 
-                                              'K-Medoids '+ metr + name)
-            f1_score(clusters)
-            
-            rate(df, clusters, 'K-Medoids '+ metr + name)
+        
         
         df['cluster'] = clusters
         df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
@@ -53,4 +48,11 @@ def kmedoids (df, extended_information, name):
         max_silh_dict["K-Medoids - " + metr + name] = []
         max_silh_dict["K-Medoids - " + metr + name].append(max_silhouette)
         max_silh_dict["K-Medoids - " + metr + name].append(b3.calc_b3(labels_true, labels_pred))
+        
+        if (extended_information):
+            #reduce_dimension_after_clustering(clusters, n_clusters, 
+            #                                  'K-Medoids '+ metr + name)
+            #f1_score(clusters)
+            rate(df, clusters, 'K-Medoids '+ metr + name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
+            
     return max_silh_dict

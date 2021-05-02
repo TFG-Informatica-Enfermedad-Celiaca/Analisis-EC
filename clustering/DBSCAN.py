@@ -49,7 +49,9 @@ def dbscan (df, extended_information, name):
     aux = len(db.core_sample_indices_)
     
     df['cluster'] = clusters
-    df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
+    df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnostico"]
+    df_con_diagnostico = df[df['Diagnóstico']!= "Paciente perdido"]
+    df_con_diagnostico = df[df['Diagnóstico']!= "Aún en estudio"]
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
    

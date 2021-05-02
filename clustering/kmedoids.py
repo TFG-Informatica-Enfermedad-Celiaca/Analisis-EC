@@ -40,7 +40,9 @@ def kmedoids (df, extended_information, name):
         
         
         df['cluster'] = clusters
-        df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnóstico"]
+        df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnostico"]
+        df_con_diagnostico = df[df['Diagnóstico']!= "Paciente perdido"]
+        df_con_diagnostico = df[df['Diagnóstico']!= "Aún en estudio"]
         labels_true = df_con_diagnostico['Diagnóstico'].values
         labels_pred = df_con_diagnostico['cluster'].values
         

@@ -101,7 +101,7 @@ def plotResults(clustering, silhouette, f_measure, precision, recall, title):
                                         np.array(list(recall.values()))],
             align = "left")
     )])
-    fig.update_layout(width=1000, height=1000)
+    fig.update_layout(width=1000, height=1000, title_text=title)
     fig.show()
     
     
@@ -134,7 +134,7 @@ def plot_hopkins(hopkins):
             values=[np.array(list(hopkins.keys())), np.array(list(hopkins.values()))],
             align = "left")
     )])
-    fig.update_layout(width=500, height=1000)
+    fig.update_layout(width=500, height=1000, title="Estadístico de Hopkins")
     fig.show()
     
 def main():

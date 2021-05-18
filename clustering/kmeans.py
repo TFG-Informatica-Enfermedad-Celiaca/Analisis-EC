@@ -13,6 +13,7 @@ from rater import rate
 from silhouette import silhouette
 from sklearn import metrics
 import b3
+from datetime import datetime
 
 def kmeans (df, extended_information, name=''):
     data = df.drop(columns = ['Diagnóstico'])
@@ -28,6 +29,19 @@ def kmeans (df, extended_information, name=''):
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnostico"]
     df_con_diagnostico = df[df['Diagnóstico']!= "Paciente perdido"]
     df_con_diagnostico = df[df['Diagnóstico']!= "Aún en estudio"]
+    
+    df_con_diagnostico.loc[(df_con_diagnostico['Diagnóstico']
+                           == "EC") | (df_con_diagnostico['Diagnóstico']
+                           == "EC Potencial") | (df_con_diagnostico['Diagnóstico']
+                           == "EC Refractaria") | (df_con_diagnostico['Diagnóstico']
+                           == "EC dudosa"), 'Diagnóstico'] = "EC"
+                                                   
+    df_con_diagnostico.loc[(df_con_diagnostico['Diagnóstico']
+                           == "no EC ni SGNC") | (df_con_diagnostico['Diagnóstico']
+                           == "SGNC no estricta") | (df_con_diagnostico['Diagnóstico']
+                           == "Sensibilidad al gluten no celíaca (SGNC) estricta") 
+                            , 'Diagnóstico'] = "no EC"                                           
+    
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
     
@@ -36,5 +50,6 @@ def kmeans (df, extended_information, name=''):
         #f1_score(kmeans.labels_)
         rate(df, clusters, 'K-Means'+ name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
     
+    df.to_excel("kmeans.xlsx" , index = False)
     return {"K-Means"+ name: [max_silhouette, b3.calc_b3(labels_true, labels_pred)]}
 

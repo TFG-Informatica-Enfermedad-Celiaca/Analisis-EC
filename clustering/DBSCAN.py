@@ -52,6 +52,19 @@ def dbscan (df, extended_information, name):
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnostico"]
     df_con_diagnostico = df[df['Diagnóstico']!= "Paciente perdido"]
     df_con_diagnostico = df[df['Diagnóstico']!= "Aún en estudio"]
+        
+    df_con_diagnostico.loc[(df_con_diagnostico['Diagnóstico']
+                       == "EC") | (df_con_diagnostico['Diagnóstico']
+                       == "EC Potencial") | (df_con_diagnostico['Diagnóstico']
+                       == "EC Refractaria") | (df_con_diagnostico['Diagnóstico']
+                       == "EC dudosa"), 'Diagnóstico'] = "EC"
+                                               
+    df_con_diagnostico.loc[(df_con_diagnostico['Diagnóstico']
+                       == "no EC ni SGNC") | (df_con_diagnostico['Diagnóstico']
+                       == "SGNC no estricta") | (df_con_diagnostico['Diagnóstico']
+                       == "Sensibilidad al gluten no celíaca (SGNC) estricta") 
+                        , 'Diagnóstico'] = "no EC"   
+                                                     
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
    

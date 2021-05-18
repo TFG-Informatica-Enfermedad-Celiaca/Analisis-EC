@@ -53,4 +53,5 @@ def silhouette(name, data, data_prototypes, data_modes, data_pod,
                        yaxis_title='Coeficiente de Silhouette')
         fig.show()
     
-    return [n_clusters,max(silhouette)]
+    #return [n_clusters,max(silhouette)]
+    return[2, silhouette[0]]

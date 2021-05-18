@@ -33,7 +33,8 @@ def reduce_dimension_global_data_plotly():
                     "Sexo":True, "HLA: grupos de riesgo": True, "DCG EMA": True, 
                     "DSG EMA  ": True, "DCG_ATG2": True, "DCG A-PDG": True,
                     "DSG ATG2": True, "DSG A-PDG": True, "Valoracion LIEs DCG": True, 
-                    "Valoracion LIEs DSG": True, "Biopsia DCG": True, "Biopsia DSG": True})
+                    "Valoracion LIEs DSG": True, "Biopsia DCG": True, "Biopsia DSG": True
+                    })
     fig.update_layout(title='Reducción de la dimensionalidad con UMAP', 
                       xaxis_title='',
                       yaxis_title='')    

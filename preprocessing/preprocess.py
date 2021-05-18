@@ -12,6 +12,8 @@ from imputation import imputation
 from scale import quantile_transformer
 from utils import numerical_columns, try1_columns, try_cat_columns
 import pandas as pd
+from skfeature.function.statistical_based.CFS import cfs
+from skfeature.function.information_theoretical_based.FCBF import fcbf
 
 def preprocess():
     df = read_new_data_from_local()
@@ -67,16 +69,56 @@ def preprocess():
     df_try5 = df_try3.drop(columns=try1_columns)
     df_try6 = df_try4.drop(columns = try1_columns)
     
+    filter_col = [col for col in df_numerical if (col.startswith('HLA: grupos de riesgo') |
+                    col.startswith('DCG EMA') | col.startswith('Biopsia DCG') | 
+                    col.startswith('Valoracion LIEs DCG_') | col.startswith('Valoracion LIEs DSG_') |
+                    col.startswith('Biopsia DSG'))]
+    df_try7 = df_numerical.filter(filter_col +['1º grado', 'Diagnóstico',
+        'Diarrea crónica', 'Estreñimiento', 'Distensión abdominal','Dispepsia','Malabsorción',
+        'Anemia ferropénica o ferropenia', 'DCG_ATG2_Negativo', 'DCG_ATG2_Positivo', 'DCG A-PDG_Negativo', 
+        'DCG A-PDG_Positivo'])
+    
+    
+    X = df_numerical.drop(df_numerical[df_numerical['Diagnóstico'] == 'Sin diagnostico'].index)
+    y = X['Diagnóstico'].to_numpy()
+    X = X.drop(columns=['Diagnóstico']).to_numpy()
+    idx_cfs = cfs(X,y)
+    
+    df_try8 = df_numerical.drop(columns=['Diagnóstico'])
+    features_selected = df_try8.columns[idx_cfs]
+    #print(features_selected)
+    df_try8  = df_try8.iloc[:, idx_cfs]
+    df_try8 ['Diagnóstico'] = df_numerical['Diagnóstico']
+    
+    idx_fcbf = fcbf(X,y)
+    
+    df_try9 = df_numerical.drop(columns=['Diagnóstico'])
+    features_selected = df_try9.columns[idx_fcbf[0]]
+    #print(features_selected)
+    df_try9 = df_try9.iloc[:, idx_fcbf[0]]
+    df_try9['Diagnóstico'] = df_numerical['Diagnóstico']
+    
     numericals_dfs = [df_numerical, df_numerical_short, df_try1, df_try2, 
-                     df_try3, df_try4, df_try5, df_try6]
+                     df_try3, df_try4, df_try5, df_try6, df_try7, df_try8, df_try9]
     
     #Categorical Experiments
     df_cat_try1 = df_categorical.drop(columns=try_cat_columns)
     df_cat_try2 = pd.concat([df_categorical.iloc[:, 0:17], df_categorical.iloc[:, 57:70]], axis = 1)
     df_cat_try3 = df_cat_try2.drop(columns=try_cat_columns)
     
+    df_cat_try4 = df_categorical.filter(['HLA: grupos de riesgo', '1º grado', 'Diagnóstico',
+        'Diarrea crónica', 'Estreñimiento', 'Distensión abdominal','Dispepsia','Malabsorción',
+        'Anemia ferropénica o ferropenia', 'DCG EMA', 'DCG_ATG2', 'DCG A-PDG', 'Valoracion LIEs DCG', 
+        'Valoracion LIEs DSG', 'Biopsia DCG', 'Biopsia DSG'])
+    
+    df_cat_try5 = df_categorical.filter(['Diagnóstico', 'Valoración LIEs DCG', 'Biopsia DCG', 'DCG_ATG2',
+        'DCG EMA', 'DSG ATG2', 'DCG A-PDG', 'Biopsia DCG', 'Valoración LIEs DSG'])
+    
+    df_cat_try_6 = df_categorical.filter(['Diagnóstico','Valoración LIEs DCG', 'Biopsia DCG', 'DCG EMA', 
+                                          'Biopsia DSG', 'Esclerosis múltiple'])
+    
     categorical_dfs = [df_categorical,df_cat_try1, df_cat_try2,
-                       df_cat_try3]
+                       df_cat_try3, df_cat_try4, df_cat_try5, df_cat_try_6]
     
     #Mix experiments
     df_mix_short = df_mix.drop(columns = ["DCG_ATG2", "DSG ATG2",
@@ -90,10 +132,20 @@ def preprocess():
          "Valoracion LIEs DSG"])
     df_mix_try5 = df_mix_try3.drop(columns=try_cat_columns)
     df_mix_try6 = df_mix_try4.drop(columns = try_cat_columns)
+    df_mix_try7 = df_mix.filter(['HLA: grupos de riesgo', '1º grado', 'Diagnóstico',
+        'Diarrea crónica', 'Estreñimiento', 'Distensión abdominal','Dispepsia','Malabsorción',
+        'Anemia ferropénica o ferropenia', 'DCG EMA', 'DCG_ATG2', 'DCG A-PDG', 'Valoracion LIEs DCG', 
+        'Valoracion LIEs DSG', 'Biopsia DCG', 'Biopsia DSG'])
     
-
+    df_mix_try8 = df_mix.filter(['Diagnóstico', 'LIEs DCG %iNK', 'Biopsia DCG', 
+                                 'Valoracion LIEs DCG', 'DCG_ATG2', 'DCG EMA', 
+                                 'LIEs DCG %GD', 'DSG ATG2'])
+    df_mix_try_9 = df_mix.filter(['Diagnóstico', 'LIEs DCG %iNK', 'Biopsia DCG', 
+                                  'Valoracion LIEs DCG', 'DCG EMA', 'Biopsia DSG', 
+                                  'Esclerosis múltiple'])
     mixs_dfs = [df_mix, df_mix_short, df_mix_try1, df_mix_try2,
-                       df_mix_try3, df_mix_try4, df_mix_try5, df_mix_try6]
+                       df_mix_try3, df_mix_try4, df_mix_try5, df_mix_try6, df_mix_try7, df_mix_try8, 
+                       df_mix_try_9]
     
     
     #Missing Experiments
@@ -116,8 +168,27 @@ def preprocess():
     df_missing_try5 = df_missing_try3.drop(columns=try1_columns)
     df_missing_try6 = df_missing_try4.drop(columns = try1_columns)
     
+    filter_col = [col for col in df_missing if (col.startswith('HLA: grupos de riesgo') |
+                    col.startswith('DCG EMA') | col.startswith('Biopsia DCG') | 
+                    col.startswith('Valoracion LIEs DCG_') | col.startswith('Valoracion LIEs DSG_') |
+                    col.startswith('Biopsia DSG'))]
+    df_missing_try7 = df_missing.filter(filter_col +['1º grado', 'Diagnóstico',
+        'Diarrea crónica', 'Estreñimiento', 'Distensión abdominal','Dispepsia','Malabsorción',
+        'Anemia ferropénica o ferropenia', 'DCG_ATG2_Negativo', 'DCG_ATG2_Positivo', 'DCG A-PDG_Negativo', 
+        'DCG A-PDG_Positivo'])
+    
+    df_missing_try8 = df_missing.drop(columns=['Diagnóstico'])
+    df_missing_try8 = df_missing_try8.iloc[:, idx_cfs]
+    df_missing_try8['Diagnóstico'] = df_missing['Diagnóstico']
+    
+    df_missing_try9 = df_numerical.drop(columns=['Diagnóstico'])
+    df_missing_try9 = df_missing_try9.iloc[:, idx_fcbf[0]]
+    df_missing_try9['Diagnóstico'] = df_numerical['Diagnóstico']
+    
+    
     missings_dfs = [df_missing, df_missing_short, df_missing_try1, df_missing_try2, 
-                     df_missing_try3, df_missing_try4, df_missing_try5, df_missing_try6]
+                     df_missing_try3, df_missing_try4, df_missing_try5, df_missing_try6, 
+                     df_missing_try7, df_missing_try8, df_missing_try9]
     
     
     

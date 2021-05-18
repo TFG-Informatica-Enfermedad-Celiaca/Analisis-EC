@@ -162,6 +162,10 @@ categorical_columns = {
     "7": ["HLA: grupos de riesgo", "DCG EMA", "DSG EMA  ", 
         "Helicobacter pylori en el momento de la biopsia", "Fecha nacimiento", 
         "Biopsia DCG", "Biopsia DSG"],
+    "8": ['HLA: grupos de riesgo', 'DCG EMA', 'DCG_ATG2', 'DCG A-PDG', 'Valoracion LIEs DCG', 
+        'Valoracion LIEs DSG', 'Biopsia DCG', 'Biopsia DSG'],
+    "9": ['Biopsia DCG', 'Valoracion LIEs DCG', 'DCG_ATG2', 'DCG EMA','DSG ATG2'],
+    "10": ['Biopsia DCG', 'Valoracion LIEs DCG', 'DCG EMA', 'Biopsia DSG']
     }
     
 

@@ -16,7 +16,7 @@ Read the relevant columns form .xlsx stored in local and creates deaframe
 def read_new_data_from_local():
     try:
         df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Datos actualizados.xlsx')
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Datos actualizados.xlsx')
         return df
     except:
         try:
@@ -34,7 +34,7 @@ Read the relevant columns form .xlsx stored in local and creates deaframe
 def read_columns_from_local():
     try:
         df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Important columns.xlsx')
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Important columns.xlsx')
         return df
     except:
         try:
@@ -55,7 +55,7 @@ Read the relevant columns form .xlsx stored in local and creates deaframe
 def read_data_from_local():
     try:
         df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Analisis-EC/formated_data.xlsx')
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Analisis-EC/formated_data.xlsx')
         return df
     except:
         try:
@@ -68,7 +68,7 @@ def read_data_from_local():
 def read_numerical_data_from_local():
     try:
         df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Codigo/Analisis-EC/formated_imputed_scaled_numerical_data.xlsx')
+            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Analisis-EC/formated_imputed_scaled_numerical_data.xlsx')
         return df
     except:
         try:

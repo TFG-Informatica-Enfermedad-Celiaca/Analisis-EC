@@ -28,7 +28,7 @@ def rate(df, clusters, algorithm, silhouette, b3):
 
     colors_final= []
     for c in clusters:
-        colors_final.append(colors[int(c)])
+        colors_final.append(colors[int(c)%len(colors)])
 
     aux['Color'] = colors_final
     mostrar = pd.DataFrame()

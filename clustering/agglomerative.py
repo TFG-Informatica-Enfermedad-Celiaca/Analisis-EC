@@ -48,7 +48,7 @@ def agglomerative(df, extended_information, name):
     data = df.drop(columns = ['Diagnóstico'])
     
     max_silh_dict = {}
-    for metric in ['ward', 'complete', 'average', 'single']:
+    for metric in ['ward', 'average']:
         [n_clusters,max_silhouette] = silhouette("Aglomerative " + metric + name, 
             data, None, None, None, AgglomerativeClustering, None, extended_information,
             affinity='euclidean', memory = None, connectivity = None,

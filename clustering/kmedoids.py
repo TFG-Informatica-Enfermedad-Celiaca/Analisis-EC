@@ -25,7 +25,7 @@ def kmedoids (df, extended_information, name):
     
     #He quitado las distancias manhattan y euclidean porque pasa algo raro con silhoutte
     #for metr in ['manhattan', 'euclidean', 'cosine']:
-    for metr in ['cosine']:
+    for metr in ['euclidean']:
         
         [n_clusters,max_silhouette] = silhouette("K-Medoids "+ metr + name, data, 
                                 None, None, None, KMedoids, None, extended_information, 

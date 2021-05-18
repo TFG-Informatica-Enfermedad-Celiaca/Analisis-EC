@@ -505,6 +505,12 @@ def proces_EMA_column(df, columnName):
     
     df[columnName] = aux2
     
+    #ATG2 + and Kit == Otro => DCG EMA +
+    df['DCG EMA'] = np.where( ((df['DCG_ATG2_1'] == "Positivo") |
+                    (df["DCG ATG2_2  "] == "Positivo")) &
+                    (df["Indicar el kit empleado con el punto de corte entre paréntesis"] == "Otro"),
+                    "Positivo", "Negativo")
+    
     return df
 
 
@@ -559,6 +565,17 @@ def drop_values(df):
     for to_drop in to_drop_values.values():
         df[to_drop[0]] = df[to_drop[0]].replace(to_drop[1], np.nan)
     return df
+
+
+##################################################################
+#           DCG ATG2 - => DCG EMA -
+##################################################################
+def last_adjustments(df):    
+    df.loc[df.DCG_ATG2 == "Negativo", "DCG EMA"] = "Negativo"
+    return df
+
+
+
 '''
 Function that makes the filtering by columns
 '''
@@ -571,7 +588,6 @@ def filtering (df_aux):
     df_aux = countries_preprocesing(df_aux, european_countries, records_number)
 
     df_aux = proces_EMA_column(df_aux, "DCG EMA")
-    df_aux = proces_EMA_column(df_aux, "DSG EMA  ")
 
     df_aux = HLA_formating(df_aux)
     
@@ -601,6 +617,10 @@ def filtering (df_aux):
     df_aux = process_diagnostico(df_aux)
 
     df_aux = drop_values(df_aux)
+    
+    df_aux = last_adjustments(df_aux)
+    
+    
     return df_aux
 
     

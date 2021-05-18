@@ -1,2 +1,5 @@
 DatosBonitos.xlsx
 filterData.xlsx
+clustering/__pychache__/*
+*.xlsx
+*.csv

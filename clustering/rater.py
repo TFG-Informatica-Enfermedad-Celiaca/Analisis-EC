@@ -13,7 +13,11 @@ import numpy as np
 from plotly.subplots import make_subplots
 import matplotlib, random
 
+import os
 
+if not os.path.exists(r"images"):
+    os.mkdir("images")
+    
 def rate(df, clusters, algorithm, silhouette, b3):
     aux = pd.DataFrame()
     aux['Cluster']=clusters
@@ -69,5 +73,5 @@ def rate(df, clusters, algorithm, silhouette, b3):
     row=2, col=1
     )
     fig.update_layout(width=500, height=1300, title =  algorithm)
-    fig.show()
+    fig.write_html("images/" + algorithm + " Clasificacion.html")
     

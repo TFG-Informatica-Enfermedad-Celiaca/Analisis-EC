@@ -17,7 +17,6 @@ from DBSCAN import dbscan
 from kmedoids import kmedoids
 from optics import optics
 from spectral import spectral
-from reduceDimension import reduce_dimension_global_data_plotly
 from hopkins_statistics import hopkins_test
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -26,7 +25,11 @@ import numpy as np
 from plotly.subplots import make_subplots
 from skfeature.function.statistical_based.CFS import cfs
 from skfeature.function.information_theoretical_based.FCBF import fcbf
+import os
 
+if not os.path.exists(r"images"):
+    os.mkdir("images")
+    
 def fill_dict(clustering, silhouette, f_measure, precision, recall):
     for cluster_method in clustering:
         for key in cluster_method.keys():
@@ -39,50 +42,50 @@ def fill_dict(clustering, silhouette, f_measure, precision, recall):
 
 def executeKMeans(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)) :
-        clustering.append(kmeans(numericals_dfs[i], False, titles_dfs[i]))
+        clustering.append(kmeans(numericals_dfs[i], True, titles_dfs[i]))
     return clustering
 
 def executeKPod(clustering, numericals_dfs, missings_dfs, titles_dfs):
     for i in range(len(missings_dfs)) :
-        clustering.append(kpod(numericals_dfs[i], missings_dfs[i], False, titles_dfs[i]))
+        clustering.append(kpod(numericals_dfs[i], missings_dfs[i], True, titles_dfs[i]))
     return clustering
 
 def executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs):
     for i in range(len(mixs_dfs)) :
-        clustering.append(kprototypes(numericals_dfs[i], mixs_dfs[i], i, False, titles_dfs[i]))
+        clustering.append(kprototypes(numericals_dfs[i], mixs_dfs[i], i, True, titles_dfs[i]))
     return clustering
 
 def executeKModes(clustering, numericals_dfs, categoricals_dfs, titles_dfs):
     for i in range(len(categoricals_dfs)):
         if (i > 5):
-            clustering.append(kmodes(numericals_dfs[i], categoricals_dfs[i], False, titles_dfs[i]))
+            clustering.append(kmodes(numericals_dfs[i], categoricals_dfs[i], True, titles_dfs[i]))
         else:
-            clustering.append(kmodes(numericals_dfs[2*i], categoricals_dfs[i], False, titles_dfs[i]))
+            clustering.append(kmodes(numericals_dfs[2*i], categoricals_dfs[i], True, titles_dfs[i]))
     return clustering
 
 def executeSPECTRAL(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(spectral(numericals_dfs[i],False, titles_dfs[i]))
+        clustering.append(spectral(numericals_dfs[i],True, titles_dfs[i]))
     return clustering
 
 def executeAgglomerative(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(agglomerative(numericals_dfs[i], False, titles_dfs[i]))
+        clustering.append(agglomerative(numericals_dfs[i], True, titles_dfs[i]))
     return clustering
 
 def executeDBSCAN(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(dbscan(numericals_dfs[i],False, titles_dfs[i]))
+        clustering.append(dbscan(numericals_dfs[i],True, titles_dfs[i]))
     return clustering
 
 def executeOPTICS(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(optics(numericals_dfs[i],False, titles_dfs[i]))
+        clustering.append(optics(numericals_dfs[i],True, titles_dfs[i]))
     return clustering
 
 def executeMedoids(clustering, numericals_dfs, titles_dfs):
     for i in range(len(numericals_dfs)):
-        clustering.append(kmedoids(numericals_dfs[i],False, titles_dfs[i]))
+        clustering.append(kmedoids(numericals_dfs[i],True, titles_dfs[i]))
     return clustering
 
 
@@ -102,43 +105,8 @@ def plotResults(clustering, silhouette, f_measure, precision, recall, title):
             align = "left")
     )])
     fig.update_layout(width=1000, height=1000, title_text=title)
-    fig.show()
+    fig.write_html("images/Resumen" + title + ".html")
     
-    
-def chooseFinalResult(final_clustering, numericals_dfs,
-                      categoricals_dfs, mixs_dfs, missings_dfs, titles_dfs):
-
-    
-    final_clustering.append(kmeans(numericals_dfs[0], True, titles_dfs[0]))
-    '''
-    final_clustering.append(kpod(numericals_dfs[6], missings_dfs[6], True, titles_dfs[5]))
-    
-    #KProto fallaba
-    ##final_clustering.
-    
-    final_clustering.append(kmodes(numericals_dfs[2], categoricals_dfs[2], True, titles_dfs[3]))
-   
-    final_clustering.append(spectral(numericals_dfs[7], True, titles_dfs[7]))
-    
-    
-    
-    #Agglomerative salen 4. Hay que quedarse con ward creo (no estoy seguro)
-    final_clustering.append(agglomerative(numericals_dfs[9], True, titles_dfs[9]))
-    
-    
-    final_clustering.append(dbscan(numericals_dfs[10], True, titles_dfs[10]))
-    
-    final_clustering.append(optics(numericals_dfs[8], True, titles_dfs[8]))
-    '''
-    
-    
-    '''
-    final_clustering.append(kmedoids(numericals_dfs[9], True, titles_dfs[9]))
-    '''
-    
-    
-
-    return final_clustering
 
 def plot_hopkins(hopkins):
     fig = go.Figure(data=[go.Table(
@@ -150,8 +118,8 @@ def plot_hopkins(hopkins):
             values=[np.array(list(hopkins.keys())), np.array(list(hopkins.values()))],
             align = "left")
     )])
-    fig.update_layout(width=500, height=1000, title="Estadístico de Hopkins")
-    fig.show()
+    fig.update_layout(width=500, height=700, title="Estadístico de Hopkins")
+    fig.write_html("images/Estadístico de Hopkins.html")
     
 def main():
     [numericals_dfs ,missings_dfs, mixs_dfs, categoricals_dfs] = preprocess()
@@ -186,51 +154,21 @@ def main():
         hopkins_numeric["Numérico-"+ titles_dfs[i]] = round(aux, 3)
         
     hopkins_numeric = dict(sorted(hopkins_numeric.items(), key=lambda item: item[1]))
-    plot_hopkins(hopkins_numeric);
+    plot_hopkins(hopkins_numeric);    
     
-    #PRUEBA DE CONCEPTO
-    '''
-    numerical_df = numericals_dfs[0].drop(numericals_dfs[0][(numericals_dfs[0]['Diagnóstico'] != 'EC') &
-                    (numericals_dfs[0]['Diagnóstico'] != 'no EC ni SGNC') ].index)
-    
-    missing_df = missings_dfs[0].drop(missings_dfs[0][(missings_dfs[0]['Diagnóstico'] != 'EC') &
-                    (missings_dfs[0]['Diagnóstico'] != 'no EC ni SGNC')].index)
-    
-    categorical_df = categoricals_dfs[0].drop(categoricals_dfs[0][(categoricals_dfs[0]['Diagnóstico'] != 'EC') &
-                    (categoricals_dfs[0]['Diagnóstico'] != 'no EC ni SGNC')].index)
-    
-    filter_col = [col for col in numerical_df if (col.startswith('HLA: grupos de riesgo') |
-                    col.startswith('DCG EMA') | col.startswith('DSG EMA') |
-                    col.startswith('Biopsia DCG') | col.startswith('Biopsia DSG'))]
-    
-    numerical_df = numerical_df.filter(filter_col +['DCG_ATG2_VALUE', 'DCG A-PDG_VALUE', 'DSG ATG2 VALUE', 
-        'DSG A-PDG VALUE', 'LIEs DCG %GD', 'LIEs DCG %iNK', 'LIEs DSG %GD', 'LIEs DSG %iNK', 'Diagnóstico'])
-    
-    missing_df = missing_df.filter(filter_col +['DCG_ATG2_VALUE', 'DCG A-PDG_VALUE', 'DSG ATG2 VALUE', 
-        'DSG A-PDG VALUE', 'LIEs DCG %GD', 'LIEs DCG %iNK', 'LIEs DSG %GD', 'LIEs DSG %iNK', 'Diagnóstico'])
-    
-    categorical_df = categorical_df.filter(['DCG_ATG2', 'DCG A-PDG', 'DSG ATG2', 
-        'DSG A-PDG', 'Valoracion LIEs DCG', 'Valoracion LIEs DSG','Biopsia DCG','Biopsia DSG',
-        'DCG EMA','DSG EMA  ','Diagnóstico', 'HLA: grupos de riesgo'])
-    '''
-    
-    '''
     #KMEANS
     clustering_method_results.append(
         executeKMeans(clustering, numericals_dfs, titles_dfs))
-    
     
     #KPOD
     clustering = []
     clustering_method_results.append(
         executeKPod(clustering, numericals_dfs, missings_dfs, titles_dfs))
     '''
-    '''
     #KPrototypes
     clustering = []
     clustering_method_results.append(
         executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs))
-    '''
     '''
     #KModes
     clustering = []
@@ -268,14 +206,8 @@ def main():
     clustering_method_results.append(
         executeMedoids(clustering, numericals_dfs, titles_dfs))
     
-    
-    
     title_methods = ["K-Means", "K-POD", "K-Prototypes", "K-Modes",
                     "Spectral", "Agglomerative", "DBSCAN", "OPTICS", "K-Medoids"]
-    '''
-    
-    #Si se quiere hacer pruebas descomentar el array de abajo y ponerle el nombre de los metodos
-    title_methods = ["KMeans"]
     
     for i in range(len(clustering_method_results)):
         silhouette = {}
@@ -284,15 +216,8 @@ def main():
         recall = {}
         [silhouette, f_measure, precision, recall] = fill_dict(
             clustering_method_results[i], silhouette,f_measure, precision, recall)
-        #silhouette = dict(sorted(silhouette.items(), key=lambda item: item[1], reverse=True))
+        
         plotResults(clustering_method_results[i], silhouette, f_measure, precision, recall, title_methods[i])
-    
-    
-    
-    final_clustering = []
-    final_clustering = chooseFinalResult(final_clustering, numericals_dfs,
-                      categoricals_dfs, mixs_dfs, missings_dfs, titles_dfs)
-    
     
     
 

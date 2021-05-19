@@ -13,7 +13,11 @@ pio.renderers.default='browser'
 import numpy as np
 from kPOD import k_pod
 from sklearn_extra.cluster import KMedoids
+import os
 
+if not os.path.exists(r"images"):
+    os.mkdir("images")
+    
 def silhouette(name, data, data_prototypes, data_modes, data_pod,
                cluster_prod,categories_numbers, extended_information,  **kwargs):
     
@@ -51,7 +55,7 @@ def silhouette(name, data, data_prototypes, data_modes, data_pod,
         fig.update_layout(title='Coeficiente de Silhouette ' + name,
                        xaxis_title='Número de clusters',
                        yaxis_title='Coeficiente de Silhouette')
-        fig.show()
+
+        fig.write_html("images/" + name + " Coeficiente de Silhouette.html")
     
-    #return [n_clusters,max(silhouette)]
-    return[2, silhouette[0]]
+    return [n_clusters,max(silhouette)]

@@ -1,5 +1,6 @@
 DatosBonitos.xlsx
 filterData.xlsx
 clustering/__pychache__/*
+preprocessing/__pycache__/*
 *.xlsx
 *.csv

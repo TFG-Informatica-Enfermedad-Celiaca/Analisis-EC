@@ -588,9 +588,8 @@ def filtering (df_aux):
     df_aux = countries_preprocesing(df_aux, european_countries, records_number)
 
     df_aux = proces_EMA_column(df_aux, "DCG EMA")
-
-    df_aux = HLA_formating(df_aux)
     
+    df_aux = HLA_formating(df_aux)
     
     for column in take_the_highest_value_columns.values():
         df_aux = take_highest_value(df_aux, column[0], column[1], column[2],

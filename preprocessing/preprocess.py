@@ -21,6 +21,7 @@ def preprocess():
     df.to_excel("unformated_data.xlsx", index = False)
     df = filtering(df)
     df.to_excel("formated_data.xlsx", index = False)
+    df = df.drop(columns=["Record Id"])
     
     df_numerical = transform_categorical_to_numerical(df)
     df_mix = fill_null_value_categorical(df)
@@ -33,6 +34,8 @@ def preprocess():
     #delete_null_rows(df)
     #delete_percentages(df)
     
+    #Paint red the empty cells
+    
     df_numerical = imputation(df_numerical)
     df_mix[numerical_columns] = df_numerical[numerical_columns]
     df_numerical_short = df_numerical.drop(columns = ["DCG_ATG2_Negativo", "DCG_ATG2_Positivo", 
@@ -44,7 +47,7 @@ def preprocess():
     df_numerical.to_excel("formated_imputed_numerical_data.xlsx", index = False)
     #df_categorical.to_excel("formated_imputed_categorical_data.xlsx", index = False)
     
-    
+
     df_numerical = quantile_transformer(df_numerical)
     df_missing = quantile_transformer(df_missing)
     df_numerical_short[numerical_columns] = df_numerical[numerical_columns]
@@ -77,16 +80,18 @@ def preprocess():
         'Diarrea crónica', 'Estreñimiento', 'Distensión abdominal','Dispepsia','Malabsorción',
         'Anemia ferropénica o ferropenia', 'DCG_ATG2_Negativo', 'DCG_ATG2_Positivo', 'DCG A-PDG_Negativo', 
         'DCG A-PDG_Positivo'])
-    
-    
-    X = df_numerical.drop(df_numerical[df_numerical['Diagnóstico'] == 'Sin diagnostico'].index)
+
+    X = df_numerical[df_numerical['Diagnóstico']!= "Sin diagnostico"]
+    X = X[X['Diagnóstico']!= "Paciente perdido"]
+    X = X[X['Diagnóstico']!= "Aún en estudio"]
+
     y = X['Diagnóstico'].to_numpy()
     X = X.drop(columns=['Diagnóstico']).to_numpy()
     idx_cfs = cfs(X,y)
     
     df_try8 = df_numerical.drop(columns=['Diagnóstico'])
     features_selected = df_try8.columns[idx_cfs]
-    #print(features_selected)
+    print(features_selected)
     df_try8  = df_try8.iloc[:, idx_cfs]
     df_try8 ['Diagnóstico'] = df_numerical['Diagnóstico']
     
@@ -94,7 +99,7 @@ def preprocess():
     
     df_try9 = df_numerical.drop(columns=['Diagnóstico'])
     features_selected = df_try9.columns[idx_fcbf[0]]
-    #print(features_selected)
+    print(features_selected)
     df_try9 = df_try9.iloc[:, idx_fcbf[0]]
     df_try9['Diagnóstico'] = df_numerical['Diagnóstico']
     
@@ -111,11 +116,12 @@ def preprocess():
         'Anemia ferropénica o ferropenia', 'DCG EMA', 'DCG_ATG2', 'DCG A-PDG', 'Valoracion LIEs DCG', 
         'Valoracion LIEs DSG', 'Biopsia DCG', 'Biopsia DSG'])
     
-    df_cat_try5 = df_categorical.filter(['Diagnóstico', 'Valoración LIEs DCG', 'Biopsia DCG', 'DCG_ATG2',
-        'DCG EMA', 'DSG ATG2', 'DCG A-PDG', 'Biopsia DCG', 'Valoración LIEs DSG'])
+    df_cat_try5 = df_categorical.filter(['Diagnóstico', 'Valoración LIEs DCG', 'Biopsia DCG',
+        'DCG ATG2', 'DSG ATG2', 'DCG A-PDG', 'Valoración LIEs DSG'])
     
-    df_cat_try_6 = df_categorical.filter(['Diagnóstico','Valoración LIEs DCG', 'Biopsia DCG', 'DCG EMA', 
-                                          'Biopsia DSG', 'Esclerosis múltiple'])
+    df_cat_try_6 = df_categorical.filter(['Diagnóstico','Valoración LIEs DCG', 'Biopsia DCG',
+                                          'Biopsia DSG', 'Esclerosis múltiple', 'Valoración LIEs DSG',
+                                          'Malabsorción','DCG ATG2' ])
     
     categorical_dfs = [df_categorical,df_cat_try1, df_cat_try2,
                        df_cat_try3, df_cat_try4, df_cat_try5, df_cat_try_6]
@@ -137,12 +143,26 @@ def preprocess():
         'Anemia ferropénica o ferropenia', 'DCG EMA', 'DCG_ATG2', 'DCG A-PDG', 'Valoracion LIEs DCG', 
         'Valoracion LIEs DSG', 'Biopsia DCG', 'Biopsia DSG'])
     
-    df_mix_try8 = df_mix.filter(['Diagnóstico', 'LIEs DCG %iNK', 'Biopsia DCG', 
-                                 'Valoracion LIEs DCG', 'DCG_ATG2', 'DCG EMA', 
+    '''
+    LIEs DSG %GD', 'Biopsia DCG_M0',
+       'Valoracion LIEs DCG_No compatible con EC', 'DCG_ATG2_Negativo',
+       'DCG_ATG2_VALUE', 'Valoracion LIEs DCG_Compatible con EC activa',
+       'DSG ATG2_Negativo', 'LIEs DCG %GD', 'DCG A-PDG_Negativo',
+       'DCG_ATG2_Positivo', 'Biopsia DCG_M3b'
+    '''
+    
+    df_mix_try8 = df_mix.filter(['Diagnóstico', 'LIEs DSG %GD', 'Biopsia DCG', 
+                                 'Valoracion LIEs DCG', 'DCG_ATG2', 'DCG A-PDG',
                                  'LIEs DCG %GD', 'DSG ATG2'])
-    df_mix_try_9 = df_mix.filter(['Diagnóstico', 'LIEs DCG %iNK', 'Biopsia DCG', 
-                                  'Valoracion LIEs DCG', 'DCG EMA', 'Biopsia DSG', 
-                                  'Esclerosis múltiple'])
+    
+    '''
+    'LIEs DSG %GD', 'Biopsia DCG_M0',
+       'Valoracion LIEs DCG_No compatible con EC', 'DCG_ATG2_Negativo',
+       'Malabsorción', 'Biopsia DSG_M3b', 'Esclerosis múltiple'
+    '''
+    df_mix_try_9 = df_mix.filter(['Diagnóstico', 'LIEs DSG %GD', 'Biopsia DCG', 
+                                  'Valoracion LIEs DCG', 'DCG_ATG2', 'Biopsia DSG', 
+                                  'Esclerosis múltiple', 'Malabsorción'])
     mixs_dfs = [df_mix, df_mix_short, df_mix_try1, df_mix_try2,
                        df_mix_try3, df_mix_try4, df_mix_try5, df_mix_try6, df_mix_try7, df_mix_try8, 
                        df_mix_try_9]

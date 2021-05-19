@@ -9,6 +9,8 @@ from sklearn.impute import IterativeImputer
 import pandas as pd
 from sklearn.impute import KNNImputer
 import operator
+from sklearn.preprocessing import QuantileTransformer
+
 
 # Suffers from Convergence Warming:
 # Early stopping criterion not reached
@@ -21,6 +23,32 @@ def multivariate_imputation(df):
      return df
      
 def knn_imputation(df):
+    
+    columns_reorder = df.columns
+    
+    filter_col = [col for col in df if (col.startswith('HLA: grupos de riesgo') |
+                    col.startswith('DCG EMA') | col.startswith('Biopsia DCG') | 
+                    col.startswith('Valoracion LIEs DCG_') | col.startswith('Valoracion LIEs DSG_') |
+                    col.startswith('Biopsia DSG'))]
+    df_fit = df.filter(filter_col + ['DCG_ATG2_VALUE', 'DCG A-PDG_VALUE', '1º grado', 'LIEs DCG %GD', 
+                        'LIEs DCG %iNK', 'DSG ATG2 VALUE', 'DSG A-PDG VALUE', 'LIEs DSG %GD', 'LIEs DSG %iNK'])
+    columns_fit = df_fit.columns
+    
+    columns_difference = columns_reorder.difference(columns_fit)
+    df_difference = df[columns_difference]
+    
+    transformer = QuantileTransformer(n_quantiles=6, random_state=0)
+    df_fit = transformer.fit_transform(df_fit)
+    
+    imputer = KNNImputer(weights = 'distance', n_neighbors=4)
+    df_fit = imputer.fit_transform(df_fit)
+    
+    df_fit = transformer.inverse_transform(df_fit)
+    
+    df_fit = pd.DataFrame(df_fit, columns = columns_fit)
+    result = pd.concat([df_fit, df_difference], axis = 1)
+    df = result.reindex(columns=columns_reorder) 
+    '''
     aux = df[["Diagnóstico"]]
     df = df.drop(columns=["Diagnóstico"])
     columns = df.columns
@@ -30,6 +58,7 @@ def knn_imputation(df):
     
     df = pd.DataFrame(df, columns = columns)
     df = pd.concat([df, aux], axis = 1)
+    '''
     return df
 
 def imputation(df):

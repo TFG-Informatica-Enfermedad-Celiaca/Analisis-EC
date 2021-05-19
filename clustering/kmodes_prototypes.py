@@ -37,27 +37,16 @@ def kmodes(df_numerical, df, extended_information, name=''):
     clusters = kmodes.fit_predict(X)
     
     df['cluster'] = clusters
+    df_numerical['cluster'] = clusters
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnostico"]
     df_con_diagnostico = df[df['Diagnóstico']!= "Paciente perdido"]
     df_con_diagnostico = df[df['Diagnóstico']!= "Aún en estudio"]
-        
-    df_con_diagnostico.loc[(df_con_diagnostico['Diagnóstico']
-                       == "EC") | (df_con_diagnostico['Diagnóstico']
-                       == "EC Potencial") | (df_con_diagnostico['Diagnóstico']
-                       == "EC Refractaria") | (df_con_diagnostico['Diagnóstico']
-                       == "EC dudosa"), 'Diagnóstico'] = "EC"
                                                
-    df_con_diagnostico.loc[(df_con_diagnostico['Diagnóstico']
-                       == "no EC ni SGNC") | (df_con_diagnostico['Diagnóstico']
-                       == "SGNC no estricta") | (df_con_diagnostico['Diagnóstico']
-                       == "Sensibilidad al gluten no celíaca (SGNC) estricta") 
-                        , 'Diagnóstico'] = "no EC"   
-                                                     
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
     
     if (extended_information):
-        #reduce_dimension_after_clustering(clusters, n_clusters, 'K-Modes'+name)
+        reduce_dimension_after_clustering('K-Modes'+name, df_numerical)
         #f1_score(clusters)
         rate(df, clusters, 'K-Modes'+name, max_silhouette,  b3.calc_b3(labels_true, labels_pred))
     
@@ -81,27 +70,17 @@ def kprototypes(df_numerical, df, index, extended_information, name=''):
     clusters = kproto.fit_predict(X, categorical=categories_numbers)
     
     df['cluster'] = clusters
+    df_numerical['cluster'] = clusters
     df_con_diagnostico = df[df['Diagnóstico']!= "Sin diagnostico"]
     df_con_diagnostico = df[df['Diagnóstico']!= "Paciente perdido"]
     df_con_diagnostico = df[df['Diagnóstico']!= "Aún en estudio"]
-        
-    df_con_diagnostico.loc[(df_con_diagnostico['Diagnóstico']
-                       == "EC") | (df_con_diagnostico['Diagnóstico']
-                       == "EC Potencial") | (df_con_diagnostico['Diagnóstico']
-                       == "EC Refractaria") | (df_con_diagnostico['Diagnóstico']
-                       == "EC dudosa"), 'Diagnóstico'] = "EC"
-                                               
-    df_con_diagnostico.loc[(df_con_diagnostico['Diagnóstico']
-                       == "no EC ni SGNC") | (df_con_diagnostico['Diagnóstico']
-                       == "SGNC no estricta") | (df_con_diagnostico['Diagnóstico']
-                       == "Sensibilidad al gluten no celíaca (SGNC) estricta") 
-                        , 'Diagnóstico'] = "no EC"   
-                                                     
+    
+    
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
     
     if(extended_information):
-        #reduce_dimension_after_clustering(clusters, n_clusters, 'K-Prototype'+name)
+        reduce_dimension_after_clustering('K-Prototype'+name, df_numerical)
         #f1_score(clusters)
         rate(df, clusters, 'K-Prototype'+name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
     

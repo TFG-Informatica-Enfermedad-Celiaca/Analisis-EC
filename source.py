@@ -108,9 +108,9 @@ def plotResults(clustering, silhouette, f_measure, precision, recall, title):
 def chooseFinalResult(final_clustering, numericals_dfs,
                       categoricals_dfs, mixs_dfs, missings_dfs, titles_dfs):
 
-    '''
-    final_clustering.append(kmeans(numericals_dfs[6], True, titles_dfs[6]))
     
+    final_clustering.append(kmeans(numericals_dfs[0], True, titles_dfs[0]))
+    '''
     final_clustering.append(kpod(numericals_dfs[6], missings_dfs[6], True, titles_dfs[5]))
     
     #KProto fallaba
@@ -121,11 +121,11 @@ def chooseFinalResult(final_clustering, numericals_dfs,
     final_clustering.append(spectral(numericals_dfs[7], True, titles_dfs[7]))
     
     
-    '''
+    
     #Agglomerative salen 4. Hay que quedarse con ward creo (no estoy seguro)
     final_clustering.append(agglomerative(numericals_dfs[9], True, titles_dfs[9]))
     
-    '''
+    
     final_clustering.append(dbscan(numericals_dfs[10], True, titles_dfs[10]))
     
     final_clustering.append(optics(numericals_dfs[8], True, titles_dfs[8]))
@@ -224,14 +224,14 @@ def main():
     clustering = []
     clustering_method_results.append(
         executeKPod(clustering, numericals_dfs, missings_dfs, titles_dfs))
-    
-    
+    '''
+    '''
     #KPrototypes
     clustering = []
     clustering_method_results.append(
         executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs))
-    
-    
+    '''
+    '''
     #KModes
     clustering = []
     clustering_method_results.append(
@@ -243,14 +243,14 @@ def main():
     clustering_method_results.append(
         executeSPECTRAL(clustering, numericals_dfs, titles_dfs))
     
-    '''
+    
     #Agglomerative
     clustering = []
     clustering_method_results.append(
         executeAgglomerative(clustering, numericals_dfs, titles_dfs))
     
     
-    '''
+    
     #DBSCAN
     clustering = []
     clustering_method_results.append(
@@ -267,15 +267,15 @@ def main():
     clustering = []
     clustering_method_results.append(
         executeMedoids(clustering, numericals_dfs, titles_dfs))
-    '''
     
-    '''
+    
+    
     title_methods = ["K-Means", "K-POD", "K-Prototypes", "K-Modes",
                     "Spectral", "Agglomerative", "DBSCAN", "OPTICS", "K-Medoids"]
     '''
     
     #Si se quiere hacer pruebas descomentar el array de abajo y ponerle el nombre de los metodos
-    title_methods = [ "Agglomerative", "DBSCAN", "OPTICS", "K-Medoids"]
+    title_methods = ["KMeans"]
     
     for i in range(len(clustering_method_results)):
         silhouette = {}

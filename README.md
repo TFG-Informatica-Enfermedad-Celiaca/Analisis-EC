@@ -12,6 +12,7 @@ Para ejecutar el código y visualizar los resultados en local tendrás que tener
 - [Numpy](https://numpy.org/install/)
 - [Pandas](https://pandas.pydata.org/pandas-docs/stable/getting_started/install.html)
 - [Plotly](https://plotly.com/python/getting-started/#installation)
+- [Plotly orca]
 - [Sklearn](https://scikit-learn.org/stable/install.html)
 - [Sklearn extra](https://scikit-learn-extra.readthedocs.io/en/stable/install.html)
 - [kPOD](https://pypi.org/project/kPOD/)

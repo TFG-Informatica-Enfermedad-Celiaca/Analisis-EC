@@ -72,8 +72,19 @@ Sobre todos los datasets listados en el apartado anterior ejecutamos los algorit
 Además utilizamos otros algoritmos de clustering menos conocidos pero que por el tipo de datos (gran cantidad de datos categóricos, y datos incompletos) resultaban de mucho interés como son: [KPrototypes](clustering/kmodes_prototypes.py), [KModes](clustering/kmodes_prototypes.py), [kPOD](clustering/kpod_a.py).
 
 ## Evaluación de los datasets y de los métodos de clustering
+Para la evaluación de los datasets utilizamos el [estadístico de Hopkins](clustering/hopkins_statistics.py). 
+Para la evaluación de los métodos de clustering utilizamos como método intrínseco el [coeficiente de Silhouette](clustering/silhouette.py) y como método extrínseco [la precisión y exhaustividad BCubed](clustering/b3.py).
 
 ## Visualización de los resultados
+Para la visualización de los resultados estamos utilizando la librería Plotly y tenemos tres elementos básicos de visualización:
+1. Comparación de la calidad de los datasets mediante estadístico de Hopkins.
+2. Comparación de los datasets para cada método mediante coeficiente de Silhouette y precisión y exhaustividad BCubed.
+3. Clasificación de los pacientes en clústeres según su diagnóstico. 
+
+Además utilizamos dos herramientas más de visualización que fueron muy útiles durante el desarrollo aunque no tanto para el análisis final de los resultados:
+1. Visualización de los pacientes y resultado del clustering en 2D
+2. Visualización del peso de las variables
+
 
 ## Referencias
 Chi JT, Chi EC, Baraniuk RG (2016). “k-POD: A Method for k-Means Clustering of Missing Data.” The American Statistician, 70, 91–99. doi: 10.1080/00031305.2015.1086685, http://www.tandfonline.com/doi/abs/10.1080/00031305.2015.1086685.

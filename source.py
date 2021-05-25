@@ -164,12 +164,12 @@ def main():
     clustering = []
     clustering_method_results.append(
         executeKPod(clustering, numericals_dfs, missings_dfs, titles_dfs))
-    '''
+    
     #KPrototypes
     clustering = []
     clustering_method_results.append(
         executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs))
-    '''
+    
     #KModes
     clustering = []
     clustering_method_results.append(

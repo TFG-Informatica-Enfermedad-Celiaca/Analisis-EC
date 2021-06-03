@@ -36,7 +36,12 @@ Para ejecutar el código y visualizar los resultados en local tendrás que tener
 - [Sklearn extra](https://scikit-learn-extra.readthedocs.io/en/stable/install.html)
 - [kPOD](https://pypi.org/project/kPOD/)
 - [kmodes](https://pypi.org/project/kmodes/)
-- [scikit-feature](https://github.com/jundongl/scikit-feature) Tendrá que descargarse este repositorio en local además de hacer los siguientes
+- [scikit-feature](https://github.com/jundongl/scikit-feature) Tendrá que descargarse este repositorio en local además de hacer los siguientes cambios: 
+- [umap](https://umap-learn.readthedocs.io/en/latest/)
+- [lightgbm](https://lightgbm.readthedocs.io/en/latest/)
+- [shap](https://shap.readthedocs.io/en/latest/index.html)
+- [matplotlib](https://matplotlib.org/stable/users/installing.html)
+- [pyclustertend](https://pyclustertend.readthedocs.io/en/latest/)
 Después solo tendrás que ejecutar:
 ```
 python3 source.py

@@ -58,4 +58,5 @@ def silhouette(name, data, data_prototypes, data_modes, data_pod,
 
         fig.write_html("images/" + name + " Coeficiente de Silhouette.html")
     
-    return [n_clusters,max(silhouette)]
+    #return [n_clusters,max(silhouette)]
+    return [2, silhouette[0]]

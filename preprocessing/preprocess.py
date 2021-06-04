@@ -84,7 +84,7 @@ def preprocess():
     X = df_numerical[df_numerical['Diagnóstico']!= "Sin diagnostico"]
     X = X[X['Diagnóstico']!= "Paciente perdido"]
     X = X[X['Diagnóstico']!= "Aún en estudio"]
-
+    
     y = X['Diagnóstico'].to_numpy()
     X = X.drop(columns=['Diagnóstico']).to_numpy()
     idx_cfs = cfs(X,y)

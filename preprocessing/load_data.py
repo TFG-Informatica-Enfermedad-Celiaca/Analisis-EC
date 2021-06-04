@@ -27,7 +27,6 @@ def read_new_data_from_local():
             print("It was not possible to load data 2")
 
 
-
 '''
 Read the relevant columns form .xlsx stored in local and creates deaframe
 '''

@@ -91,7 +91,7 @@ def preprocess():
     
     df_try8 = df_numerical.drop(columns=['Diagnóstico'])
     features_selected = df_try8.columns[idx_cfs]
-    print(features_selected)
+    #print(features_selected)
     df_try8  = df_try8.iloc[:, idx_cfs]
     df_try8 ['Diagnóstico'] = df_numerical['Diagnóstico']
     
@@ -99,7 +99,7 @@ def preprocess():
     
     df_try9 = df_numerical.drop(columns=['Diagnóstico'])
     features_selected = df_try9.columns[idx_fcbf[0]]
-    print(features_selected)
+    #print(features_selected)
     df_try9 = df_try9.iloc[:, idx_fcbf[0]]
     df_try9['Diagnóstico'] = df_numerical['Diagnóstico']
     

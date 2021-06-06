@@ -23,7 +23,7 @@ def multivariate_imputation(df):
      return df
      
 def knn_imputation(df):
-    '''
+    
     columns_reorder = df.columns
     
     filter_col = [col for col in df if (col.startswith('HLA: grupos de riesgo') |
@@ -48,6 +48,7 @@ def knn_imputation(df):
     df_fit = pd.DataFrame(df_fit, columns = columns_fit)
     result = pd.concat([df_fit, df_difference], axis = 1)
     df = result.reindex(columns=columns_reorder) 
+    
     '''
     aux = df[["Diagnóstico"]]
     df = df.drop(columns=["Diagnóstico"])
@@ -58,7 +59,7 @@ def knn_imputation(df):
     
     df = pd.DataFrame(df, columns = columns)
     df = pd.concat([df, aux], axis = 1)
-    
+    '''
     return df
 
 def imputation(df):

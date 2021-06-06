@@ -164,12 +164,12 @@ def main():
     clustering = []
     clustering_method_results.append(
         executeKPod(clustering, numericals_dfs, missings_dfs, titles_dfs))
-    '''
+
     #KPrototypes
     clustering = []
     clustering_method_results.append(
         executeKPrototypes(clustering, numericals_dfs, mixs_dfs, titles_dfs))
-    '''
+    
     #KModes
     clustering = []
     clustering_method_results.append(
@@ -206,12 +206,10 @@ def main():
     clustering_method_results.append(
         executeMedoids(clustering, numericals_dfs, titles_dfs))
     
-    '''
+    
     title_methods = ["K-Means", "K-POD", "K-Prototypes", "K-Modes",
                     "Spectral", "Agglomerative", "DBSCAN", "OPTICS", "K-Medoids"]
-    '''
-    title_methods = ["K-Means", "K-POD", "K-Modes",
-                    "Spectral", "Agglomerative", "DBSCAN", "OPTICS", "K-Medoids"]
+
     
     for i in range(len(clustering_method_results)):
         silhouette = {}

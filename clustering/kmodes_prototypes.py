@@ -80,7 +80,7 @@ def kprototypes(df_numerical, df, index, extended_information, name=''):
     labels_pred = df_con_diagnostico['cluster'].values
     
     if(extended_information):
-        reduce_dimension_after_clustering('K-Prototype'+name, df_numerical)
+        reduce_dimension_after_clustering('K-Prototypes'+name, df_numerical)
         #f1_score(clusters)
         rate(df, clusters, 'K-Prototype'+name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
     

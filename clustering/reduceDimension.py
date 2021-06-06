@@ -12,7 +12,7 @@ import plotly.express as px
 pio.renderers.default='browser'
 import sys
 sys.path.append(r'../preprocessing')
-from load_data import read_data_from_local, read_new_data_from_local
+from load_data import read_data_from_local
 
 def reduce_dimension_after_clustering(tit, df):
     data = read_data_from_local()

@@ -16,16 +16,20 @@ Read the relevant columns form .xlsx stored in local and creates deaframe
 def read_new_data_from_local():
     try:
         df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Datos actualizados.xlsx')
+            'Fichero prueba.xlsx')
         return df
     except:
         try:
             df=pd.read_excel(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\Datos actualizados.xlsx')
+                '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Datos actualizados.xlsx')
             return df
         except:
-            print("It was not possible to load data 2")
-
+            try:
+                df=pd.read_excel(
+                    r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\Datos actualizados.xlsx')
+                return df
+            except:
+                print("It was not possible to load Fichero prueba.xlsx")
 
 '''
 Read the relevant columns form .xlsx stored in local and creates deaframe
@@ -33,15 +37,20 @@ Read the relevant columns form .xlsx stored in local and creates deaframe
 def read_columns_from_local():
     try:
         df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Important columns.xlsx')
+            'Important columns.xlsx')
         return df
     except:
         try:
             df=pd.read_excel(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\Important columns.xlsx')
+                '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Important columns.xlsx')
             return df
         except:
-            print("It was not possible to load data 3")
+            try:
+                df=pd.read_excel(
+                    r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\Important columns.xlsx')
+                return df
+            except:
+                print("It was not possible to load Important columns.xlsx")
 
 
 ##################################################################
@@ -54,25 +63,35 @@ Read the relevant columns form .xlsx stored in local and creates deaframe
 def read_data_from_local():
     try:
         df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Analisis-EC/formated_data.xlsx')
+            'formated_data.xlsx')
         return df
     except:
         try:
             df=pd.read_excel(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\formated_data.xlsx')
+                '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Analisis-EC/formated_data.xlsx')
             return df
         except:
-            print("It was not possible to load data 2")
+            try:
+                df=pd.read_excel(
+                    r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\formated_data.xlsx')
+                return df
+            except:
+                print("It was not possible to formated_data.xlsx")
 
 def read_numerical_data_from_local():
     try:
         df=pd.read_excel(
-            '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Analisis-EC/formated_imputed_scaled_numerical_data.xlsx')
+            'formated_imputed_scaled_numerical_data.xlsx')
         return df
     except:
         try:
             df=pd.read_excel(
-                r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\formated_imputed_scaled_numerical_data.xlsx')
+                '/Users/pablo/Desktop/Universidad/5/TFG/Informática/Código/Analisis-EC/formated_imputed_scaled_numerical_data.xlsx')
             return df
         except:
-            print("It was not possible to load data 2")
+            try:
+                df=pd.read_excel(
+                    r'C:\Users\Carla\Desktop\TFG-Informatica\Analisis-EC\formated_imputed_scaled_numerical_data.xlsx')
+                return df
+            except:
+                print("It was not possible to load formated_imputed_scaled_numerical_data.xlsx")

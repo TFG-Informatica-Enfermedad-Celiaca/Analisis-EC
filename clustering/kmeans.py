@@ -5,8 +5,8 @@ Created on Tue Mar 30 11:44:41 2021
 @author: Carla
 """
 from sklearn.cluster import KMeans
-#import sys
-#sys.path.append(r'../')
+import sys
+sys.path.append(r'../')
 from reduceDimension import reduce_dimension_after_clustering
 from rater import rate
 from silhouette import silhouette

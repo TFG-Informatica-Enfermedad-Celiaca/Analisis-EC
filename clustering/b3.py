@@ -46,11 +46,9 @@ def compute_class_precision_recall(L,K):
     Compute the partitions matrix P which stores the size
     of the intersection of elements belong to Label i and Cluster j
     in the (i,j)-th entry of P
-
     Input:
       L -- Numpy array of Labels or numpy 2d array with shape (1,N_L) or (N_L,1)
       K -- Numpy array of Clusters or numpy 2d array with shape (1,N_K) or (N_K,1)
-
     Output:
       P -- Numpy ndarray |\L| x |\K| Partitions Matrix, where |\L| is the
           size of the label set, and \K is the number of clusters
@@ -103,34 +101,26 @@ def calc_b3(L , K , class_norm=False, beta=1.0):
     Amit Bagga, Jason Baldridge, Raman Chandraseker, Alexis Dimitriadis, 
     Kieran Snyder, Magdalena Wolska, Institute for Research in Cognitive 
     Science.
-
     Usage:
       from B3 import B3
       import numpy as np
-
       score = B3()
       L = np.array([1,3,3,3,3,4,2,2,2,3,3])
       K = np.array([1,2,3,4,5,5,5,6,2,1,1])
-
       # Standard BCUBED (Weight each element equally)
       [fmeasure, precision, recall] = score.calc_b3(L,K)
       
       # Equivalence class normalization (Weight each class equally)
       [fmeasure, precision, recall] = score.calc_b3(L,K,class_norm=True)
-
       # Different weighting schemes for fmeasure
       [fmeasure, precision, recall] = score.calc_b3(L,K,beta=2.0)
       [fmeasure, precision, recall] = score.calc_b3(L,K,beta=0.5)
-
-
     Computes the precision, recall, and fmeasure from the Class level
     precision, and recall arrays. Two types are possible. One weights all
     classes equally while the other weights each element equally.
-
     Input:
       L -- Numpy array of Labels or numpy 2d array with shape (1,N_L) or (N_L,1)
       K -- Numpy array of Clusters or numpy 2d array with shape (1,N_K) or (N_K,1)
-
       options:
         class_norm: Decides whether to weight the precision by class or by entity
         beta: Harmonic mean weighting
@@ -151,9 +141,5 @@ def calc_b3(L , K , class_norm=False, beta=1.0):
   f_measure = (1 + beta**2) * (precision * recall) /( (beta**2) * precision + recall ) 
   
   return [f_measure,precision,recall]      
-
-
-
-
 
 

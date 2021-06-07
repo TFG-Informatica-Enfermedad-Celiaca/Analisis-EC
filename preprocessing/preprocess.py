@@ -5,6 +5,8 @@ Created on Mon Apr  5 21:02:56 2021
 @author: Carla
 @author: pablo
 """
+import sys
+sys.path.append(r'../scikit-feature')
 from format_data import selectImportantColumns, filtering
 from load_data import read_new_data_from_local
 from categorical_data import transform_categorical_to_numerical, fill_null_value_categorical

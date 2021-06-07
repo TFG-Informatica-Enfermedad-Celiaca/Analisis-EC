@@ -22,9 +22,6 @@ import plotly.graph_objects as go
 import plotly.io as pio
 pio.renderers.default='browser'
 import numpy as np
-from plotly.subplots import make_subplots
-from skfeature.function.statistical_based.CFS import cfs
-from skfeature.function.information_theoretical_based.FCBF import fcbf
 import os
 
 if not os.path.exists(r"images"):

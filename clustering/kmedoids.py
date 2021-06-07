@@ -11,7 +11,6 @@ pio.renderers.default='browser'
 import sys
 sys.path.append(r'../')
 from reduceDimension import reduce_dimension_after_clustering
-from scoreF1 import f1_score
 from sklearn_extra.cluster import KMedoids
 from rater import rate
 from silhouette import silhouette

@@ -27,25 +27,47 @@ Para ello llevamos a cabo el formateo de los datos (los que por motivos de priva
 <div id='installation'></div>
 En este repositorio se incluye un fichero de datos que por supuesto no es el real, pero que tiene la misma estructura (en cuanto a las columnas que contiene) y que permitirá a aquellas personas que lo deseen ejecutar el proyecto y visualizar los resultados. 
 
-Para ejecutar el código y visualizar los resultados en local tendrás que tener instaladas las siguientes librerías de Python: 
-- [Numpy](https://numpy.org/install/)
-- [Pandas](https://pandas.pydata.org/pandas-docs/stable/getting_started/install.html)
-- [Plotly](https://plotly.com/python/getting-started/#installation)
-- [Plotly orca](https://github.com/plotly/orca)
-- [Sklearn](https://scikit-learn.org/stable/install.html)
-- [Sklearn extra](https://scikit-learn-extra.readthedocs.io/en/stable/install.html)
-- [kPOD](https://pypi.org/project/kPOD/)
-- [kmodes](https://pypi.org/project/kmodes/)
-- [scikit-feature](https://github.com/jundongl/scikit-feature) Tendrá que descargarse este repositorio en local además de hacer los siguientes cambios: 
-- [umap](https://umap-learn.readthedocs.io/en/latest/)
-- [lightgbm](https://lightgbm.readthedocs.io/en/latest/)
-- [shap](https://shap.readthedocs.io/en/latest/index.html)
-- [matplotlib](https://matplotlib.org/stable/users/installing.html)
-- [pyclustertend](https://pyclustertend.readthedocs.io/en/latest/)
-Después solo tendrás que ejecutar:
-```
-python3 source.py
-```
+Para ejecutar el código y visualizar los resultados en local tendrás que seguir los siguientes pasos:
+1. **Instala Python 2.7 y Python3.** Puedes instalarlos desde los siguientes links [Python 2](https://www.python.org/downloads/release/python-2716/) y [Python 3](https://www.python.org/downloads/release/python-395/).
+2. **Instala Anaconda y sigue los pasos de instalación.** Puedes instalar Anaconda desde [aquí](https://www.anaconda.com/products/individual). Después, solo tendrás que seguir los pasos de la instalación y esperar unos minutos a que se complete. 
+3. **Instala git bash.** Puedes instalar git bash desde [aquí](https://git-scm.com/downloads). Después, solo tendrás que seguir los pasos de instalación y esperar unos minutos a que se complete.
+4. **Descarga el repositorio del proyecto en local:** Abre la consola de git bash y navega hasta el directorio donde deseas descargar el proyecto luego solo tendrás que ejecutar 
+    ```
+       git clone https://github.com/TFG-Informatica-Enfermedad-Celiaca/Analisis-EC.git
+    ```
+5. **Descarga el repositorio de la librería scikit-feature:** Desde la consola de git bash navega hasta el directorio donde has descargado el repositorio anterior y descarga este repositorio para ello tienes que ejecutar:
+    ```
+       git clone https://github.com/jundongl/scikit-feature
+    ```
+6. **Cambios en el repositorio scikit-feature:** Las funciones que utilizaremos tienen algunas erratas que debemos arreglar para el correcto funcionamiento del proyecto. Para ello en el explorador de archivos iremos al directorio donde hayamos descargado el repositorio de scikit-feature, navegaremos a *skfeature/function/information_theoretical_based/FCBF.py* y abrimos el fichero con un editor de texto para cambiar la línea 39 sustituyendo el valor actual t1=np.zeros((n\_features, 2), dtypes='object')} por t1=np.zeros((n\_features, 2), dtype='object') y en la  línea 53 sustituimos fp= X[:, s_list[idx, 0]]} por fp=$X[:, int(s_list[idx, 0])].
+    
+7. **Instalar las librerías necesarias:** Para ello abre Spyder y ejecuta en la consola de Spyder los siguientes comandos.
+    ```
+        conda install numpy
+        conda install pandas
+        conda install -c plotly plotly
+        conda install -c conda-forge scikit-learn 
+        conda install -c conda-forge scikit-learn-extra
+        pip install kPOD
+        pip install kmodes
+        conda install -c conda-forge umap-learn
+        conda install matplotlib
+        pip install pyclustertend
+        conda install -c anaconda scipy
+    ```
+    Si la ejecución de alguno de estos comandos te da error, prueba ejecutándolo con el flag --user.
+            
+8. **Instalar el repositorio scikit-feature:** Abre la consola de tu sistema operativo y navega hasta el directorio donde hayas descargado el repositorio de scikit-feature. 
+        8.1 Si eres usuario de Windows ejecuta: 
+        ```
+             setup.py install
+        ```
+        8.2 Si eres usuario de Linux ejecuta: 
+            ```
+               python setup.py install
+            ```
+            
+9. **Ejecuta fichero source.py** Abre en Spyder el fichero source.py y ejecútalo. La ejecución tardará unos minutos, cuando termine encontrarás los resultados en la carpeta */images*.
 
 ## 2. Preprocesado de los datos
 <div id='preprocesado'></div>
@@ -153,7 +175,7 @@ Para la visualización de los resultados estamos utilizando la librería Plotly.
 ## 7. Datos simulados
 <div id='simulados'></div>
 
-Como ya hemos dicho por motivos de protección de datos no podemos incluir en el repositorio los datos reales con los que trabajamos pero se ha generado un archivo de datos simulados para que se pueda ejecutar en local el proyecto si se desea este fichero se genera de forma automática y podemos encontrar el código [aquí](Simulator/codeSimulator.py)
+Como ya hemos dicho por motivos de protección de datos no podemos incluir en el repositorio los datos reales con los que trabajamos pero se ha generado un archivo de datos simulados para que se pueda ejecutar en local el proyecto el fichero es Fichero prueba.xlsx.
 
 ## 8. Referencias
 <div id='referencias'></div>

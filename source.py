@@ -188,7 +188,6 @@ def main():
         executeAgglomerative(clustering, numericals_dfs, titles_dfs))
     
     
-    
     #DBSCAN
     clustering = []
     clustering_method_results.append(

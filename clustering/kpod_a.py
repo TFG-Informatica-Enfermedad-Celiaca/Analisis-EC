@@ -10,9 +10,7 @@ from kPOD import k_pod
 import sys
 sys.path.append(r'../')
 from reduceDimension import reduce_dimension_after_clustering
-from scoreF1 import f1_score
 from rater import rate
-
 from tqdm import tqdm
 from sklearn.metrics import silhouette_score
 import plotly.graph_objects as go
@@ -33,7 +31,7 @@ def kpod(df_complete, df, extended_information, name=''):
                                              X, k_pod, None, extended_information)
 
     clustered_data = k_pod(X, n_clusters)    
-    # save the cluster assignments and centers
+    # Save the cluster assignments and centers
     cluster_assignments = clustered_data[0]
     
     df['cluster'] = cluster_assignments
@@ -47,7 +45,6 @@ def kpod(df_complete, df, extended_information, name=''):
     
     if (extended_information):
         reduce_dimension_after_clustering('K-POD' + name, df_complete)
-        #f1_score(cluster_assignments)
         rate(df, cluster_assignments, 'K-POD'+name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
     
     return {"K-POD"+name: [max_silhouette, b3.calc_b3(labels_true, labels_pred)]}

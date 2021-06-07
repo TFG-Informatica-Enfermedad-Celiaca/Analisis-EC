@@ -12,7 +12,6 @@ pio.renderers.default='browser'
 import sys
 sys.path.append(r'../')
 from reduceDimension import reduce_dimension_after_clustering
-from scoreF1 import f1_score
 from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import dendrogram
 from matplotlib import pyplot as plt
@@ -75,7 +74,6 @@ def agglomerative(df, extended_information, name):
         max_silh_dict["Agglomerative - " + metric + name].append(b3.calc_b3(labels_true, labels_pred))
         if (extended_information):
             reduce_dimension_after_clustering('Agglomerative ' + metric + name, df)
-            #f1_score(clusters)
             #plot_dendrogram(model, truncate_mode='level', p=n_clusters)
             #plt.title(metric)
             #plt.xlabel("Number of points in node (or index of point if no parenthesis).")

@@ -10,7 +10,6 @@ from sklearn.cluster import SpectralClustering
 import sys
 sys.path.append(r'../')
 from reduceDimension import reduce_dimension_after_clustering
-from scoreF1 import f1_score
 from rater import rate
 
 from silhouette import silhouette
@@ -38,7 +37,6 @@ def spectral(df, extended_information, name):
 
     if (extended_information):
         reduce_dimension_after_clustering('Spectral' + name, df)
-        #f1_score(clusters)
         rate(df, clusters, 'Spectral' + name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
     
     

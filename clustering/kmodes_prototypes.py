@@ -17,7 +17,6 @@ import numpy as np
 import sys
 sys.path.append(r'../')
 from reduceDimension import reduce_dimension_after_clustering
-from scoreF1 import f1_score
 from rater import rate
 from utils import categorical_columns
 from silhouette import silhouette
@@ -81,7 +80,6 @@ def kprototypes(df_numerical, df, index, extended_information, name=''):
     
     if(extended_information):
         reduce_dimension_after_clustering('K-Prototypes'+name, df_numerical)
-        #f1_score(clusters)
         rate(df, clusters, 'K-Prototype'+name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
     
     return {"K-Prototypes" + name: [max_silhouette, b3.calc_b3(labels_true, labels_pred)]}

@@ -12,7 +12,6 @@ pio.renderers.default='browser'
 import sys
 sys.path.append(r'../')
 from reduceDimension import reduce_dimension_after_clustering
-from scoreF1 import f1_score
 from sklearn.cluster import OPTICS
 from rater import rate
 from sklearn.metrics import silhouette_score
@@ -35,13 +34,16 @@ def optics (df, extended_information, name):
     labels_true = df_con_diagnostico['Diagnóstico'].values
     labels_pred = df_con_diagnostico['cluster'].values
     
+    if len(np.unique(opt.labels_)) >= 2 :
+            silhouette_s = silhouette_score(data, opt.labels_)
+    else:
+            silhouette_s= -1
+            
     if (extended_information):
-        rate(df, clusters, 'Optics' + name, silhouette_score(data, opt.labels_), 
+        rate(df, clusters, 'Optics' + name, silhouette_s, 
                        b3.calc_b3(labels_true, labels_pred))
-        #f1_score(clusters)
-        #aux = len(np.unique(opt.labels_))
         reduce_dimension_after_clustering('Optics' + name, df)
     
-    return {"Optics" + name: [silhouette_score(data, opt.labels_), 
+    return {"Optics" + name: [silhouette_s, 
                        b3.calc_b3(labels_true, labels_pred)]}
     

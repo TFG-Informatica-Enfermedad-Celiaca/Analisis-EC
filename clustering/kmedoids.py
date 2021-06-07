@@ -23,7 +23,7 @@ def kmedoids (df, extended_information, name):
     
     max_silh_dict = {}
     
-    #He quitado las distancias manhattan y euclidean porque pasa algo raro con silhoutte
+    #Manhattan and cosine do not work correctly
     #for metr in ['manhattan', 'euclidean', 'cosine']:
     for metr in ['euclidean']:
         
@@ -54,7 +54,6 @@ def kmedoids (df, extended_information, name):
         
         if (extended_information):
             reduce_dimension_after_clustering('K-Medoids '+ metr + name, df)
-            #f1_score(clusters)
             rate(df, clusters, 'K-Medoids '+ metr + name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
             
     return max_silh_dict

@@ -8,7 +8,6 @@ from sklearn.cluster import KMeans
 #import sys
 #sys.path.append(r'../')
 from reduceDimension import reduce_dimension_after_clustering
-from scoreF1 import f1_score
 from rater import rate
 from silhouette import silhouette
 from sklearn import metrics
@@ -35,7 +34,6 @@ def kmeans (df, extended_information, name=''):
     
     if (extended_information):
         reduce_dimension_after_clustering('K-Means'+ name, df)
-        #f1_score(kmeans.labels_)
         rate(df, clusters, 'K-Means'+ name, max_silhouette, b3.calc_b3(labels_true, labels_pred))
     
     df.to_excel("kmeans.xlsx" , index = False)
